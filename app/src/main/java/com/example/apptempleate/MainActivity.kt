@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.Parcelable
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -70,6 +71,9 @@ class MainActivity : AppCompatActivity() {
 
     private var currentConversation: Conversation? = null
     private var allConversations: MutableList<Conversation> = mutableListOf()
+
+    private var isNewChatState = true
+    private var chatListScrollState: Parcelable? = null
 
     private var speechRecognizer: SpeechRecognizer? = null
     private var isListening = false
@@ -143,7 +147,7 @@ class MainActivity : AppCompatActivity() {
         btnMic = findViewById(R.id.btnMic)
         btnLiveVoice = findViewById(R.id.btnLiveVoice)
 
-        // Set Dynamic Premium Time-of-Day Greeting
+        // Set Dynamic Premium Time-of-Day Greeting with User Name
         updateGreetingText()
 
         // Load Saved Conversations & Populate Sidebar Recent History List
@@ -260,20 +264,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        chatListScrollState = rvChatMessages.layoutManager?.onSaveInstanceState()
+    }
+
     override fun onResume() {
         super.onResume()
-        // Reload conversations when returning from Voice Call or Memory Vault
+        updateGreetingText()
         refreshSidebarHistory()
-        val activeId = currentConversation?.id
-        if (activeId != null) {
-            val updated = ChatRepository.loadAllConversations(this).find { it.id == activeId }
-            if (updated != null) {
-                loadConversationIntoView(updated)
-            }
-        } else if (allConversations.isNotEmpty()) {
-            val latest = allConversations[0]
-            if (latest.messages.isNotEmpty()) {
-                loadConversationIntoView(latest)
+
+        if (isNewChatState) {
+            // Keep exact New Chat state
+            llGreetingContainer.visibility = View.VISIBLE
+            rvChatMessages.visibility = View.GONE
+            btnDeleteCurrentChat.visibility = View.GONE
+        } else {
+            val activeId = currentConversation?.id
+            if (activeId != null) {
+                val updated = ChatRepository.loadAllConversations(this).find { it.id == activeId }
+                if (updated != null) {
+                    loadConversationIntoView(updated, restoreScroll = true)
+                }
+            } else if (allConversations.isNotEmpty()) {
+                val latest = allConversations[0]
+                if (latest.messages.isNotEmpty()) {
+                    loadConversationIntoView(latest, restoreScroll = true)
+                }
             }
         }
     }
@@ -393,6 +410,7 @@ class MainActivity : AppCompatActivity() {
         if (userText.isEmpty()) return
 
         etChatInput.setText("")
+        isNewChatState = false
 
         // Create or get active conversation
         val activeConv = currentConversation ?: Conversation(
@@ -458,20 +476,25 @@ class MainActivity : AppCompatActivity() {
         }, 600)
     }
 
-    private fun loadConversationIntoView(conversation: Conversation) {
+    private fun loadConversationIntoView(conversation: Conversation, restoreScroll: Boolean = false) {
+        isNewChatState = false
         currentConversation = conversation
         llGreetingContainer.visibility = View.GONE
         rvChatMessages.visibility = View.VISIBLE
         btnDeleteCurrentChat.visibility = View.VISIBLE
 
         chatAdapter.setMessages(conversation.messages)
-        if (conversation.messages.isNotEmpty()) {
+        if (restoreScroll && chatListScrollState != null) {
+            rvChatMessages.layoutManager?.onRestoreInstanceState(chatListScrollState)
+        } else if (conversation.messages.isNotEmpty()) {
             rvChatMessages.scrollToPosition(conversation.messages.size - 1)
         }
     }
 
     private fun startNewConversationSession() {
+        isNewChatState = true
         currentConversation = null
+        chatListScrollState = null
         llGreetingContainer.visibility = View.VISIBLE
         rvChatMessages.visibility = View.GONE
         btnDeleteCurrentChat.visibility = View.GONE
@@ -618,12 +641,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateGreetingText() {
+        val prefs = getSharedPreferences("MemossistPrefs", MODE_PRIVATE)
+        val userName = prefs.getString("user_name", "Dinesh") ?: "Dinesh"
+
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
         val timeGreeting = when (hour) {
-            in 4..11 -> "Good morning,"
-            in 12..16 -> "Good afternoon,"
-            in 17..21 -> "Good evening,"
-            else -> "Good night,"
+            in 4..11 -> "Good morning, $userName"
+            in 12..16 -> "Good afternoon, $userName"
+            in 17..21 -> "Good evening, $userName"
+            else -> "Good night, $userName"
         }
         tvGreetingTitle.text = timeGreeting
     }
