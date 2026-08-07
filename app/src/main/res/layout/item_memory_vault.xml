@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_metallic_card"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Top Row: Tag & Time -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvMemoryTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#E5E7EB"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="3dp"
+            android:text="AUDIO"
+            android:textColor="#374151"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvMemoryTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:text="4m ago"
+            android:textColor="#6B7280"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <!-- Memory Title -->
+    <TextView
+        android:id="@+id/tvMemoryTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Quarterly Strategy &amp; Cognitive Notes"
+        android:textColor="#111827"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <!-- Memory Snippet -->
+    <TextView
+        android:id="@+id/tvMemorySnippet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="Key takeaways from the strategy discussion covering neural architecture designs and user cognitive flows..."
+        android:textColor="#4B5563"
+        android:textSize="14sp"
+        android:lineSpacingExtra="2dp" />
+
+</LinearLayout>

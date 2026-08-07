@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/grp_main" android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_menu"
+            android:title="Home Workspace"
+            android:checked="true" />
+        <item
+            android:id="@+id/nav_vault"
+            android:icon="@drawable/ic_vault"
+            android:title="Memory Vault" />
+        <item
+            android:id="@+id/nav_insights"
+            android:icon="@drawable/ic_insights"
+            android:title="Cognitive Insights" />
+        <item
+            android:id="@+id/nav_connections"
+            android:icon="@drawable/ic_connections"
+            android:title="Connections" />
+    </group>
+
+    <item android:id="@+id/nav_recent_history_group" android:title="Recent History">
+        <menu>
+            <group android:id="@+id/grp_history" android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_chat_1"
+                    android:icon="@drawable/ic_pin"
+                    android:title="📌 AI System Architecture" />
+                <item
+                    android:id="@+id/nav_chat_2"
+                    android:icon="@drawable/ic_chat_history"
+                    android:title="Voice Transcript - Aug 7" />
+                <item
+                    android:id="@+id/nav_chat_3"
+                    android:icon="@drawable/ic_chat_history"
+                    android:title="Product Roadmap &amp; Tokens" />
+            </group>
+        </menu>
+    </item>
+</menu>

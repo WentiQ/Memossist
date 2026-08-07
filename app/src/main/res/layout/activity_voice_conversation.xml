@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".VoiceConversationActivity">
+
+    <!-- Status Tag Badge (Centered cleanly near top without header bar) -->
+    <TextView
+        android:id="@+id/tvLiveBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_metallic_card"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="8dp"
+        android:text="MEMOSSIST LIVE"
+        android:textColor="#121417"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.15"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Custom Smooth Yellow & Green Floating Leaf Animation Circle -->
+    <com.example.apptempleate.LeafOrbView
+        android:id="@+id/leafOrbView"
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        app:layout_constraintBottom_toTopOf="@+id/llBottomControls"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvLiveBadge"
+        app:layout_constraintVertical_bias="0.4" />
+
+    <!-- Voice State Text Indicator -->
+    <TextView
+        android:id="@+id/tvVoiceStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:text="Listening..."
+        android:textColor="#121417"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.05"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/leafOrbView" />
+
+    <TextView
+        android:id="@+id/tvVoiceSubStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Speak now or tap to pause"
+        android:textColor="#616161"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvVoiceStatus" />
+
+    <!-- Bottom Action Controls Bar -->
+    <LinearLayout
+        android:id="@+id/llBottomControls"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="44dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Mute / Mic Toggle Button -->
+        <ImageButton
+            android:id="@+id/btnMuteMic"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/bg_metallic_card"
+            android:contentDescription="Mute Microphone"
+            android:padding="16dp"
+            android:src="@drawable/ic_mic"
+            app:tint="#424242" />
+
+        <!-- Red Circular End Call / Exit Button -->
+        <ImageButton
+            android:id="@+id/btnEndCall"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:background="@drawable/bg_end_call_button"
+            android:contentDescription="End Voice Conversation"
+            android:padding="18dp"
+            android:src="@drawable/ic_call_end"
+            app:tint="#FFFFFF" />
+
+        <!-- Speaker Output Toggle Button -->
+        <ImageButton
+            android:id="@+id/btnSpeakerToggle"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="32dp"
+            android:background="@drawable/bg_metallic_card"
+            android:contentDescription="Speaker Output"
+            android:padding="16dp"
+            android:src="@drawable/ic_speaker"
+            app:tint="#424242" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

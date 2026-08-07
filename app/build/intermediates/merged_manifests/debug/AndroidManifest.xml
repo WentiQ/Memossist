@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.apptempleate"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="21"
+        android:targetSdkVersion="33" />
+
+    <application
+        android:allowBackup="true"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:debuggable="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Memossist"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppTempeLate" >
+        <activity
+            android:name="com.example.apptempleate.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppTempeLate" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.apptempleate.VoiceConversationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+        <activity
+            android:name="com.example.apptempleate.MemoryVaultActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+        <activity
+            android:name="com.example.apptempleate.CognitiveInsightsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+        <activity
+            android:name="com.example.apptempleate.ConnectionsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+        <activity
+            android:name="com.example.apptempleate.SettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="com.example.apptempleate.androidx-startup"
+            android:exported="false" >
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+        </provider>
+    </application>
+
+</manifest>

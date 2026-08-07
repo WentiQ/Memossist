@@ -1,0 +1,19 @@
+<resources>
+    <style name="Theme.AppTempeLate" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Disable Action Bar Header -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+
+        <!-- White Window Theme Settings -->
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/white</item>
+    </style>
+
+    <style name="ShapeAppearance.App.RoundedSquare" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerSize">16dp</item>
+    </style>
+</resources>
