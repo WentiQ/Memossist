@@ -81,7 +81,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         if (activeConversation == null) {
             activeConversation = Conversation(
                 id = UUID.randomUUID().toString(),
-                title = "Voice Call Conversation",
+                title = "New Chat",
                 lastUpdated = System.currentTimeMillis()
             )
             ChatRepository.saveOrUpdateConversation(this, activeConversation!!)
@@ -262,8 +262,8 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
 
         val conv = activeConversation ?: return
 
-        // 1. Update Title if it was default
-        if (conv.messages.isEmpty()) {
+        // 1. Update Title dynamically from first spoken user prompt (just like standard chat)
+        if (conv.title == "New Chat" || conv.messages.isEmpty() || conv.messages.size <= 1) {
             conv.title = if (userText.length > 28) userText.take(28) + "..." else userText
         }
 

@@ -73,6 +73,7 @@ class MainActivity : AppCompatActivity() {
     private var allConversations: MutableList<Conversation> = mutableListOf()
 
     private var isNewChatState = true
+    private var newChatSessionTimestamp = 0L
     private var chatListScrollState: Parcelable? = null
 
     private var speechRecognizer: SpeechRecognizer? = null
@@ -274,24 +275,23 @@ class MainActivity : AppCompatActivity() {
         updateGreetingText()
         refreshSidebarHistory()
 
-        if (isNewChatState) {
-            // Keep exact New Chat state
+        val activeId = currentConversation?.id
+        if (activeId != null) {
+            val updated = ChatRepository.loadAllConversations(this).find { it.id == activeId }
+            if (updated != null) {
+                loadConversationIntoView(updated, restoreScroll = true)
+            }
+        } else if (allConversations.isNotEmpty() && 
+                   allConversations[0].lastUpdated >= newChatSessionTimestamp && 
+                   allConversations[0].messages.isNotEmpty()) {
+            // Voice call created/updated a conversation after starting a New Chat
+            val latest = allConversations[0]
+            loadConversationIntoView(latest, restoreScroll = false)
+        } else if (isNewChatState) {
+            // Keep exact New Chat greeting state if no voice messages were created
             llGreetingContainer.visibility = View.VISIBLE
             rvChatMessages.visibility = View.GONE
             btnDeleteCurrentChat.visibility = View.GONE
-        } else {
-            val activeId = currentConversation?.id
-            if (activeId != null) {
-                val updated = ChatRepository.loadAllConversations(this).find { it.id == activeId }
-                if (updated != null) {
-                    loadConversationIntoView(updated, restoreScroll = true)
-                }
-            } else if (allConversations.isNotEmpty()) {
-                val latest = allConversations[0]
-                if (latest.messages.isNotEmpty()) {
-                    loadConversationIntoView(latest, restoreScroll = true)
-                }
-            }
         }
     }
 
@@ -493,6 +493,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startNewConversationSession() {
         isNewChatState = true
+        newChatSessionTimestamp = System.currentTimeMillis()
         currentConversation = null
         chatListScrollState = null
         llGreetingContainer.visibility = View.VISIBLE
