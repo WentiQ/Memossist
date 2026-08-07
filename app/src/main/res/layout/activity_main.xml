@@ -217,47 +217,260 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Side Navigation Drawer Container -->
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="280dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#FFFFFF">
+        android:background="#FFFFFF"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical">
 
-        <!-- Navigation View for top and scrollable history -->
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/navView"
+        <!-- 1. FIXED TOP HEADER & WORKSPACE NAVIGATION ITEMS (Does NOT scroll) -->
+        <LinearLayout
+            android:id="@+id/llFixedSidebarHeader"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/vSettingsDivider"
-            android:background="#FFFFFF"
-            android:fitsSystemWindows="false"
-            app:elevation="0dp"
-            app:insetForeground="@android:color/transparent"
-            app:headerLayout="@layout/nav_header_main"
-            app:menu="@menu/side_navigation_menu"
-            app:itemIconTint="#121417"
-            app:itemTextColor="#121417"
-            app:subheaderColor="#616161"
-            app:itemBackground="@android:color/transparent" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="28dp"
+            android:paddingBottom="8dp">
 
-        <!-- Separation Line (Matches menu separation line above recent history) -->
+            <!-- Brand Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:background="@drawable/bg_profile_avatar_rounded"
+                    android:gravity="center"
+                    android:text="M"
+                    android:textColor="#121417"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Memossist"
+                        android:textColor="#121417"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.02" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="1dp"
+                        android:text="Cognitive Workspace"
+                        android:textColor="#616161"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- "+ New Chat" Button Pill -->
+            <LinearLayout
+                android:id="@+id/btnSidebarNewChat"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_button_cancel_pill"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_plus"
+                    app:tint="#121417"
+                    android:contentDescription="New Chat Icon" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="New Chat"
+                    android:textColor="#121417"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Workspace Navigation Menu Items (Consistent Bold Weight) -->
+            <LinearLayout
+                android:id="@+id/btnNavHome"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="14dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="8dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_menu"
+                    app:tint="#121417" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Home Workspace"
+                    android:textColor="#121417"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnNavVault"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="8dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_vault"
+                    app:tint="#121417" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Memory Vault"
+                    android:textColor="#121417"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnNavInsights"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="8dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_insights"
+                    app:tint="#121417" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Cognitive Insights"
+                    android:textColor="#121417"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnNavConnections"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="8dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_connections"
+                    app:tint="#121417" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Connections"
+                    android:textColor="#121417"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Separation Line Above History -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:background="#E5E7EB" />
+
+            <!-- Recent History Subheader Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Recent History"
+                android:textColor="#616161"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- 2. SCROLLABLE RECENT HISTORY LIST ONLY -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSidebarHistory"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="4dp" />
+
+        <!-- Separation Line Above Settings -->
         <View
-            android:id="@+id/vSettingsDivider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_above="@+id/llPinnedSettings"
             android:background="#E5E7EB" />
 
-        <!-- Pinned Settings Button at bottom (Pure white background with no black/grey gradient) -->
+        <!-- 3. FIXED BOTTOM PINNED SETTINGS (Does NOT scroll) -->
         <LinearLayout
             android:id="@+id/llPinnedSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:background="#FFFFFF"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="20dp"
             android:paddingVertical="14dp"
             android:clickable="true"
             android:focusable="true">
@@ -265,7 +478,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_marginStart="8dp"
                 android:src="@drawable/ic_settings"
                 app:tint="#424242"
                 android:contentDescription="Settings Icon" />
@@ -281,6 +493,6 @@
 
         </LinearLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

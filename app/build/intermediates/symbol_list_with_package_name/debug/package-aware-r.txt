@@ -2790,6 +2790,10 @@ id btnHeaderNewChat
 id btnLiveVoice
 id btnMic
 id btnMuteMic
+id btnNavConnections
+id btnNavHome
+id btnNavInsights
+id btnNavVault
 id btnOptDelete
 id btnOptPin
 id btnOptRename
@@ -2931,6 +2935,7 @@ id invisible
 id inward
 id italic
 id item_touch_helper_previous_elevation
+id ivHistoryIcon
 id ivOptPinIcon
 id ivProfilePic
 id jumpToEnd
@@ -2948,7 +2953,9 @@ id listMode
 id list_item
 id llBottomControls
 id llChatInputBar
+id llFixedSidebarHeader
 id llGreetingContainer
+id llHistoryItemRow
 id llPinnedSettings
 id llSearchContainer
 id mainContentContainer
@@ -3009,7 +3016,6 @@ id mtrl_picker_text_input_range_start
 id mtrl_picker_title_text
 id mtrl_view_tag_bottom_padding
 id multiply
-id navView
 id nav_chat_1
 id nav_chat_2
 id nav_chat_3
@@ -3072,6 +3078,7 @@ id rounded
 id row_index_key
 id rvChatMessages
 id rvMemoryList
+id rvSidebarHistory
 id save_non_transition_alpha
 id save_overlay_view
 id sawtooth
@@ -3187,6 +3194,7 @@ id tvAvatarInitials
 id tvConnectionsTitle
 id tvGreetingPrompt
 id tvGreetingTitle
+id tvHistoryTitle
 id tvInsightsTitle
 id tvLiveBadge
 id tvMemorySnippet
@@ -3208,7 +3216,6 @@ id unlabeled
 id up
 id useLogo
 id vBottomGradientOverlay
-id vSettingsDivider
 id vTopGradientOverlay
 id vertical_only
 id view_offset_helper
@@ -3377,6 +3384,7 @@ layout dialog_edit_username
 layout item_chat_ai
 layout item_chat_user
 layout item_memory_vault
+layout item_sidebar_history
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
 layout m3_alert_dialog_title

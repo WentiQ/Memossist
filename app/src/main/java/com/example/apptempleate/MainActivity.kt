@@ -5,10 +5,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.view.Window
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
@@ -24,7 +22,6 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.navigation.NavigationView
 import java.util.Calendar
 import java.util.UUID
 import kotlin.math.abs
@@ -32,7 +29,6 @@ import kotlin.math.abs
 class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
-    private lateinit var navView: NavigationView
     private lateinit var btnHamburger: ImageButton
     private lateinit var btnHeaderNewChat: ImageButton
     private lateinit var btnDeleteCurrentChat: ImageButton
@@ -49,6 +45,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnPlus: ImageButton
     private lateinit var btnMic: ImageButton
     private lateinit var btnLiveVoice: ImageButton
+
+    // Sidebar Views
+    private lateinit var btnSidebarNewChat: View
+    private lateinit var btnNavHome: View
+    private lateinit var btnNavVault: View
+    private lateinit var btnNavInsights: View
+    private lateinit var btnNavConnections: View
+    private lateinit var rvSidebarHistory: RecyclerView
+    private lateinit var sidebarHistoryAdapter: SidebarHistoryAdapter
     private lateinit var llPinnedSettings: LinearLayout
 
     private var currentConversation: Conversation? = null
@@ -66,13 +71,20 @@ class MainActivity : AppCompatActivity() {
         
         setContentView(R.layout.activity_main)
 
-        // Initialize Navigation & Layout Views
+        // Initialize Navigation & Main Layout Views
         drawerLayout = findViewById(R.id.drawerLayout)
-        navView = findViewById(R.id.navView)
         btnHamburger = findViewById(R.id.btnHamburger)
         btnHeaderNewChat = findViewById(R.id.btnHeaderNewChat)
         btnDeleteCurrentChat = findViewById(R.id.btnDeleteCurrentChat)
         mainContentContainer = findViewById(R.id.mainContentContainer)
+
+        // Initialize Sidebar Views
+        btnSidebarNewChat = findViewById(R.id.btnSidebarNewChat)
+        btnNavHome = findViewById(R.id.btnNavHome)
+        btnNavVault = findViewById(R.id.btnNavVault)
+        btnNavInsights = findViewById(R.id.btnNavInsights)
+        btnNavConnections = findViewById(R.id.btnNavConnections)
+        rvSidebarHistory = findViewById(R.id.rvSidebarHistory)
         llPinnedSettings = findViewById(R.id.llPinnedSettings)
 
         // Initialize Greeting Views
@@ -86,6 +98,19 @@ class MainActivity : AppCompatActivity() {
         rvChatMessages.layoutManager = LinearLayoutManager(this)
         rvChatMessages.adapter = chatAdapter
 
+        // Initialize Sidebar History RecyclerView (Only history scrolls!)
+        sidebarHistoryAdapter = SidebarHistoryAdapter(
+            onItemClick = { conv ->
+                loadConversationIntoView(conv)
+                drawerLayout.closeDrawer(GravityCompat.START)
+            },
+            onItemLongClick = { conv ->
+                showChatOptionsDialog(conv)
+            }
+        )
+        rvSidebarHistory.layoutManager = LinearLayoutManager(this)
+        rvSidebarHistory.adapter = sidebarHistoryAdapter
+
         // Initialize Chat Input Views
         etChatInput = findViewById(R.id.etChatInput)
         btnPlus = findViewById(R.id.btnPlus)
@@ -95,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         // Set Dynamic Premium Time-of-Day Greeting
         updateGreetingText()
 
-        // Load Saved Conversations & Populate Sidebar Recent History
+        // Load Saved Conversations & Populate Sidebar Recent History List
         refreshSidebarHistory()
 
         // Setup Touch Swipe Gesture Detection
@@ -119,13 +144,38 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Sidebar Header "+ New Chat" Button Click
-        val headerView = navView.getHeaderView(0)
-        val btnSidebarNewChat: View? = headerView?.findViewById(R.id.btnSidebarNewChat)
-        btnSidebarNewChat?.setOnClickListener {
+        // Sidebar "+ New Chat" Button Click
+        btnSidebarNewChat.setOnClickListener {
             startNewConversationSession()
             drawerLayout.closeDrawer(GravityCompat.START)
             Toast.makeText(this, "Started new chat", Toast.LENGTH_SHORT).show()
+        }
+
+        // Sidebar Fixed Workspace Navigation Clicks
+        btnNavHome.setOnClickListener {
+            startNewConversationSession()
+            drawerLayout.closeDrawer(GravityCompat.START)
+        }
+
+        btnNavVault.setOnClickListener {
+            val intent = Intent(this, MemoryVaultActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            drawerLayout.closeDrawer(GravityCompat.START)
+        }
+
+        btnNavInsights.setOnClickListener {
+            val intent = Intent(this, CognitiveInsightsActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            drawerLayout.closeDrawer(GravityCompat.START)
+        }
+
+        btnNavConnections.setOnClickListener {
+            val intent = Intent(this, ConnectionsActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            drawerLayout.closeDrawer(GravityCompat.START)
         }
 
         // Pinned Bottom Settings Click -> Open Settings Activity
@@ -134,40 +184,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             drawerLayout.closeDrawer(GravityCompat.START)
-        }
-
-        // Side Navigation Drawer Item Clicks
-        navView.setNavigationItemSelectedListener { menuItem ->
-            val id = menuItem.itemId
-            when {
-                id == R.id.nav_home -> {
-                    startNewConversationSession()
-                }
-                id == R.id.nav_vault -> {
-                    val intent = Intent(this, MemoryVaultActivity::class.java)
-                    startActivity(intent)
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                }
-                id == R.id.nav_insights -> {
-                    val intent = Intent(this, CognitiveInsightsActivity::class.java)
-                    startActivity(intent)
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                }
-                id == R.id.nav_connections -> {
-                    val intent = Intent(this, ConnectionsActivity::class.java)
-                    startActivity(intent)
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                }
-                else -> {
-                    // Check if a recent conversation item was clicked
-                    val selectedConv = allConversations.find { it.id.hashCode() == id }
-                    if (selectedConv != null) {
-                        loadConversationIntoView(selectedConv)
-                    }
-                }
-            }
-            drawerLayout.closeDrawer(GravityCompat.START)
-            true
         }
 
         // Handle Chat Input Send (keyboard enter / action send)
@@ -306,7 +322,7 @@ class MainActivity : AppCompatActivity() {
 
         tvOptDialogTitle.text = conversation.title
         tvOptPinText.text = if (conversation.isPinned) "Unpin Chat" else "Pin Chat"
-        ivOptPinIcon.setImageResource(if (conversation.isPinned) R.drawable.ic_pin else R.drawable.ic_pin)
+        ivOptPinIcon.setImageResource(R.drawable.ic_pin)
 
         // Action 1: Toggle Pin
         btnOptPin.setOnClickListener {
@@ -340,7 +356,6 @@ class MainActivity : AppCompatActivity() {
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        val tvTitle: TextView = dialogView.findViewById(R.id.etDialogUserName)
         val etInput: EditText = dialogView.findViewById(R.id.etDialogUserName)
         val btnCancel: TextView = dialogView.findViewById(R.id.btnDialogCancel)
         val btnSave: TextView = dialogView.findViewById(R.id.btnDialogSave)
@@ -367,46 +382,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun refreshSidebarHistory() {
         allConversations = ChatRepository.loadAllConversations(this)
-        val historyGroupItem = navView.menu.findItem(R.id.nav_recent_history_group)
-        val subMenu = historyGroupItem?.subMenu
-        subMenu?.clear()
-
-        for (conv in allConversations) {
-            val titleText = if (conv.isPinned) "📌 ${conv.title}" else conv.title
-            val menuItem = subMenu?.add(Menu.NONE, conv.id.hashCode(), Menu.NONE, titleText)
-            menuItem?.setIcon(if (conv.isPinned) R.drawable.ic_pin else R.drawable.ic_chat_history)
-        }
-
-        // Attach long-press handler to navigation view child views
-        Handler(Looper.getMainLooper()).postDelayed({
-            for (i in 0 until navView.childCount) {
-                val child = navView.getChildAt(i)
-                if (child is ViewGroup) {
-                    attachLongClickListenerToMenuViews(child)
-                }
-            }
-        }, 150)
-    }
-
-    private fun attachLongClickListenerToMenuViews(viewGroup: ViewGroup) {
-        for (i in 0 until viewGroup.childCount) {
-            val child = viewGroup.getChildAt(i)
-            if (child is ViewGroup) {
-                attachLongClickListenerToMenuViews(child)
-            } else if (child is TextView) {
-                val text = child.text.toString()
-                val matchedConv = allConversations.find { 
-                    text == it.title || text == "📌 ${it.title}"
-                }
-                if (matchedConv != null) {
-                    val parentRow = child.parent as? View ?: child
-                    parentRow.setOnLongClickListener {
-                        showChatOptionsDialog(matchedConv)
-                        true
-                    }
-                }
-            }
-        }
+        sidebarHistoryAdapter.setConversations(allConversations)
     }
 
     private fun openVoiceConversationSmoothly() {
