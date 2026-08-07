@@ -237,6 +237,7 @@
             app:menu="@menu/side_navigation_menu"
             app:itemIconTint="#121417"
             app:itemTextColor="#121417"
+            app:subheaderColor="#616161"
             app:itemBackground="@android:color/transparent" />
 
         <!-- Separation Line (Matches menu separation line above recent history) -->
