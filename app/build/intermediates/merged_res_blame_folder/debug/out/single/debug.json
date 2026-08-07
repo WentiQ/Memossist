@@ -4,16 +4,16 @@
         "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\bg_circle_icon_button.xml"
     },
     {
-        "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\drawable_bg_button_save_pill.xml.flat",
-        "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\bg_button_save_pill.xml"
+        "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
     },
     {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\drawable_bg_voice_orb.xml.flat",
         "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\bg_voice_orb.xml"
     },
     {
-        "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+        "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\drawable_bg_button_save_pill.xml.flat",
+        "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\bg_button_save_pill.xml"
     },
     {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\drawable_ic_send.xml.flat",
@@ -38,10 +38,6 @@
     {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\drawable_bg_procedural_metallic_soil.xml.flat",
         "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\bg_procedural_metallic_soil.xml"
-    },
-    {
-        "merged": "com.example.apptempleate.app-merged_res-29:/drawable_bg_tag_rounded.xml.flat",
-        "source": "com.example.apptempleate.app-main-31:/drawable/bg_tag_rounded.xml"
     },
     {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\drawable_matte_metallic_bg.jpg.flat",
@@ -116,6 +112,10 @@
         "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\ic_trash.xml"
     },
     {
+        "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\drawable_bg_tag_rounded.xml.flat",
+        "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\bg_tag_rounded.xml"
+    },
+    {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\drawable_bg_gemini_chat_box.xml.flat",
         "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\bg_gemini_chat_box.xml"
     },
@@ -182,6 +182,10 @@
     {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\drawable_bg_metallic_button.xml.flat",
         "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\bg_metallic_button.xml"
+    },
+    {
+        "merged": "com.example.apptempleate.app-merged_res-29:/drawable_ic_send.xml.flat",
+        "source": "com.example.apptempleate.app-main-31:/drawable/ic_send.xml"
     },
     {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\layout_item_chat_user.xml.flat",

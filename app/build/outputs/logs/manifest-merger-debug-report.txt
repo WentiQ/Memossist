@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-50:12
-INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-50:12
-INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-50:12
-INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-50:12
+ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-52:12
+INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-52:12
+INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-52:12
+INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-52:12
 MERGED from [com.google.android.material:material:1.7.0] C:\Users\dines\.gradle\caches\transforms-3\3b75d48d141959e246c2b330b3775d98\transformed\material-1.7.0\AndroidManifest.xml:17:1-26:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\dines\.gradle\caches\transforms-3\b33890605d4ea705a62c3c6d94ee3f6c\transformed\constraintlayout-2.1.4\AndroidManifest.xml:2:1-11:12
 MERGED from [androidx.appcompat:appcompat-resources:1.5.1] C:\Users\dines\.gradle\caches\transforms-3\b40c7a0e93501db5fbfcf2371306e302\transformed\jetified-appcompat-resources-1.5.1\AndroidManifest.xml:17:1-22:12
@@ -44,25 +44,29 @@ MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\dines\.gradle\ca
 MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\dines\.gradle\caches\transforms-3\f3337052948e39edffa3b7b1b3a65a88\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.print:print:1.0.0] C:\Users\dines\.gradle\caches\transforms-3\fcd7fb09891fddf47c7bc7dc41fc81f5\transformed\print-1.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.annotation:annotation-experimental:1.1.0] C:\Users\dines\.gradle\caches\transforms-3\96734f50b015a8f649aaf36375e7892b\transformed\jetified-annotation-experimental-1.1.0\AndroidManifest.xml:17:1-24:12
-INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-50:12
-INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-50:12
-INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-50:12
+INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-52:12
+INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-52:12
+INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-52:12
 	package
 		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:3:5-39
 		INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml
 		INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml
 	android:versionName
 		INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-50:12
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-52:12
 		INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml
 	android:versionCode
 		INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-50:12
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-52:12
 		INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml
 	xmlns:android
 		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:11-69
+uses-permission#android.permission.RECORD_AUDIO
+ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:5:5-71
+	android:name
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:5:22-68
 application
-ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:5:5-48:19
+ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:7:5-50:19
 MERGED from [com.google.android.material:material:1.7.0] C:\Users\dines\.gradle\caches\transforms-3\3b75d48d141959e246c2b330b3775d98\transformed\material-1.7.0\AndroidManifest.xml:24:5-20
 MERGED from [com.google.android.material:material:1.7.0] C:\Users\dines\.gradle\caches\transforms-3\3b75d48d141959e246c2b330b3775d98\transformed\material-1.7.0\AndroidManifest.xml:24:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\dines\.gradle\caches\transforms-3\b33890605d4ea705a62c3c6d94ee3f6c\transformed\constraintlayout-2.1.4\AndroidManifest.xml:9:5-20
@@ -80,75 +84,75 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\dines\.gradle\cach
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.8.0] C:\Users\dines\.gradle\caches\transforms-3\76411c7520f0d995d1e8fc516856d8c3\transformed\core-1.8.0\AndroidManifest.xml:24:18-86
 	android:supportsRtl
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:10:9-35
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:12:9-35
 	android:label
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:7:9-34
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:9:9-34
 	android:roundIcon
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:9:9-54
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:11:9-54
 	android:icon
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:8:9-43
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:10:9-43
 	android:allowBackup
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:6:9-35
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:8:9-35
 	android:theme
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:11:9-50
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:13:9-50
 activity#com.example.apptempleate.MainActivity
-ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:13:9-21:20
+ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:15:9-23:20
 	android:exported
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:15:13-36
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:17:13-36
 	android:theme
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:16:13-54
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:18:13-54
 	android:name
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:14:13-41
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:16:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:17:13-20:29
+ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:19:13-22:29
 action#android.intent.action.MAIN
-ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:18:17-69
+ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:20:17-69
 	android:name
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:18:25-66
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:20:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:19:17-77
+ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:21:17-77
 	android:name
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:19:27-74
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:21:27-74
 activity#com.example.apptempleate.VoiceConversationActivity
-ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:23:9-26:57
+ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:25:9-28:57
 	android:exported
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:25:13-37
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:27:13-37
 	android:theme
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:28:13-54
+	android:name
 		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:26:13-54
-	android:name
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:24:13-54
 activity#com.example.apptempleate.MemoryVaultActivity
-ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:28:9-31:57
+ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:30:9-33:57
 	android:exported
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:30:13-37
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:32:13-37
 	android:theme
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:31:13-54
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:33:13-54
 	android:name
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:29:13-48
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:31:13-48
 activity#com.example.apptempleate.CognitiveInsightsActivity
-ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:33:9-36:57
+ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:35:9-38:57
 	android:exported
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:35:13-37
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:37:13-37
 	android:theme
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:38:13-54
+	android:name
 		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:36:13-54
-	android:name
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:34:13-54
 activity#com.example.apptempleate.ConnectionsActivity
-ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:38:9-41:57
+ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:40:9-43:57
 	android:exported
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:40:13-37
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:42:13-37
 	android:theme
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:41:13-54
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:43:13-54
 	android:name
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:39:13-48
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:41:13-48
 activity#com.example.apptempleate.SettingsActivity
-ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:43:9-46:57
+ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:45:9-48:57
 	android:exported
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:45:13-37
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:47:13-37
 	android:theme
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:46:13-54
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:48:13-54
 	android:name
-		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:44:13-45
+		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:46:13-45
 uses-sdk
 INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml

@@ -1,9 +1,18 @@
 package com.example.apptempleate
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -15,14 +24,17 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Calendar
+import java.util.Locale
 import java.util.UUID
 import kotlin.math.abs
 
@@ -59,8 +71,22 @@ class MainActivity : AppCompatActivity() {
     private var currentConversation: Conversation? = null
     private var allConversations: MutableList<Conversation> = mutableListOf()
 
+    private var speechRecognizer: SpeechRecognizer? = null
+    private var isListening = false
+
     private var touchStartX = 0f
     private var touchStartY = 0f
+
+    // Audio Record Permission Launcher
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            startSilentSpeechToText()
+        } else {
+            Toast.makeText(this, "Microphone permission required for voice input", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -186,6 +212,24 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START)
         }
 
+        // Dynamic Mic / Send Icon Morphing based on input text presence
+        etChatInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val hasText = !s.isNullOrBlank()
+                if (hasText && !isListening) {
+                    btnMic.setImageResource(R.drawable.ic_send)
+                    btnMic.contentDescription = "Send Message"
+                    btnMic.imageTintList = ColorStateList.valueOf(Color.parseColor("#121417"))
+                } else if (!isListening) {
+                    btnMic.setImageResource(R.drawable.ic_mic)
+                    btnMic.contentDescription = "Voice Input"
+                    btnMic.imageTintList = ColorStateList.valueOf(Color.parseColor("#424242"))
+                }
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
         // Handle Chat Input Send (keyboard enter / action send)
         etChatInput.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEND || actionId == EditorInfo.IME_NULL) {
@@ -200,14 +244,130 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Add attachments", Toast.LENGTH_SHORT).show()
         }
 
+        // Smart Microphone / Send Action Button Click
         btnMic.setOnClickListener {
-            sendMessage()
+            val text = etChatInput.text.toString().trim()
+            if (text.isNotEmpty() && !isListening) {
+                sendMessage()
+            } else {
+                toggleSilentSpeechToText()
+            }
         }
 
         // Open Voice Conversation Activity with smooth animation
         btnLiveVoice.setOnClickListener {
             openVoiceConversationSmoothly()
         }
+    }
+
+    private fun toggleSilentSpeechToText() {
+        if (isListening) {
+            stopSilentSpeechToText()
+        } else {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                startSilentSpeechToText()
+            } else {
+                requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            }
+        }
+    }
+
+    private fun startSilentSpeechToText() {
+        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+            Toast.makeText(this, "Speech recognition is not available on this device", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (speechRecognizer == null) {
+            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
+            speechRecognizer?.setRecognitionListener(object : RecognitionListener {
+                override fun onReadyForSpeech(params: Bundle?) {
+                    isListening = true
+                    btnMic.setImageResource(R.drawable.ic_mic)
+                    btnMic.imageTintList = ColorStateList.valueOf(Color.parseColor("#DC2626"))
+                    etChatInput.hint = "Listening silently..."
+                }
+
+                override fun onBeginningOfSpeech() {}
+                override fun onRmsChanged(rmsdB: Float) {}
+                override fun onBufferReceived(buffer: ByteArray?) {}
+                override fun onEndOfSpeech() {
+                    isListening = false
+                    updateMicOrSendButtonState()
+                }
+
+                override fun onError(error: Int) {
+                    isListening = false
+                    updateMicOrSendButtonState()
+                }
+
+                override fun onResults(results: Bundle?) {
+                    isListening = false
+                    val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                    if (!matches.isNullOrEmpty()) {
+                        val spokenText = matches[0]
+                        if (spokenText.isNotBlank()) {
+                            etChatInput.setText(spokenText)
+                            etChatInput.setSelection(spokenText.length)
+                        }
+                    }
+                    updateMicOrSendButtonState()
+                }
+
+                override fun onPartialResults(partialResults: Bundle?) {
+                    val matches = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                    if (!matches.isNullOrEmpty()) {
+                        val spokenText = matches[0]
+                        if (spokenText.isNotBlank()) {
+                            etChatInput.setText(spokenText)
+                            etChatInput.setSelection(spokenText.length)
+                        }
+                    }
+                }
+
+                override fun onEvent(eventType: Int, params: Bundle?) {}
+            })
+        }
+
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+            putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+            putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 5000L)
+            putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 2000L)
+        }
+
+        try {
+            speechRecognizer?.startListening(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            isListening = false
+            updateMicOrSendButtonState()
+        }
+    }
+
+    private fun stopSilentSpeechToText() {
+        isListening = false
+        try {
+            speechRecognizer?.stopListening()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        updateMicOrSendButtonState()
+    }
+
+    private fun updateMicOrSendButtonState() {
+        val hasText = etChatInput.text.toString().trim().isNotEmpty()
+        if (hasText) {
+            btnMic.setImageResource(R.drawable.ic_send)
+            btnMic.contentDescription = "Send Message"
+            btnMic.imageTintList = ColorStateList.valueOf(Color.parseColor("#121417"))
+        } else {
+            btnMic.setImageResource(R.drawable.ic_mic)
+            btnMic.contentDescription = "Voice Input"
+            btnMic.imageTintList = ColorStateList.valueOf(Color.parseColor("#424242"))
+        }
+        etChatInput.hint = "Ask Memossist..."
     }
 
     private fun sendMessage() {
@@ -446,5 +606,11 @@ class MainActivity : AppCompatActivity() {
             else -> "Good night,"
         }
         tvGreetingTitle.text = timeGreeting
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        speechRecognizer?.destroy()
+        speechRecognizer = null
     }
 }
