@@ -35,6 +35,8 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
     private var speechRecognizer: SpeechRecognizer? = null
     private var textToSpeech: TextToSpeech? = null
 
+    private var activeConversation: Conversation? = null
+
     private var isMuted = false
     private var isSpeakerOn = true
     private var isTtsReady = false
@@ -69,6 +71,21 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         tvVoiceStatus = findViewById(R.id.tvVoiceStatus)
         tvVoiceSubStatus = findViewById(R.id.tvVoiceSubStatus)
         leafOrbView = findViewById(R.id.leafOrbView)
+
+        // Load active conversation passed from MainActivity or create new one
+        val convId = intent.getStringExtra("CONVERSATION_ID")
+        if (convId != null) {
+            activeConversation = ChatRepository.loadAllConversations(this).find { it.id == convId }
+        }
+
+        if (activeConversation == null) {
+            activeConversation = Conversation(
+                id = UUID.randomUUID().toString(),
+                title = "Voice Call Conversation",
+                lastUpdated = System.currentTimeMillis()
+            )
+            ChatRepository.saveOrUpdateConversation(this, activeConversation!!)
+        }
 
         // Initialize TextToSpeech engine
         textToSpeech = TextToSpeech(this, this)
@@ -144,8 +161,10 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
                     }
                 })
 
-                // Speak initial Gemini Live welcome greeting
-                speakAiResponse("Hello! I'm Memossist Live. How can I help you today?")
+                // If conversation is brand new, speak initial welcome greeting
+                if (activeConversation?.messages.isNullOrEmpty()) {
+                    speakAiResponse("Hello! I'm Memossist Live. How can I help you today?")
+                }
             }
         }
     }
@@ -241,7 +260,24 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         tvVoiceStatus.text = "Thinking..."
         tvVoiceSubStatus.text = "\"$userText\""
 
-        // Automatically save voice call experience into Memory Vault
+        val conv = activeConversation ?: return
+
+        // 1. Update Title if it was default
+        if (conv.messages.isEmpty()) {
+            conv.title = if (userText.length > 28) userText.take(28) + "..." else userText
+        }
+
+        // 2. Add User Message to Chat Conversation in real-time
+        val userMsg = ChatMessage(
+            conversationId = conv.id,
+            text = userText,
+            isUser = true
+        )
+        conv.messages.add(userMsg)
+        conv.lastUpdated = System.currentTimeMillis()
+        ChatRepository.saveOrUpdateConversation(this, conv)
+
+        // 3. Automatically save voice call experience into Memory Vault
         val expId = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}"
         val memoryItem = MemoryItem(
             id = expId,
@@ -255,8 +291,19 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         )
         MemoryVaultRepository.saveMemory(this, memoryItem)
 
-        // Generate AI response
+        // 4. Generate AI Response and speak it out
         val aiResponse = ChatRepository.generateAiResponse(userText)
+
+        // 5. Add AI Message to Chat Conversation in real-time
+        val aiMsg = ChatMessage(
+            conversationId = conv.id,
+            text = aiResponse,
+            isUser = false
+        )
+        conv.messages.add(aiMsg)
+        conv.lastUpdated = System.currentTimeMillis()
+        ChatRepository.saveOrUpdateConversation(this, conv)
+
         speakAiResponse(aiResponse)
     }
 

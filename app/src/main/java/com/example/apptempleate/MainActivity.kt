@@ -260,6 +260,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Reload conversations when returning from Voice Call or Memory Vault
+        refreshSidebarHistory()
+        val activeId = currentConversation?.id
+        if (activeId != null) {
+            val updated = ChatRepository.loadAllConversations(this).find { it.id == activeId }
+            if (updated != null) {
+                loadConversationIntoView(updated)
+            }
+        } else if (allConversations.isNotEmpty()) {
+            val latest = allConversations[0]
+            if (latest.messages.isNotEmpty()) {
+                loadConversationIntoView(latest)
+            }
+        }
+    }
+
     private fun toggleSilentSpeechToText() {
         if (isListening) {
             stopSilentSpeechToText()
@@ -560,7 +578,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openVoiceConversationSmoothly() {
-        val intent = Intent(this, VoiceConversationActivity::class.java)
+        val intent = Intent(this, VoiceConversationActivity::class.java).apply {
+            putExtra("CONVERSATION_ID", currentConversation?.id)
+        }
         startActivity(intent)
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
