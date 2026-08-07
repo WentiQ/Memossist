@@ -88,6 +88,8 @@ class MemoryVaultActivity : AppCompatActivity() {
         val tvTimestamp: TextView = dialogView.findViewById(R.id.tvDetailTimestamp)
         val tvLocation: TextView = dialogView.findViewById(R.id.tvDetailLocation)
         val tvFullMessage: TextView = dialogView.findViewById(R.id.tvDetailFullMessage)
+        val ibEdit: ImageButton = dialogView.findViewById(R.id.ibDetailEdit)
+        val ibDelete: ImageButton = dialogView.findViewById(R.id.ibDetailDelete)
         val btnClose: View = dialogView.findViewById(R.id.btnDetailClose)
 
         tvExpId.text = memory.id
@@ -96,11 +98,82 @@ class MemoryVaultActivity : AppCompatActivity() {
         tvLocation.text = memory.location
         tvFullMessage.text = memory.message
 
+        ibEdit.setOnClickListener {
+            dialog.dismiss()
+            showEditMemoryDialog(memory)
+        }
+
+        ibDelete.setOnClickListener {
+            dialog.dismiss()
+            showDeleteMemoryConfirmationDialog(memory)
+        }
+
         btnClose.setOnClickListener {
             dialog.dismiss()
         }
 
         dialog.show()
+    }
+
+    private fun showEditMemoryDialog(memory: MemoryItem) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_experience, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val tvDialogTitle: TextView = dialogView.findViewById(R.id.tvEditExpDialogTitle)
+        val etMessage: EditText = dialogView.findViewById(R.id.etEditExpMessage)
+        val btnCancel: View = dialogView.findViewById(R.id.btnEditExpCancel)
+        val btnSave: View = dialogView.findViewById(R.id.btnEditExpSave)
+
+        tvDialogTitle.text = "Edit ${memory.id}"
+        etMessage.setText(memory.message)
+        etMessage.setSelection(memory.message.length)
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnSave.setOnClickListener {
+            val newMessage = etMessage.text.toString().trim()
+            if (newMessage.isNotEmpty()) {
+                val newTitle = if (newMessage.length > 32) newMessage.take(32) + "..." else newMessage
+                val newSnippet = if (newMessage.length > 70) newMessage.take(70) + "..." else newMessage
+                
+                val updatedItem = memory.copy(
+                    title = newTitle,
+                    snippet = newSnippet,
+                    message = newMessage
+                )
+
+                MemoryVaultRepository.updateMemory(this, updatedItem)
+                loadMemoriesFromRepository()
+                adapter.updateList(allMemories)
+                Toast.makeText(this, "Experience updated", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun showDeleteMemoryConfirmationDialog(memory: MemoryItem) {
+        AlertDialog.Builder(this)
+            .setTitle("Delete Experience")
+            .setMessage("Are you sure you want to delete ${memory.id} from Memory Vault?")
+            .setPositiveButton("Delete") { dialog, _ ->
+                MemoryVaultRepository.deleteMemory(this, memory.id)
+                loadMemoriesFromRepository()
+                adapter.updateList(allMemories)
+                Toast.makeText(this, "Experience deleted", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun filterMemories(query: String) {

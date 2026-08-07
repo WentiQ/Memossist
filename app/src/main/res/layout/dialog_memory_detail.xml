@@ -7,39 +7,82 @@
     android:orientation="vertical"
     android:padding="24dp">
 
-    <!-- Header Row (Experience ID Badge + Tag) -->
-    <LinearLayout
+    <!-- Top Header Row (Experience ID & Tag on Left + Small Edit & Delete Icons on Right) -->
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tvDetailExpId"
+        <!-- Left Badges -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_profile_avatar_rounded"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="4dp"
-            android:text="EXP-9081"
-            android:textColor="#121417"
-            android:textSize="13sp"
-            android:textStyle="bold" />
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tvDetailTag"
+            <TextView
+                android:id="@+id/tvDetailExpId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_profile_avatar_rounded"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:text="EXP-9081"
+                android:textColor="#121417"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDetailTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_tag_rounded"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:text="Chat"
+                android:textColor="#616161"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- Right Small Action Icons (Edit & Delete) -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/bg_tag_rounded"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp"
-            android:text="Chat"
-            android:textColor="#616161"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-    </LinearLayout>
+            <!-- Small Edit Icon Button -->
+            <ImageButton
+                android:id="@+id/ibDetailEdit"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Edit Experience"
+                android:padding="7dp"
+                android:src="@drawable/ic_edit"
+                app:tint="#616161" />
+
+            <!-- Small Delete Icon Button -->
+            <ImageButton
+                android:id="@+id/ibDetailDelete"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Delete Experience"
+                android:padding="7dp"
+                android:src="@drawable/ic_trash"
+                app:tint="#DC2626" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
     <!-- Timestamp Row -->
     <LinearLayout

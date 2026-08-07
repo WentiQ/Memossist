@@ -66,6 +66,23 @@ object MemoryVaultRepository {
         saveAllMemories(context, memories)
     }
 
+    fun updateMemory(context: Context, updatedMemory: MemoryItem) {
+        val memories = loadAllMemories(context)
+        val index = memories.indexOfFirst { it.id == updatedMemory.id }
+        if (index != -1) {
+            memories[index] = updatedMemory
+            saveAllMemories(context, memories)
+        }
+    }
+
+    fun deleteMemory(context: Context, memoryId: String) {
+        val memories = loadAllMemories(context)
+        val removed = memories.removeAll { it.id == memoryId }
+        if (removed) {
+            saveAllMemories(context, memories)
+        }
+    }
+
     fun saveAllMemories(context: Context, memories: List<MemoryItem>) {
         try {
             val array = JSONArray()

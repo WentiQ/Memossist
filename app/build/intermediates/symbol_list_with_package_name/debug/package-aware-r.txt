@@ -2785,6 +2785,8 @@ id btnDeleteCurrentChat
 id btnDetailClose
 id btnDialogCancel
 id btnDialogSave
+id btnEditExpCancel
+id btnEditExpSave
 id btnEditName
 id btnEndCall
 id btnHamburger
@@ -2884,6 +2886,7 @@ id enterAlways
 id enterAlwaysCollapsed
 id etChatInput
 id etDialogUserName
+id etEditExpMessage
 id etSearchVault
 id exitUntilCollapsed
 id expand_activities_button
@@ -2923,6 +2926,8 @@ id home
 id homeAsUp
 id honorRequest
 id horizontal_only
+id ibDetailDelete
+id ibDetailEdit
 id icon
 id icon_group
 id ifRoom
@@ -3199,6 +3204,7 @@ id tvDetailFullMessage
 id tvDetailLocation
 id tvDetailTag
 id tvDetailTimestamp
+id tvEditExpDialogTitle
 id tvGreetingPrompt
 id tvGreetingTitle
 id tvHistoryTitle
@@ -3387,6 +3393,7 @@ layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
 layout dialog_chat_options
+layout dialog_edit_experience
 layout dialog_edit_username
 layout dialog_memory_detail
 layout item_chat_ai
