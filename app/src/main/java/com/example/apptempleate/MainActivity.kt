@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Remove window title & hide action bar header completely
+        // Remove window title & hide action bar completely
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         supportActionBar?.hide()
         
@@ -235,6 +235,20 @@ class MainActivity : AppCompatActivity() {
         activeConv.messages.add(userMsg)
         activeConv.lastUpdated = System.currentTimeMillis()
 
+        // Automatically save message experience into Memory Vault
+        val expId = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}"
+        val memoryItem = MemoryItem(
+            id = expId,
+            title = if (userText.length > 32) userText.take(32) + "..." else userText,
+            snippet = if (userText.length > 70) userText.take(70) + "..." else userText,
+            message = userText,
+            timestamp = MemoryVaultRepository.formatCurrentTime(),
+            location = MemoryVaultRepository.getCurrentLocation(),
+            tag = "Chat",
+            timeAgo = "Just now"
+        )
+        MemoryVaultRepository.saveMemory(this, memoryItem)
+
         // Show active chat list & hide greeting
         llGreetingContainer.visibility = View.GONE
         rvChatMessages.visibility = View.VISIBLE
@@ -243,7 +257,7 @@ class MainActivity : AppCompatActivity() {
         chatAdapter.setMessages(activeConv.messages)
         rvChatMessages.smoothScrollToPosition(chatAdapter.itemCount - 1)
 
-        // Save progress to local repository
+        // Save progress to local chat repository
         ChatRepository.saveOrUpdateConversation(this, activeConv)
         refreshSidebarHistory()
 

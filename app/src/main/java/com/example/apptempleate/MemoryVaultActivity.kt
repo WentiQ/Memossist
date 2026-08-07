@@ -3,10 +3,14 @@ package com.example.apptempleate
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
 import android.view.Window
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -44,12 +48,12 @@ class MemoryVaultActivity : AppCompatActivity() {
             Toast.makeText(this, "Add new memory feature", Toast.LENGTH_SHORT).show()
         }
 
-        // Initialize Sample Memories Data
-        loadSampleMemories()
+        // Load Real & Sample Memories Data from Repository
+        loadMemoriesFromRepository()
 
-        // Setup RecyclerView
+        // Setup RecyclerView with Click Handler to open Detail Dialog
         adapter = MemoryVaultAdapter(allMemories) { memory ->
-            Toast.makeText(this, "Opened: ${memory.title}", Toast.LENGTH_SHORT).show()
+            showMemoryDetailDialog(memory)
         }
 
         rvMemoryList.layoutManager = LinearLayoutManager(this)
@@ -65,54 +69,38 @@ class MemoryVaultActivity : AppCompatActivity() {
         })
     }
 
-    private fun loadSampleMemories() {
-        allMemories.add(
-            MemoryItem(
-                id = "1",
-                title = "Quarterly Strategy & Cognitive Notes",
-                snippet = "Key takeaways from the strategy session covering neural architecture designs, memory retrieval benchmarks, and UI state flows.",
-                tag = "Audio",
-                timeAgo = "4 mins ago",
-                isPinned = true
-            )
-        )
-        allMemories.add(
-            MemoryItem(
-                id = "2",
-                title = "AI Agentic Workflow Ideas",
-                snippet = "Explored multi-agent delegation patterns for autonomous contextual search and live tactile background rendering.",
-                tag = "Idea",
-                timeAgo = "2 hours ago",
-                isPinned = true
-            )
-        )
-        allMemories.add(
-            MemoryItem(
-                id = "3",
-                title = "Product Roadmap & UI Polish Transcript",
-                snippet = "Transcript of live voice conversation discussing smooth swipe gestures, sidebar navigation, and clean white interface styling.",
-                tag = "Document",
-                timeAgo = "Yesterday"
-            )
-        )
-        allMemories.add(
-            MemoryItem(
-                id = "4",
-                title = "Voice Note on Neural Memory Retention",
-                snippet = "Recorded thoughts on long-term cognitive indexing and instant context recall algorithms.",
-                tag = "Audio",
-                timeAgo = "2 days ago"
-            )
-        )
-        allMemories.add(
-            MemoryItem(
-                id = "5",
-                title = "Design System Color Tokens",
-                snippet = "Monochrome light palette specification with dark slate typography and subtle card stroke borders.",
-                tag = "Idea",
-                timeAgo = "3 days ago"
-            )
-        )
+    private fun loadMemoriesFromRepository() {
+        allMemories.clear()
+        val loadedList = MemoryVaultRepository.loadAllMemories(this)
+        allMemories.addAll(loadedList)
+    }
+
+    private fun showMemoryDetailDialog(memory: MemoryItem) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_memory_detail, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val tvExpId: TextView = dialogView.findViewById(R.id.tvDetailExpId)
+        val tvTag: TextView = dialogView.findViewById(R.id.tvDetailTag)
+        val tvTimestamp: TextView = dialogView.findViewById(R.id.tvDetailTimestamp)
+        val tvLocation: TextView = dialogView.findViewById(R.id.tvDetailLocation)
+        val tvFullMessage: TextView = dialogView.findViewById(R.id.tvDetailFullMessage)
+        val btnClose: View = dialogView.findViewById(R.id.btnDetailClose)
+
+        tvExpId.text = memory.id
+        tvTag.text = memory.tag
+        tvTimestamp.text = memory.timestamp
+        tvLocation.text = memory.location
+        tvFullMessage.text = memory.message
+
+        btnClose.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun filterMemories(query: String) {
@@ -122,6 +110,8 @@ class MemoryVaultActivity : AppCompatActivity() {
             allMemories.filter {
                 it.title.contains(query, ignoreCase = true) ||
                 it.snippet.contains(query, ignoreCase = true) ||
+                it.message.contains(query, ignoreCase = true) ||
+                it.id.contains(query, ignoreCase = true) ||
                 it.tag.contains(query, ignoreCase = true)
             }
         }

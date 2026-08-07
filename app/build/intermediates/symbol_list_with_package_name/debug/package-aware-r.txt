@@ -2564,6 +2564,7 @@ drawable bg_metallic_card
 drawable bg_overlay_vignette
 drawable bg_procedural_metallic_soil
 drawable bg_profile_avatar_rounded
+drawable bg_tag_rounded
 drawable bg_top_chat_gradient
 drawable bg_voice_orb
 drawable btn_checkbox_checked_mtrl
@@ -2781,6 +2782,7 @@ id btnBack
 id btnChangeAvatar
 id btnClearCache
 id btnDeleteCurrentChat
+id btnDetailClose
 id btnDialogCancel
 id btnDialogSave
 id btnEditName
@@ -3192,6 +3194,11 @@ id triangle
 id tvAiMsg
 id tvAvatarInitials
 id tvConnectionsTitle
+id tvDetailExpId
+id tvDetailFullMessage
+id tvDetailLocation
+id tvDetailTag
+id tvDetailTimestamp
 id tvGreetingPrompt
 id tvGreetingTitle
 id tvHistoryTitle
@@ -3381,6 +3388,7 @@ layout design_text_input_end_icon
 layout design_text_input_start_icon
 layout dialog_chat_options
 layout dialog_edit_username
+layout dialog_memory_detail
 layout item_chat_ai
 layout item_chat_user
 layout item_memory_vault

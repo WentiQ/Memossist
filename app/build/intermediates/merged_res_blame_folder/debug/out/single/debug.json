@@ -40,6 +40,10 @@
         "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\bg_procedural_metallic_soil.xml"
     },
     {
+        "merged": "com.example.apptempleate.app-merged_res-29:/drawable_bg_tag_rounded.xml.flat",
+        "source": "com.example.apptempleate.app-main-31:/drawable/bg_tag_rounded.xml"
+    },
+    {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\drawable_matte_metallic_bg.jpg.flat",
         "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\matte_metallic_bg.jpg"
     },
@@ -84,8 +88,8 @@
         "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\layout\\nav_header_main.xml"
     },
     {
-        "merged": "com.example.apptempleate.app-merged_res-29:/layout_activity_main.xml.flat",
-        "source": "com.example.apptempleate.app-main-31:/layout/activity_main.xml"
+        "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\layout_dialog_memory_detail.xml.flat",
+        "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\layout\\dialog_memory_detail.xml"
     },
     {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\layout_activity_cognitive_insights.xml.flat",
