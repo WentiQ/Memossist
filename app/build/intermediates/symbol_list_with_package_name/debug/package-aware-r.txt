@@ -2823,10 +2823,13 @@ id btnOptDelete
 id btnOptPin
 id btnOptRename
 id btnPlus
+id btnResetView
 id btnSelectModelCard
 id btnSidebarNewChat
 id btnSpeakerToggle
 id btnWordsDone
+id btnZoomIn
+id btnZoomOut
 id buttonPanel
 id cache_measures
 id callMeasure
@@ -2867,6 +2870,7 @@ id currentState
 id custom
 id customPanel
 id cut
+id dagGraph2DView
 id date_picker_actions
 id decelerate
 id decelerateAndComplete
@@ -2944,6 +2948,7 @@ id groups
 id grp_history
 id grp_main
 id guideline
+id headerOverlay
 id header_title
 id hideable
 id home
@@ -2988,7 +2993,6 @@ id llBestForContainer
 id llBottomControls
 id llChatInputBar
 id llDagConnectionsContainer
-id llDagEdgesContainer
 id llFilterCategoryContainer
 id llFixedSidebarHeader
 id llGreetingContainer
@@ -3262,6 +3266,7 @@ id tvDeviceRamInfo
 id tvEditExpDialogTitle
 id tvEmptyDagMessage
 id tvEmptyWordsMessage
+id tvGraphHelpHint
 id tvGreetingPrompt
 id tvGreetingTitle
 id tvHeaderModelIcon

@@ -4,308 +4,136 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="#F9FAFB"
     tools:context=".ConnectionsActivity">
 
-    <!-- Back Button (No container box) -->
-    <ImageButton
-        android:id="@+id/btnBack"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_circle_icon_button"
-        android:contentDescription="Back"
-        android:padding="10dp"
-        android:src="@drawable/ic_close"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#121417" />
-
-    <!-- Title -->
-    <TextView
-        android:id="@+id/tvConnectionsTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Connections"
-        android:textColor="#121417"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:letterSpacing="-0.01"
-        app:layout_constraintBottom_toBottomOf="@+id/btnBack"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnBack" />
-
-    <ScrollView
+    <!-- 2D Infinite Graph View Filling Screen -->
+    <com.example.apptempleate.DagGraph2DView
+        android:id="@+id/dagGraph2DView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:clipToPadding="false"
-        android:paddingBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnBack">
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Top Overlay Header Row -->
+    <RelativeLayout
+        android:id="@+id/headerOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="12dp"
+        android:background="#D9FFFFFF"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_circle_icon_button"
+            android:contentDescription="Back"
+            android:padding="9dp"
+            android:src="@drawable/ic_close"
+            app:tint="#121417" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="20dp"
-            android:paddingTop="8dp">
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="vertical">
 
-            <!-- Overview Card -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_metallic_card"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ACTIVE KNOWLEDGE GRAPH"
-                    android:textColor="#374151"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.1" />
-
-                <TextView
-                    android:id="@+id/tvConnectionsCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="248 Semantic Links Connected"
-                    android:textColor="#111827"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Memossist automatically correlates concepts, audio notes, and workspace documents."
-                    android:textColor="#4B5563"
-                    android:textSize="13sp"
-                    android:lineSpacingExtra="3dp" />
-
-            </LinearLayout>
-
-            <!-- Section Label: Linked Concepts -->
             <TextView
+                android:id="@+id/tvConnectionsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="LINKED CONCEPT NODES IN DAG"
-                android:textColor="#6B7280"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.1" />
+                android:text="2D DAG Knowledge Plane"
+                android:textColor="#121417"
+                android:textSize="17sp"
+                android:textStyle="bold" />
 
-            <!-- Dynamic DAG Edges Container -->
-            <LinearLayout
-                android:id="@+id/llDagEdgesContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-
-            <!-- Connection Node 1 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_metallic_card"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Product Strategy ↔ UI Tokens"
-                        android:textColor="#111827"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="34 Links"
-                        android:textColor="#2563EB"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Cross-referenced between strategy notes and monochrome UI layout specifications."
-                    android:textColor="#4B5563"
-                    android:textSize="13sp" />
-
-            </LinearLayout>
-
-            <!-- Connection Node 2 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bg_metallic_card"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Neural Arch ↔ Vault Index"
-                        android:textColor="#111827"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="18 Links"
-                        android:textColor="#2563EB"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Connected deep learning memory retrieval algorithms to saved audio transcripts."
-                    android:textColor="#4B5563"
-                    android:textSize="13sp" />
-
-            </LinearLayout>
-
-            <!-- Section Label: Integrations -->
             <TextView
+                android:id="@+id/tvConnectionsCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="CONNECTED INTEGRATIONS"
-                android:textColor="#6B7280"
+                android:layout_marginTop="2dp"
+                android:text="0 Active Non-Zero Connections"
+                android:textColor="#2563EB"
                 android:textSize="12sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.1" />
-
-            <!-- Integration 1 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_metallic_card"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Google Workspace &amp; Docs"
-                        android:textColor="#111827"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Real-time document indexing enabled"
-                        android:textColor="#4B5563"
-                        android:textSize="13sp" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="#DEF7EC"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="4dp"
-                    android:text="ACTIVE"
-                    android:textColor="#03543F"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <!-- Integration 2 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bg_metallic_card"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Notion Knowledge Base"
-                        android:textColor="#111827"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="1,240 workspace pages linked"
-                        android:textColor="#4B5563"
-                        android:textSize="13sp" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="#DEF7EC"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="4dp"
-                    android:text="ACTIVE"
-                    android:textColor="#03543F"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
-    </ScrollView>
+        <ImageButton
+            android:id="@+id/btnResetView"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_circle_icon_button"
+            android:contentDescription="Reset Graph Position"
+            android:padding="10dp"
+            android:src="@drawable/ic_insights"
+            app:tint="#121417" />
+
+    </RelativeLayout>
+
+    <!-- Floating Zoom Controls (Bottom Right) -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="90dp"
+        android:elevation="6dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnZoomIn"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/bg_circle_icon_button"
+            android:contentDescription="Zoom In"
+            android:padding="10dp"
+            android:src="@drawable/ic_plus"
+            app:tint="#121417" />
+
+        <ImageButton
+            android:id="@+id/btnZoomOut"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_circle_icon_button"
+            android:contentDescription="Zoom Out"
+            android:padding="10dp"
+            android:src="@drawable/ic_trash"
+            app:tint="#121417" />
+
+    </LinearLayout>
+
+    <!-- Bottom Help Pill Overlay -->
+    <TextView
+        android:id="@+id/tvGraphHelpHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_floating_chat_box"
+        android:elevation="4dp"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp"
+        android:text="2D Infinite Plane • Drag to Pan • Pinch to Zoom • Tap Dot for Connections"
+        android:textColor="#4B5563"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

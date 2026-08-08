@@ -1,19 +1,23 @@
 package com.example.apptempleate
 
-import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
 import android.view.Window
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
 class ConnectionsActivity : AppCompatActivity() {
 
     private lateinit var btnBack: ImageButton
+    private lateinit var btnResetView: ImageButton
+    private lateinit var btnZoomIn: ImageButton
+    private lateinit var btnZoomOut: ImageButton
     private lateinit var tvConnectionsCount: TextView
-    private lateinit var llDagEdgesContainer: LinearLayout
+    private lateinit var dagGraph2DView: DagGraph2DView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,103 +29,154 @@ class ConnectionsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_connections)
 
         btnBack = findViewById(R.id.btnBack)
+        btnResetView = findViewById(R.id.btnResetView)
+        btnZoomIn = findViewById(R.id.btnZoomIn)
+        btnZoomOut = findViewById(R.id.btnZoomOut)
         tvConnectionsCount = findViewById(R.id.tvConnectionsCount)
-        llDagEdgesContainer = findViewById(R.id.llDagEdgesContainer)
+        dagGraph2DView = findViewById(R.id.dagGraph2DView)
 
         btnBack.setOnClickListener {
             finishWithSmoothAnimation()
         }
 
-        renderDagGraphConnections()
+        btnResetView.setOnClickListener {
+            dagGraph2DView.resetView()
+        }
+
+        btnZoomIn.setOnClickListener {
+            dagGraph2DView.zoomIn()
+        }
+
+        btnZoomOut.setOnClickListener {
+            dagGraph2DView.zoomOut()
+        }
+
+        dagGraph2DView.onNodeSelectedListener = { memory, connectedEdges ->
+            showNodeDetailsDialog(memory, connectedEdges)
+        }
+
+        render2DGraphPlane()
     }
 
     override fun onResume() {
         super.onResume()
-        renderDagGraphConnections()
+        render2DGraphPlane()
     }
 
-    private fun renderDagGraphConnections() {
-        val edges = ExperienceDagRepository.loadAllEdges(this).filter { it.strength > 0.0 }
-        tvConnectionsCount.text = "${edges.size} Active Semantic Edges in DAG Graph"
+    private fun render2DGraphPlane() {
+        val memories = MemoryVaultRepository.loadAllMemories(this)
+        val allEdges = ExperienceDagRepository.loadAllEdges(this)
+        val nonZeroEdges = allEdges.filter { it.strength > 0.0 }
 
-        llDagEdgesContainer.removeAllViews()
+        tvConnectionsCount.text = "${nonZeroEdges.size} Active Non-Zero Connections in 2D Plane"
 
-        if (edges.isEmpty()) {
-            val emptyTv = TextView(this).apply {
-                text = "No active DAG connections yet. Ask questions in Chat to construct semantic edges across your experiences!"
-                setTextColor(Color.parseColor("#6B7280"))
-                textSize = 13f
-                setPadding(0, 16, 0, 16)
-            }
-            llDagEdgesContainer.addView(emptyTv)
-            return
-        }
+        dagGraph2DView.setData(memories, nonZeroEdges)
+    }
 
-        for (edge in edges) {
-            val cardView = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                setPadding(32, 28, 32, 28)
-                setBackgroundResource(R.drawable.bg_metallic_card)
+    private fun showNodeDetailsDialog(memory: MemoryItem, connectedEdges: List<DagEdge>) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_dag_connections, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
 
-                val lp = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    topMargin = 20
-                }
-                layoutParams = lp
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-                val headerRow = LinearLayout(context).apply {
-                    orientation = LinearLayout.HORIZONTAL
-                    gravity = android.view.Gravity.CENTER_VERTICAL
+        val tvTitle: TextView = dialogView.findViewById(R.id.tvDagDialogTitle)
+        val tvSubHeader: TextView = dialogView.findViewById(R.id.tvDagSubHeader)
+        val ibClose: ImageButton = dialogView.findViewById(R.id.ibDagClose)
+        val btnDone: TextView = dialogView.findViewById(R.id.btnDagDone)
+        val container: LinearLayout = dialogView.findViewById(R.id.llDagConnectionsContainer)
+        val tvEmpty: TextView = dialogView.findViewById(R.id.tvEmptyDagMessage)
 
-                    val tvPair = TextView(context).apply {
-                        text = "${edge.title1} ↔ ${edge.title2}"
-                        setTextColor(Color.parseColor("#111827"))
-                        textSize = 15f
-                        setTypeface(null, Typeface.BOLD)
-                        layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f)
+        tvTitle.text = "${memory.id}: ${memory.title}"
+
+        if (connectedEdges.isEmpty()) {
+            tvEmpty.visibility = View.VISIBLE
+            container.visibility = View.GONE
+            tvSubHeader.text = "No non-zero strength connections for ${memory.id} yet."
+        } else {
+            tvEmpty.visibility = View.GONE
+            container.visibility = View.VISIBLE
+            container.removeAllViews()
+
+            tvSubHeader.text = "${connectedEdges.size} non-zero connection(s) • S_ij > 0.0"
+
+            for (edge in connectedEdges) {
+                val isExp1Self = edge.experienceId1.equals(memory.id, ignoreCase = true)
+                val targetId = if (isExp1Self) edge.experienceId2 else edge.experienceId1
+                val targetTitle = if (isExp1Self) edge.title2 else edge.title1
+
+                val cardView = LinearLayout(this).apply {
+                    orientation = LinearLayout.VERTICAL
+                    setPadding(28, 24, 28, 24)
+                    setBackgroundResource(R.drawable.bg_metallic_card)
+
+                    val lp = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        topMargin = 16
+                    }
+                    layoutParams = lp
+
+                    val headerRow = LinearLayout(context).apply {
+                        orientation = LinearLayout.HORIZONTAL
+                        gravity = android.view.Gravity.CENTER_VERTICAL
+
+                        val tvConnectedId = TextView(context).apply {
+                            text = "$targetId: $targetTitle"
+                            setTextColor(android.graphics.Color.parseColor("#111827"))
+                            textSize = 14f
+                            setTypeface(null, android.graphics.Typeface.BOLD)
+                            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f)
+                        }
+
+                        val strengthFormatted = String.format("%.3f", edge.strength)
+                        val tvBadge = TextView(context).apply {
+                            text = "S_ij = $strengthFormatted"
+                            setTextColor(android.graphics.Color.parseColor("#2563EB"))
+                            textSize = 13f
+                            setTypeface(null, android.graphics.Typeface.BOLD)
+                        }
+
+                        addView(tvConnectedId)
+                        addView(tvBadge)
                     }
 
                     val strengthFormatted = String.format("%.3f", edge.strength)
-                    val tvBadge = TextView(context).apply {
-                        text = "S_ij = $strengthFormatted"
-                        setTextColor(Color.parseColor("#2563EB"))
+                    val tvDetails = TextView(context).apply {
+                        text = "Co-used Count (t): ${edge.usageCount} • Strength Weight: $strengthFormatted"
+                        setTextColor(android.graphics.Color.parseColor("#4B5563"))
                         textSize = 12f
-                        setTypeface(null, Typeface.BOLD)
+                        setPadding(0, 6, 0, 0)
                     }
 
-                    addView(tvPair)
-                    addView(tvBadge)
+                    val sharedTermsText = if (edge.sharedTerms.isNotEmpty()) {
+                        "Shared Words: " + edge.sharedTerms.joinToString(", ")
+                    } else {
+                        "Shared Terms: Semantic context overlap"
+                    }
+
+                    val tvTerms = TextView(context).apply {
+                        text = sharedTermsText
+                        setTextColor(android.graphics.Color.parseColor("#6B7280"))
+                        textSize = 11f
+                        setPadding(0, 4, 0, 0)
+                    }
+
+                    addView(headerRow)
+                    addView(tvDetails)
+                    addView(tvTerms)
                 }
 
-                val tvDetails = TextView(context).apply {
-                    text = "Formula S_ij = S_old + (C×t)/N • Co-used in ${edge.usageCount} responses"
-                    setTextColor(Color.parseColor("#4B5563"))
-                    textSize = 12f
-                    setPadding(0, 8, 0, 0)
-                }
-
-                val sharedTermsText = if (edge.sharedTerms.isNotEmpty()) {
-                    "Shared Vocabulary Q ∩ N1 ∩ N2: " + edge.sharedTerms.take(5).joinToString(", ")
-                } else {
-                    "Shared Terms: Semantic context overlap"
-                }
-
-                val tvTerms = TextView(context).apply {
-                    text = sharedTermsText
-                    setTextColor(Color.parseColor("#6B7280"))
-                    textSize = 11f
-                    setPadding(0, 4, 0, 0)
-                }
-
-                addView(headerRow)
-                addView(tvDetails)
-                addView(tvTerms)
+                container.addView(cardView)
             }
-
-            llDagEdgesContainer.addView(cardView)
         }
+
+        ibClose.setOnClickListener { dialog.dismiss() }
+        btnDone.setOnClickListener { dialog.dismiss() }
+
+        dialog.show()
     }
 
     override fun onBackPressed() {
