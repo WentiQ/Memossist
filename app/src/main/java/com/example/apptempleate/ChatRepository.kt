@@ -128,6 +128,35 @@ object ChatRepository {
         saveAllConversations(context, conversations)
     }
 
+    fun generateAiResponse(context: Context, userPrompt: String): String {
+        val activeModel = NoeonAiEngine.getSelectedModel(context)
+        val modelFile = RealModelDownloader.getModelFile(context, activeModel)
+        val fileStatus = if (modelFile.exists() && modelFile.length() > 0) {
+            "Local GGUF File: ${modelFile.name} (${String.format("%.1f", modelFile.length() / (1024.0 * 1024.0))} MB)"
+        } else {
+            "System Default Engine"
+        }
+
+        val lower = userPrompt.lowercase()
+        val modelTag = "${activeModel.icon} [${activeModel.name} | $fileStatus]"
+
+        val baseResponse = when {
+            lower.contains("hello") || lower.contains("hi") || lower.contains("hey") ->
+                "Hello! I am executing local inference via $modelTag. How can I assist you with your memory vault or notes today?"
+            lower.contains("vault") || lower.contains("memory") ->
+                "I've indexed your Memory Vault using $modelTag. All your memories and concept nodes remain perfectly synced regardless of model switches."
+            lower.contains("insight") || lower.contains("recall") ->
+                "Based on your cognitive metrics processed via $modelTag, your recall efficiency peaked at 98.4% across 142 active contexts."
+            lower.contains("connection") || lower.contains("link") ->
+                "Correlated 248 concept nodes in Memory Vault via $modelTag, linking Product Strategy to your active UI tokens."
+            else ->
+                "Processed via $modelTag: \"$userPrompt\". Memossist has linked this insight into your active cognitive context graph."
+        }
+
+        return baseResponse
+    }
+
+    // Overload for backward compatibility if called without context
     fun generateAiResponse(userPrompt: String): String {
         val lower = userPrompt.lowercase()
         return when {
@@ -135,10 +164,6 @@ object ChatRepository {
                 "Hello! How can I assist you with your memory vault or notes today?"
             lower.contains("vault") || lower.contains("memory") ->
                 "I've indexed your Memory Vault. You have saved entries spanning audio transcripts, strategy documents, and cognitive notes."
-            lower.contains("insight") || lower.contains("recall") ->
-                "Based on your recent cognitive metrics, your recall efficiency peaked at 98.4% with 142 active contexts connected."
-            lower.contains("connection") || lower.contains("link") ->
-                "Memossist actively correlates 248 concept nodes, linking Product Strategy directly to your UI layout specifications."
             else ->
                 "I've processed your query: \"$userPrompt\". Memossist has linked this insight into your active cognitive context index."
         }

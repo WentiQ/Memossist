@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="14dp"
+    android:background="@drawable/bg_metallic_card"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:padding="18dp">
+
+    <!-- Top Row: Icon, Title, Badge, & Checkmark -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- Model Emoji/Icon Badge -->
+        <TextView
+            android:id="@+id/tvModelIcon"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_profile_avatar_rounded"
+            android:gravity="center"
+            android:text="🧠"
+            android:textSize="22sp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <!-- Model Name -->
+                <TextView
+                    android:id="@+id/tvModelName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Qwen3.5 4B"
+                    android:textColor="#111827"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <!-- Badge Tag -->
+                <TextView
+                    android:id="@+id/tvModelBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_tag_rounded"
+                    android:backgroundTint="#F3F4F6"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="3dp"
+                    android:text="🏆 RECOMMENDED"
+                    android:textColor="#1F2937"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Tagline -->
+            <TextView
+                android:id="@+id/tvModelTagline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="BEST OVERALL"
+                android:textColor="#6B7280"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.05" />
+
+        </LinearLayout>
+
+        <!-- Active Selection State Button/Indicator -->
+        <TextView
+            android:id="@+id/btnSelectModelCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_selected"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="7dp"
+            android:text="SELECT"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- Ratings Summary Stars Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvIntelligenceStars"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="★★★★★ Intelligence"
+            android:textColor="#F59E0B"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:text="•"
+            android:textColor="#9CA3AF" />
+
+        <TextView
+            android:id="@+id/tvSpeedStars"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚡⚡⚡⚡☆ Speed"
+            android:textColor="#10B981"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- Brief Description -->
+    <TextView
+        android:id="@+id/tvModelDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:lineSpacingExtra="2dp"
+        android:text="Strong reasoning, coding, documents and everyday conversations."
+        android:textColor="#374151"
+        android:textSize="13sp" />
+
+    <!-- Parameters & Context Footer Specs -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvModelParams"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="~4B parameters"
+            android:textColor="#6B7280"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="6dp"
+            android:text="•"
+            android:textColor="#9CA3AF" />
+
+        <TextView
+            android:id="@+id/tvModelContext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Large context"
+            android:textColor="#6B7280"
+            android:textSize="12sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tap for details →"
+            android:textColor="#4F46E5"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</LinearLayout>

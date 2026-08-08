@@ -22,6 +22,10 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var btnBack: ImageButton
     private lateinit var btnClearCache: LinearLayout
+    private lateinit var btnOpenModelMarketplace: LinearLayout
+    private lateinit var tvSettingsModelIcon: TextView
+    private lateinit var tvSettingsActiveModelName: TextView
+    private lateinit var tvSettingsActiveModelBadge: TextView
 
     private lateinit var rlAvatarContainer: RelativeLayout
     private lateinit var tvAvatarInitials: TextView
@@ -60,6 +64,10 @@ class SettingsActivity : AppCompatActivity() {
 
         btnBack = findViewById(R.id.btnBack)
         btnClearCache = findViewById(R.id.btnClearCache)
+        btnOpenModelMarketplace = findViewById(R.id.btnOpenModelMarketplace)
+        tvSettingsModelIcon = findViewById(R.id.tvSettingsModelIcon)
+        tvSettingsActiveModelName = findViewById(R.id.tvSettingsActiveModelName)
+        tvSettingsActiveModelBadge = findViewById(R.id.tvSettingsActiveModelBadge)
 
         rlAvatarContainer = findViewById(R.id.rlAvatarContainer)
         tvAvatarInitials = findViewById(R.id.tvAvatarInitials)
@@ -74,6 +82,12 @@ class SettingsActivity : AppCompatActivity() {
 
         btnBack.setOnClickListener {
             finishWithSmoothAnimation()
+        }
+
+        btnOpenModelMarketplace.setOnClickListener {
+            val intent = Intent(this, ModelMarketplaceActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         btnClearCache.setOnClickListener {
@@ -93,6 +107,18 @@ class SettingsActivity : AppCompatActivity() {
         }
         btnEditName.setOnClickListener(editNameListener)
         tvUserName.setOnClickListener(editNameListener)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateActiveModelDisplay()
+    }
+
+    private fun updateActiveModelDisplay() {
+        val currentModel = NoeonAiEngine.getSelectedModel(this)
+        tvSettingsModelIcon.text = currentModel.icon
+        tvSettingsActiveModelName.text = currentModel.name
+        tvSettingsActiveModelBadge.text = currentModel.badge
     }
 
     private fun loadUserProfileData() {

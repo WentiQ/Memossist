@@ -43,6 +43,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var btnHamburger: ImageButton
+    private lateinit var btnHeaderModelPicker: LinearLayout
+    private lateinit var tvHeaderModelIcon: TextView
+    private lateinit var tvHeaderModelName: TextView
     private lateinit var btnHeaderNewChat: ImageButton
     private lateinit var btnDeleteCurrentChat: ImageButton
     private lateinit var mainContentContainer: ConstraintLayout
@@ -105,6 +108,9 @@ class MainActivity : AppCompatActivity() {
         // Initialize Navigation & Main Layout Views
         drawerLayout = findViewById(R.id.drawerLayout)
         btnHamburger = findViewById(R.id.btnHamburger)
+        btnHeaderModelPicker = findViewById(R.id.btnHeaderModelPicker)
+        tvHeaderModelIcon = findViewById(R.id.tvHeaderModelIcon)
+        tvHeaderModelName = findViewById(R.id.tvHeaderModelName)
         btnHeaderNewChat = findViewById(R.id.btnHeaderNewChat)
         btnDeleteCurrentChat = findViewById(R.id.btnDeleteCurrentChat)
         mainContentContainer = findViewById(R.id.mainContentContainer)
@@ -163,6 +169,11 @@ class MainActivity : AppCompatActivity() {
         // Hamburger Menu Click -> Smoothly open side menu drawer
         btnHamburger.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
+        }
+
+        // Header Model Picker Pill Click -> Open Gemini-Style Quick Model Switcher Sheet
+        btnHeaderModelPicker.setOnClickListener {
+            showQuickModelPickerSheet()
         }
 
         // Header New Chat Button -> Start New Chat Session
@@ -277,6 +288,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         updateGreetingText()
         refreshSidebarHistory()
+        updateHeaderActiveModel()
 
         val activeId = currentConversation?.id
         if (activeId != null) {
@@ -462,7 +474,7 @@ class MainActivity : AppCompatActivity() {
 
         // Generate AI Response with simulated typing delay
         Handler(Looper.getMainLooper()).postDelayed({
-            val aiResponseText = ChatRepository.generateAiResponse(userText)
+            val aiResponseText = ChatRepository.generateAiResponse(this@MainActivity, userText)
             val aiMsg = ChatMessage(
                 conversationId = activeConv.id,
                 text = aiResponseText,
@@ -656,6 +668,21 @@ class MainActivity : AppCompatActivity() {
             else -> "Good night, $userName"
         }
         tvGreetingTitle.text = timeGreeting
+    }
+
+    private fun updateHeaderActiveModel() {
+        val activeModel = NoeonAiEngine.getSelectedModel(this)
+        tvHeaderModelIcon.text = activeModel.icon
+        tvHeaderModelName.text = activeModel.name
+    }
+
+    private fun showQuickModelPickerSheet() {
+        val pickerSheet = ModelPickerBottomSheet(
+            onModelChanged = { _ ->
+                updateHeaderActiveModel()
+            }
+        )
+        pickerSheet.show(supportFragmentManager, "ModelPickerBottomSheet")
     }
 
     override fun onDestroy() {

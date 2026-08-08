@@ -3,6 +3,8 @@
     package="com.example.apptempleate">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -44,6 +46,11 @@
 
         <activity
             android:name=".SettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+
+        <activity
+            android:name=".ModelMarketplaceActivity"
             android:exported="false"
             android:theme="@style/Theme.AppTempeLate" />
 
