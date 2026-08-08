@@ -62,13 +62,12 @@ object ChatRepository {
         val executor = java.util.concurrent.Executors.newSingleThreadExecutor()
 
         executor.execute {
-            // Step 1: Send message & retrieve top 5 candidate experiences from Memory Vault
+            // STEP 1: Retrieve Candidate Memories from Memory Vault
             mainHandler.post { callback.onStepUpdate("Step 1/6: Retrieving candidate memories…") }
-
             val topCandidates = ExperienceDagRepository.retrieveTopMatchingExperiences(context, userMessage, topK = 5)
             val systemPromptStr = NoeonAiEngine.buildSystemPrompt(topCandidates)
 
-            // Step 2 & 3: LLM intent understanding, selective fact extraction, & humanoid answer synthesis
+            // STEP 2: LLM Intent Understanding, Fact Filtering & Humanoid Answer Synthesis
             mainHandler.post { callback.onStepUpdate("Step 2/6: LLM generating response…") }
 
             val tokenBuffer = StringBuilder()
@@ -83,24 +82,26 @@ object ChatRepository {
                 }
             )
 
-            mainHandler.post { callback.onStepUpdate("Step 3/6: Reading used memories and user facts…") }
-            // Save only facts explicitly extracted by the LLM; questions are never vault entries.
-            for (fact in llmResult.extractedInformativeFacts) {
-                val expId = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}"
-                val memoryItem = MemoryItem(
-                    id = expId,
-                    title = if (fact.length > 32) fact.take(32) + "..." else fact,
-                    snippet = if (fact.length > 70) fact.take(70) + "..." else fact,
-                    message = fact,
-                    timestamp = MemoryVaultRepository.formatCurrentTime(),
-                    location = MemoryVaultRepository.getCurrentLocation(),
-                    tag = "Chat Fact",
-                    timeAgo = "Just now"
-                )
-                MemoryVaultRepository.saveMemory(context, memoryItem)
+            // STEP 3: Save Facts Extracted Strictly by LLM into Memory Vault
+            mainHandler.post { callback.onStepUpdate("Step 3/6: Reading LLM extracted facts…") }
+            if (llmResult.extractedInformativeFacts.isNotEmpty()) {
+                for (fact in llmResult.extractedInformativeFacts) {
+                    val expId = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}"
+                    val memoryItem = MemoryItem(
+                        id = expId,
+                        title = if (fact.length > 32) fact.take(32) + "..." else fact,
+                        snippet = if (fact.length > 70) fact.take(70) + "..." else fact,
+                        message = fact,
+                        timestamp = MemoryVaultRepository.formatCurrentTime(),
+                        location = MemoryVaultRepository.getCurrentLocation(),
+                        tag = "Chat Fact",
+                        timeAgo = "Just now"
+                    )
+                    MemoryVaultRepository.saveMemory(context, memoryItem)
+                }
             }
 
-            mainHandler.post { callback.onStepUpdate("Step 4/6: Saving informative facts to the vault…") }
+            mainHandler.post { callback.onStepUpdate("Step 4/6: Updating memory vault records…") }
 
             // Step 4 & 5: Calculate DAG connection strengths using ONLY the relevant IDs returned from LLM
             mainHandler.post { callback.onStepUpdate("Step 5/6: Updating used-memory connections…") }

@@ -105,14 +105,17 @@ object ExperienceDagRepository {
         usedExperienceIds: Set<String>
     ): DagUpdateSummary {
 
-        // Step 4 is authoritative: only LLM-reported, valid experience IDs may
-        // participate in a connection update. Unused retrieved candidates create no edges.
+        val qSet = getSemanticTermSet(userQuestion)
+        val candidateTermSetN = mutableSetOf<String>()
+        for (cand in candidateExperiences) {
+            candidateTermSetN.addAll(getSemanticTermSet("${cand.title} ${cand.snippet} ${cand.message}"))
+        }
+        val N = candidateTermSetN.size.coerceAtLeast(1)
+
         val activeExperiences = candidateExperiences.filter { it.id in usedExperienceIds }
         if (activeExperiences.size < 2) {
-            return DagUpdateSummary(userQuestion, activeExperiences, usedExperienceIds.toList(), 0, emptyList())
+            return DagUpdateSummary(userQuestion, activeExperiences, usedExperienceIds.toList(), N, emptyList())
         }
-
-        val qSet = getSemanticTermSet(userQuestion)
         
         // Compute N_i for each candidate experience
         val expTermSets = mutableMapOf<String, Set<String>>()
@@ -124,7 +127,6 @@ object ExperienceDagRepository {
             unionSetN.addAll(nSet)
         }
 
-        val N = unionSetN.size.coerceAtLeast(1) // Avoid division by zero
         val edges = loadAllEdges(context)
         val edgeUpdates = mutableListOf<EdgeUpdateInfo>()
 
