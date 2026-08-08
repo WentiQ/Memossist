@@ -277,21 +277,41 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         conv.lastUpdated = System.currentTimeMillis()
         ChatRepository.saveOrUpdateConversation(this, conv)
 
-        // 3. The LLM decides which user-supplied facts are worth saving; a question
-        // is therefore never stored merely because it was spoken.
-        val aiResponse = ChatRepository.generateAiResponse(this, userText)
+        // 3. Execute full 6-step LLM Pipeline (Candidate retrieval, Intent classification, Fact extraction, Memory Vault, DAG connections)
+        ChatRepository.processChatMessageWithPipeline(
+            context = this,
+            userMessage = userText,
+            callback = object : ChatRepository.ChatPipelineCallback {
+                override fun onStepUpdate(stepText: String) {
+                    runOnUiThread {
+                        tvVoiceStatus.text = "Thinking..."
+                        tvVoiceSubStatus.text = stepText
+                    }
+                }
 
-        // 4. Add the LLM answer to the conversation in real-time
-        val aiMsg = ChatMessage(
-            conversationId = conv.id,
-            text = aiResponse,
-            isUser = false
+                override fun onTokenStream(partialText: String) {
+                    // Streaming progress during voice generation
+                }
+
+                override fun onCompleted(cleanHumanoidAnswer: String, debugLogText: String) {
+                    runOnUiThread {
+                        // 4. Add the LLM answer to the conversation in real-time with diagnostic logs
+                        val aiMsg = ChatMessage(
+                            conversationId = conv.id,
+                            text = cleanHumanoidAnswer,
+                            isUser = false,
+                            debugLog = debugLogText
+                        )
+                        conv.messages.add(aiMsg)
+                        conv.lastUpdated = System.currentTimeMillis()
+                        ChatRepository.saveOrUpdateConversation(this@VoiceConversationActivity, conv)
+
+                        // 5. Speak clean humanoid answer via Text-To-Speech
+                        speakAiResponse(cleanHumanoidAnswer)
+                    }
+                }
+            }
         )
-        conv.messages.add(aiMsg)
-        conv.lastUpdated = System.currentTimeMillis()
-        ChatRepository.saveOrUpdateConversation(this, conv)
-
-        speakAiResponse(aiResponse)
     }
 
     private fun speakAiResponse(text: String) {
