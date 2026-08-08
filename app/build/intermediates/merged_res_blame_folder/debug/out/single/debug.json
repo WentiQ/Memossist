@@ -4,16 +4,16 @@
         "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\bg_circle_icon_button.xml"
     },
     {
-        "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\drawable_bg_voice_orb.xml.flat",
-        "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\bg_voice_orb.xml"
+        "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
     },
     {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\drawable_bg_button_save_pill.xml.flat",
         "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\bg_button_save_pill.xml"
     },
     {
-        "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+        "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\drawable_bg_voice_orb.xml.flat",
+        "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\bg_voice_orb.xml"
     },
     {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\layout_dialog_chat_model_picker.xml.flat",
@@ -46,10 +46,6 @@
     {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\drawable_bg_procedural_metallic_soil.xml.flat",
         "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\drawable\\bg_procedural_metallic_soil.xml"
-    },
-    {
-        "merged": "com.example.apptempleate.app-merged_res-29:/layout_item_chat_ai.xml.flat",
-        "source": "com.example.apptempleate.app-main-31:/layout/item_chat_ai.xml"
     },
     {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\drawable_bg_rating_progress_fill.xml.flat",
@@ -196,6 +192,10 @@
         "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\layout\\dialog_word_synonyms.xml"
     },
     {
+        "merged": "com.example.apptempleate.app-merged_res-29:/layout_dialog_memory_detail.xml.flat",
+        "source": "com.example.apptempleate.app-main-31:/layout/dialog_memory_detail.xml"
+    },
+    {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\layout_activity_model_marketplace.xml.flat",
         "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\layout\\activity_model_marketplace.xml"
     },
@@ -290,6 +290,10 @@
     {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\layout_dialog_edit_experience.xml.flat",
         "source": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-main-31:\\layout\\dialog_edit_experience.xml"
+    },
+    {
+        "merged": "com.example.apptempleate.app-merged_res-29:/layout_dialog_dag_connections.xml.flat",
+        "source": "com.example.apptempleate.app-main-31:/layout/dialog_dag_connections.xml"
     },
     {
         "merged": "C:\\Users\\dines\\.gradle\\daemon\\7.5.1\\com.example.apptempleate.app-merged_res-29:\\layout_item_sidebar_history.xml.flat",

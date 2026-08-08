@@ -41,7 +41,7 @@ class ConnectionsActivity : AppCompatActivity() {
     }
 
     private fun renderDagGraphConnections() {
-        val edges = ExperienceDagRepository.loadAllEdges(this)
+        val edges = ExperienceDagRepository.loadAllEdges(this).filter { it.strength > 0.0 }
         tvConnectionsCount.text = "${edges.size} Active Semantic Edges in DAG Graph"
 
         llDagEdgesContainer.removeAllViews()

@@ -244,10 +244,6 @@
 	[
 		{
 			"backtrace" : 6,
-			"id" : "ggml-base::@23533c6d68a59d54598d"
-		},
-		{
-			"backtrace" : 6,
 			"id" : "ggml::@23533c6d68a59d54598d"
 		},
 		{
@@ -256,11 +252,15 @@
 		},
 		{
 			"backtrace" : 6,
-			"id" : "llama::@b791850eb95f38641ccb"
+			"id" : "ggml-base::@23533c6d68a59d54598d"
 		},
 		{
 			"backtrace" : 4,
 			"id" : "llama-common-base::@8bf2afb4d8037c7b7d92"
+		},
+		{
+			"backtrace" : 6,
+			"id" : "llama::@b791850eb95f38641ccb"
 		},
 		{
 			"backtrace" : 5,

@@ -2794,10 +2794,12 @@ id btnCloseDetail
 id btnCloseLogs
 id btnClosePicker
 id btnCopyLog
+id btnDagDone
 id btnDeleteCurrentChat
 id btnDeleteModel
 id btnDetailAction
 id btnDetailClose
+id btnDetailDagConnections
 id btnDetailWordsSynonyms
 id btnDialogCancel
 id btnDialogSave
@@ -2948,6 +2950,7 @@ id home
 id homeAsUp
 id honorRequest
 id horizontal_only
+id ibDagClose
 id ibDetailDelete
 id ibDetailEdit
 id ibWordsClose
@@ -2984,6 +2987,7 @@ id list_item
 id llBestForContainer
 id llBottomControls
 id llChatInputBar
+id llDagConnectionsContainer
 id llDagEdgesContainer
 id llFilterCategoryContainer
 id llFixedSidebarHeader
@@ -3240,6 +3244,8 @@ id tvCatalogCountHeader
 id tvCodingScore
 id tvConnectionsCount
 id tvConnectionsTitle
+id tvDagDialogTitle
+id tvDagSubHeader
 id tvDetailBadge
 id tvDetailDescription
 id tvDetailDownloadSize
@@ -3254,6 +3260,7 @@ id tvDetailTagline
 id tvDetailTimestamp
 id tvDeviceRamInfo
 id tvEditExpDialogTitle
+id tvEmptyDagMessage
 id tvEmptyWordsMessage
 id tvGreetingPrompt
 id tvGreetingTitle
@@ -3475,6 +3482,7 @@ layout design_text_input_start_icon
 layout dialog_ai_message_logs
 layout dialog_chat_model_picker
 layout dialog_chat_options
+layout dialog_dag_connections
 layout dialog_edit_experience
 layout dialog_edit_username
 layout dialog_memory_detail

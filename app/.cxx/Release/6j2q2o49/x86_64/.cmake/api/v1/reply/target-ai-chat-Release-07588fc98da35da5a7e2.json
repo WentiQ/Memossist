@@ -2,7 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "C:/Users/dines/Documents/01-WORK/NOEON(The 1st AB)/Projects/App/Memossist/app/build/intermediates/cxx/Release/6j2q2o49/obj/arm64-v8a/libai-chat.so"
+			"path" : "C:/Users/dines/Documents/01-WORK/NOEON(The 1st AB)/Projects/App/Memossist/app/build/intermediates/cxx/Release/6j2q2o49/obj/x86_64/libai-chat.so"
 		}
 	],
 	"backtrace" : 1,
@@ -147,11 +147,11 @@
 	[
 		{
 			"backtrace" : 2,
-			"id" : "ggml-base::@23533c6d68a59d54598d"
+			"id" : "ggml::@23533c6d68a59d54598d"
 		},
 		{
 			"backtrace" : 2,
-			"id" : "ggml::@23533c6d68a59d54598d"
+			"id" : "ggml-base::@23533c6d68a59d54598d"
 		},
 		{
 			"backtrace" : 2,
@@ -163,11 +163,11 @@
 		},
 		{
 			"backtrace" : 2,
-			"id" : "llama-common-base::@8bf2afb4d8037c7b7d92"
+			"id" : "llama-common::@8bf2afb4d8037c7b7d92"
 		},
 		{
 			"backtrace" : 2,
-			"id" : "llama-common::@8bf2afb4d8037c7b7d92"
+			"id" : "llama-common-base::@8bf2afb4d8037c7b7d92"
 		}
 	],
 	"id" : "ai-chat::@6890427a1f51a3e7e1df",
