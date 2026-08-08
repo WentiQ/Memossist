@@ -1,0 +1,270 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Release-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6.0"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "build-llama",
+					"childIndexes" : 
+					[
+						2,
+						5,
+						6,
+						7
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-build-llama-Release-23bcc8b86d7191943ba2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "llama.cpp"
+				},
+				{
+					"build" : "build-llama/ggml",
+					"childIndexes" : 
+					[
+						3
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-build-llama.ggml-Release-ac322e21c5d8782d8a14.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 2,
+					"source" : "llama.cpp/ggml"
+				},
+				{
+					"build" : "build-llama/ggml/src",
+					"childIndexes" : 
+					[
+						4
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-build-llama.ggml.src-Release-9ad88c1377e1e6acce9f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "llama.cpp/ggml/src",
+					"targetIndexes" : 
+					[
+						2,
+						3,
+						4
+					]
+				},
+				{
+					"build" : "build-llama/ggml/src/ggml-cpu",
+					"jsonFile" : "directory-build-llama.ggml.src.ggml-cpu-Release-13cc8bbd2473788a6277.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 2,
+					"source" : "llama.cpp/ggml/src/ggml-cpu"
+				},
+				{
+					"build" : "build-llama/src",
+					"jsonFile" : "directory-build-llama.src-Release-447db849dd3856ebe6f0.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "llama.cpp/src",
+					"targetIndexes" : 
+					[
+						5
+					]
+				},
+				{
+					"build" : "build-llama/common",
+					"jsonFile" : "directory-build-llama.common-Release-436138ad30e1b5ca2829.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "llama.cpp/common",
+					"targetIndexes" : 
+					[
+						6,
+						7
+					]
+				},
+				{
+					"build" : "build-llama/vendor/cpp-httplib",
+					"jsonFile" : "directory-build-llama.vendor.cpp-httplib-Release-6cd0a2d7335aee9a6678.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "llama.cpp/vendor/cpp-httplib",
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "ai-chat",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						2
+					],
+					"directoryIndexes" : 
+					[
+						1,
+						5,
+						6,
+						7
+					],
+					"name" : "llama.cpp",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						1,
+						5,
+						6,
+						7
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2,
+						3,
+						4
+					],
+					"name" : "ggml",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ai-chat::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ai-chat-Release-c89194ecb9df7a900e4a.json",
+					"name" : "ai-chat",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "cpp-httplib::@e1f36686b082eccf6cbc",
+					"jsonFile" : "target-cpp-httplib-Release-0713e5b0624df7675a79.json",
+					"name" : "cpp-httplib",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-Release-4cb300972b596902f5ee.json",
+					"name" : "ggml",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-base::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-base-Release-40538c0b3c02f9990a19.json",
+					"name" : "ggml-base",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ggml-cpu::@23533c6d68a59d54598d",
+					"jsonFile" : "target-ggml-cpu-Release-d4b82b86b5be42be087d.json",
+					"name" : "ggml-cpu",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "llama::@b791850eb95f38641ccb",
+					"jsonFile" : "target-llama-Release-ddcf222e3a07be0654de.json",
+					"name" : "llama",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "llama-common::@8bf2afb4d8037c7b7d92",
+					"jsonFile" : "target-llama-common-Release-1bd15569126c59a0c302.json",
+					"name" : "llama-common",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "llama-common-base::@8bf2afb4d8037c7b7d92",
+					"jsonFile" : "target-llama-common-base-Release-10cff297590c35bf8468.json",
+					"name" : "llama-common-base",
+					"projectIndex" : 1
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/dines/Documents/01-WORK/NOEON(The 1st AB)/Projects/App/Memossist/app/.cxx/Release/30711h3j/arm64-v8a",
+		"source" : "C:/Users/dines/Documents/01-WORK/NOEON(The 1st AB)/Projects/App/Memossist/app/src/main/cpp"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

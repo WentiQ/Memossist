@@ -34,8 +34,10 @@ object RealModelDownloader {
 
     fun isModelFileDownloaded(context: Context, model: AiModel): Boolean {
         val file = getModelFile(context, model)
-        // If file exists and size is greater than 1MB
-        return file.exists() && file.length() > 1024 * 1024
+        if (!file.exists()) return false
+        // File must be at least 70% of total expected size (or >= 50MB for small models) to be considered complete
+        val minExpectedBytes = (model.downloadSizeMb * 1024L * 1024L * 0.70).toLong().coerceAtLeast(50L * 1024L * 1024L)
+        return file.length() >= minExpectedBytes
     }
 
     fun cancelDownload() {

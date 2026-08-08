@@ -1,0 +1,60 @@
+ninja: Entering directory `C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\.cxx\Release\30711h3j\arm64-v8a'
+[1/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/hbm.cpp.o
+[2/240] Building C object build-llama/ggml/src/CMakeFiles/ggml-base.dir/ggml-alloc.c.o
+[3/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-base.dir/ggml.cpp.o
+[4/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-base.dir/ggml-threading.cpp.o
+[5/240] Building C object build-llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.c.o
+[6/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml.dir/ggml-backend-dl.cpp.o
+[7/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/mmq.cpp.o
+[8/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/traits.cpp.o
+[9/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-base.dir/ggml-backend.cpp.o
+[10/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/vec.cpp.o
+[11/240] Building C object build-llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/quants.c.o
+[12/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/arm/repack.cpp.o
+[13/240] Building C object build-llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/arm/quants.c.o
+[14/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/amx.cpp.o
+[15/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-io.cpp.o
+[16/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-impl.cpp.o
+[17/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml.dir/ggml-backend-reg.cpp.o
+[18/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.cpp.o
+[19/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-cparams.cpp.o
+[20/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-arch.cpp.o
+[21/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-kv-cache-msa.cpp.o
+[22/240] Building C object build-llama/ggml/src/CMakeFiles/ggml-base.dir/ggml.c.o
+[23/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-hparams.cpp.o
+[24/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-kv-cache-dsa.cpp.o
+[25/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-memory.cpp.o
+[26/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-mmap.cpp.o
+FAILED: build-llama/src/CMakeFiles/llama.dir/llama-mmap.cpp.o 
+C:\Users\dines\AppData\Local\Android\Sdk\ndk\25.2.9519653\toolchains\llvm\prebuilt\windows-x86_64\bin\clang++.exe --target=aarch64-none-linux-android21 --sysroot=C:/Users/dines/AppData/Local/Android/Sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/windows-x86_64/sysroot -DGGML_BACKEND_DL -DGGML_SHARED -DLLAMA_BUILD -DLLAMA_SHARED -Dllama_EXPORTS -I"C:/Users/dines/Documents/01-WORK/NOEON(The 1st AB)/Projects/App/Memossist/app/src/main/cpp/llama.cpp/src/." -I"C:/Users/dines/Documents/01-WORK/NOEON(The 1st AB)/Projects/App/Memossist/app/src/main/cpp/llama.cpp/src/../include" -I"C:/Users/dines/Documents/01-WORK/NOEON(The 1st AB)/Projects/App/Memossist/app/src/main/cpp/llama.cpp/ggml/src/../include" -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -O3 -DNDEBUG  -fPIC -Wmissing-declarations -Wmissing-noreturn -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wunreachable-code-break -Wunreachable-code-return -Wmissing-prototypes -Wextra-semi -std=gnu++17 -MD -MT build-llama/src/CMakeFiles/llama.dir/llama-mmap.cpp.o -MF build-llama\src\CMakeFiles\llama.dir\llama-mmap.cpp.o.d -o build-llama/src/CMakeFiles/llama.dir/llama-mmap.cpp.o -c "C:/Users/dines/Documents/01-WORK/NOEON(The 1st AB)/Projects/App/Memossist/app/src/main/cpp/llama.cpp/src/llama-mmap.cpp"
+C:/Users/dines/Documents/01-WORK/NOEON(The 1st AB)/Projects/App/Memossist/app/src/main/cpp/llama.cpp/src/llama-mmap.cpp:463:71: error: use of undeclared identifier 'POSIX_MADV_WILLNEED'
+            if (posix_madvise(addr, std::min(file->size(), prefetch), POSIX_MADV_WILLNEED)) {
+                                                                      ^
+C:/Users/dines/Documents/01-WORK/NOEON(The 1st AB)/Projects/App/Memossist/app/src/main/cpp/llama.cpp/src/llama-mmap.cpp:469:51: error: use of undeclared identifier 'POSIX_MADV_RANDOM'
+            if (posix_madvise(addr, file->size(), POSIX_MADV_RANDOM)) {
+                                                  ^
+2 errors generated.
+[27/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-kv-cache-iswa.cpp.o
+[28/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-base.dir/ggml-opt.cpp.o
+[29/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-memory-hybrid.cpp.o
+[30/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama.cpp.o
+[31/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-memory-hybrid-iswa.cpp.o
+[32/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-chat.cpp.o
+[33/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/binary-ops.cpp.o
+[34/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-memory-recurrent.cpp.o
+[35/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-batch.cpp.o
+[36/240] Building CXX object CMakeFiles/ai-chat.dir/llama.cpp/examples/llama.android/lib/src/main/cpp/ai_chat.cpp.o
+[37/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-adapter.cpp.o
+[38/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/unary-ops.cpp.o
+[39/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-base.dir/ggml-backend-meta.cpp.o
+[40/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-graph.cpp.o
+[41/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-base.dir/gguf.cpp.o
+[42/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/repack.cpp.o
+[43/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-context.cpp.o
+[44/240] Building C object build-llama/ggml/src/CMakeFiles/ggml-base.dir/ggml-quants.c.o
+[45/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-grammar.cpp.o
+[46/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-kv-cache-dsv4.cpp.o
+[47/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-model-loader.cpp.o
+[48/240] Building CXX object build-llama/src/CMakeFiles/llama.dir/llama-kv-cache.cpp.o
+[49/240] Building CXX object build-llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ops.cpp.o
+ninja: build stopped: subcommand failed.

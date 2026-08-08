@@ -61,7 +61,15 @@ class ModelMarketplaceActivity : AppCompatActivity() {
                 showModelDetailSheet(model)
             },
             onSelectClick = { model ->
-                showModelDetailSheet(model)
+                val isDownloaded = NoeonAiEngine.isModelDownloaded(this, model.id)
+                val isDownloading = BackgroundModelDownloadManager.isModelDownloading(model.id)
+                if (!isDownloaded && !isDownloading) {
+                    BackgroundModelDownloadManager.startDownload(this, model)
+                    Toast.makeText(this, "Started background download for ${model.name} (${model.downloadSizeMb} MB)", Toast.LENGTH_LONG).show()
+                    refreshCatalogList()
+                } else {
+                    showModelDetailSheet(model)
+                }
             }
         )
         rvModelCatalog.adapter = adapter

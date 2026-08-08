@@ -1,0 +1,167 @@
+{
+  "abi": "ARM64_V8A",
+  "info": {
+    "abi": "ARM64_V8A",
+    "bitness": 64,
+    "deprecated": false,
+    "default": true
+  },
+  "cxxBuildFolder": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a",
+  "soFolder": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\build\\intermediates\\cxx\\Release\\6j2q2o49\\obj\\arm64-v8a",
+  "soRepublishFolder": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\build\\intermediates\\cmake\\debug\\obj\\arm64-v8a",
+  "abiPlatformVersion": 28,
+  "cmake": {
+    "effectiveConfiguration": {
+      "inheritEnvironments": [],
+      "variables": []
+    }
+  },
+  "variant": {
+    "buildSystemArgumentList": [
+      "-DCMAKE_BUILD_TYPE\u003dRelease"
+    ],
+    "cFlagsList": [],
+    "cppFlagsList": [],
+    "variantName": "debug",
+    "isDebuggableEnabled": true,
+    "validAbiList": [
+      "ARM64_V8A",
+      "X86_64"
+    ],
+    "buildTargetSet": [],
+    "implicitBuildTargetSet": [],
+    "cmakeSettingsConfiguration": "android-gradle-plugin-predetermined-name",
+    "module": {
+      "cxxFolder": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx",
+      "intermediatesBaseFolder": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\build\\intermediates",
+      "intermediatesFolder": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\build\\intermediates\\cxx",
+      "gradleModulePathName": ":app",
+      "moduleRootFolder": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app",
+      "moduleBuildFile": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\build.gradle",
+      "makeFile": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+      "buildSystem": "CMAKE",
+      "ndkFolder": "C:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\ndk\\25.2.9519653",
+      "ndkVersion": "25.2.9519653",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultStl": "LIBCXX_STATIC",
+      "ndkMetaPlatforms": {
+        "min": 19,
+        "max": 33,
+        "aliases": {
+          "20": 19,
+          "25": 24,
+          "J": 16,
+          "J-MR1": 17,
+          "J-MR2": 18,
+          "K": 19,
+          "L": 21,
+          "L-MR1": 22,
+          "M": 23,
+          "N": 24,
+          "N-MR1": 24,
+          "O": 26,
+          "O-MR1": 27,
+          "P": 28,
+          "Q": 29,
+          "R": 30,
+          "S": 31,
+          "Sv2": 32,
+          "Tiramisu": 33
+        }
+      },
+      "ndkMetaAbiList": [
+        {
+          "abi": "ARMEABI_V7A",
+          "bitness": 32,
+          "deprecated": false,
+          "default": true
+        },
+        {
+          "abi": "ARM64_V8A",
+          "bitness": 64,
+          "deprecated": false,
+          "default": true
+        },
+        {
+          "abi": "X86",
+          "bitness": 32,
+          "deprecated": false,
+          "default": true
+        },
+        {
+          "abi": "X86_64",
+          "bitness": 64,
+          "deprecated": false,
+          "default": true
+        }
+      ],
+      "cmakeToolchainFile": "C:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\ndk\\25.2.9519653\\build\\cmake\\android.toolchain.cmake",
+      "cmake": {
+        "isValidCmakeAvailable": true,
+        "cmakeExe": "C:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\cmake.exe",
+        "minimumCmakeVersion": "3.22.1"
+      },
+      "stlSharedObjectMap": {
+        "LIBCXX_SHARED": {
+          "ARMEABI_V7A": "C:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\ndk\\25.2.9519653\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\arm-linux-androideabi\\libc++_shared.so",
+          "ARM64_V8A": "C:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\ndk\\25.2.9519653\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\aarch64-linux-android\\libc++_shared.so",
+          "X86": "C:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\ndk\\25.2.9519653\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\i686-linux-android\\libc++_shared.so",
+          "X86_64": "C:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\ndk\\25.2.9519653\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\x86_64-linux-android\\libc++_shared.so"
+        },
+        "LIBCXX_STATIC": {},
+        "NONE": {},
+        "SYSTEM": {}
+      },
+      "project": {
+        "rootBuildGradleFolder": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist",
+        "sdkFolder": "C:\\Users\\dines\\AppData\\Local\\Android\\Sdk",
+        "isBuildOnlyTargetAbiEnabled": true,
+        "isCmakeBuildCohabitationEnabled": false,
+        "isPrefabEnabled": false
+      },
+      "outputOptions": [],
+      "ninjaExe": "C:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe"
+    },
+    "prefabClassPaths": [],
+    "prefabPackages": [],
+    "prefabPackageConfigurations": [],
+    "stlType": "c++_static",
+    "optimizationTag": "Release"
+  },
+  "buildSettings": {
+    "environmentVariables": []
+  },
+  "prefabFolder": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\prefab\\arm64-v8a",
+  "isActiveAbi": true,
+  "fullConfigurationHash": "6j2q2o492h313aax6s4g319286l5n3b69a172d2x6x5149472e3v1c2nf6m",
+  "configurationArguments": [
+    "-HC:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp",
+    "-DCMAKE_SYSTEM_NAME\u003dAndroid",
+    "-DCMAKE_EXPORT_COMPILE_COMMANDS\u003dON",
+    "-DCMAKE_SYSTEM_VERSION\u003d28",
+    "-DANDROID_PLATFORM\u003dandroid-28",
+    "-DANDROID_ABI\u003darm64-v8a",
+    "-DCMAKE_ANDROID_ARCH_ABI\u003darm64-v8a",
+    "-DANDROID_NDK\u003dC:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\ndk\\25.2.9519653",
+    "-DCMAKE_ANDROID_NDK\u003dC:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\ndk\\25.2.9519653",
+    "-DCMAKE_TOOLCHAIN_FILE\u003dC:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\ndk\\25.2.9519653\\build\\cmake\\android.toolchain.cmake",
+    "-DCMAKE_MAKE_PROGRAM\u003dC:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003dC:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\build\\intermediates\\cxx\\Release\\6j2q2o49\\obj\\arm64-v8a",
+    "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY\u003dC:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\build\\intermediates\\cxx\\Release\\6j2q2o49\\obj\\arm64-v8a",
+    "-BC:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a",
+    "-GNinja",
+    "-DCMAKE_BUILD_TYPE\u003dRelease"
+  ],
+  "intermediatesParentFolder": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\build\\intermediates\\cxx\\Release\\6j2q2o49"
+}

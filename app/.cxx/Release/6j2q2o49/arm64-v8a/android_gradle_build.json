@@ -1,0 +1,120 @@
+{
+  "buildFiles": [
+    "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\llama.cpp\\cmake\\build-info.cmake",
+    "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\llama.cpp\\cmake\\common.cmake",
+    "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\llama.cpp\\cmake\\license.cmake",
+    "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\llama.cpp\\cmake\\llama-config.cmake.in",
+    "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\llama.cpp\\CMakeLists.txt",
+    "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\llama.cpp\\common\\CMakeLists.txt",
+    "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\llama.cpp\\ggml\\cmake\\common.cmake",
+    "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\llama.cpp\\ggml\\cmake\\ggml-config.cmake.in",
+    "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\llama.cpp\\ggml\\CMakeLists.txt",
+    "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\llama.cpp\\ggml\\src\\CMakeLists.txt",
+    "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\llama.cpp\\ggml\\src\\ggml-cpu\\CMakeLists.txt",
+    "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\llama.cpp\\src\\CMakeLists.txt",
+    "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\llama.cpp\\vendor\\cpp-httplib\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "ai-chat::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "arm64-v8a",
+      "artifactName": "ai-chat",
+      "output": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\build\\intermediates\\cxx\\Release\\6j2q2o49\\obj\\arm64-v8a\\libai-chat.so",
+      "runtimeFiles": [
+        "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libllama-common.so",
+        "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libllama.so",
+        "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libggml.so",
+        "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libggml-cpu.so",
+        "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "cpp-httplib::@e1f36686b082eccf6cbc": {
+      "toolchain": "toolchain",
+      "abi": "arm64-v8a",
+      "artifactName": "cpp-httplib",
+      "output": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\build-llama\\vendor\\cpp-httplib\\libcpp-httplib.a"
+    },
+    "ggml::@23533c6d68a59d54598d": {
+      "toolchain": "toolchain",
+      "abi": "arm64-v8a",
+      "artifactName": "ggml",
+      "output": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libggml.so",
+      "runtimeFiles": [
+        "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libggml-cpu.so",
+        "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "ggml-base::@23533c6d68a59d54598d": {
+      "toolchain": "toolchain",
+      "abi": "arm64-v8a",
+      "artifactName": "ggml-base",
+      "output": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libggml-base.so",
+      "runtimeFiles": []
+    },
+    "ggml-cpu::@23533c6d68a59d54598d": {
+      "toolchain": "toolchain",
+      "abi": "arm64-v8a",
+      "artifactName": "ggml-cpu",
+      "output": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libggml-cpu.so",
+      "runtimeFiles": [
+        "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "llama::@b791850eb95f38641ccb": {
+      "toolchain": "toolchain",
+      "abi": "arm64-v8a",
+      "artifactName": "llama",
+      "output": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libllama.so",
+      "runtimeFiles": [
+        "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libggml.so",
+        "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libggml-cpu.so",
+        "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "llama-common::@8bf2afb4d8037c7b7d92": {
+      "toolchain": "toolchain",
+      "abi": "arm64-v8a",
+      "artifactName": "llama-common",
+      "output": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libllama-common.so",
+      "runtimeFiles": [
+        "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libllama.so",
+        "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libggml.so",
+        "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libggml-cpu.so",
+        "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\bin\\libggml-base.so"
+      ]
+    },
+    "llama-common-base::@8bf2afb4d8037c7b7d92": {
+      "toolchain": "toolchain",
+      "abi": "arm64-v8a",
+      "artifactName": "llama-common-base",
+      "output": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\build-llama\\common\\libllama-common-base.a"
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "C:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\ndk\\25.2.9519653\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe",
+      "cppCompilerExecutable": "C:\\Users\\dines\\AppData\\Local\\Android\\Sdk\\ndk\\25.2.9519653\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe"
+    }
+  },
+  "cFileExtensions": [
+    "c"
+  ],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

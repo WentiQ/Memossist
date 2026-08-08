@@ -277,24 +277,11 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         conv.lastUpdated = System.currentTimeMillis()
         ChatRepository.saveOrUpdateConversation(this, conv)
 
-        // 3. Automatically save voice call experience into Memory Vault
-        val expId = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}"
-        val memoryItem = MemoryItem(
-            id = expId,
-            title = if (userText.length > 32) userText.take(32) + "..." else userText,
-            snippet = if (userText.length > 70) userText.take(70) + "..." else userText,
-            message = userText,
-            timestamp = MemoryVaultRepository.formatCurrentTime(),
-            location = MemoryVaultRepository.getCurrentLocation(),
-            tag = "Audio",
-            timeAgo = "Just now"
-        )
-        MemoryVaultRepository.saveMemory(this, memoryItem)
+        // 3. The LLM decides which user-supplied facts are worth saving; a question
+        // is therefore never stored merely because it was spoken.
+        val aiResponse = ChatRepository.generateAiResponse(this, userText)
 
-        // 4. Generate AI Response and speak it out
-        val aiResponse = ChatRepository.generateAiResponse(userText)
-
-        // 5. Add AI Message to Chat Conversation in real-time
+        // 4. Add the LLM answer to the conversation in real-time
         val aiMsg = ChatMessage(
             conversationId = conv.id,
             text = aiResponse,

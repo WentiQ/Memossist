@@ -1,0 +1,2 @@
+ninja: Entering directory `C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\.cxx\Release\6j2q2o49\x86_64'
+ninja: no work to do.

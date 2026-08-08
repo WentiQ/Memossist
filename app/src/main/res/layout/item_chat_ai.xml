@@ -8,8 +8,9 @@
     android:paddingHorizontal="16dp"
     android:paddingVertical="6dp">
 
-    <!-- Memossist AI Badge -->
+    <!-- Memossist AI Avatar Badge -->
     <TextView
+        android:id="@+id/tvAiAvatar"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginEnd="10dp"
@@ -29,6 +30,34 @@
         android:paddingHorizontal="16dp"
         android:paddingVertical="12dp">
 
+        <!-- Realtime Live Thinking / Processing Steps Stream with WhatsApp Typing Dots -->
+        <LinearLayout
+            android:id="@+id/llThinkingContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingVertical="2dp"
+            android:visibility="gone">
+
+            <com.example.apptempleate.TypingDotsView
+                android:id="@+id/typingDotsView"
+                android:layout_width="38dp"
+                android:layout_height="22dp"
+                android:layout_marginEnd="6dp" />
+
+            <TextView
+                android:id="@+id/tvThinkingStep"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Step 1/6: Retrieving memories..."
+                android:textColor="#4F46E5"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- Final Clean Humanoid Answer Text -->
         <TextView
             android:id="@+id/tvAiMsg"
             android:layout_width="wrap_content"

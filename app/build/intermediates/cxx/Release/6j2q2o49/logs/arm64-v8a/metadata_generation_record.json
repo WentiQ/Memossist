@@ -1,0 +1,44 @@
+[
+  {
+    "level_": 0,
+    "message_": "Start JSON generation. Platform version: 28 min SDK version: arm64-v8a",
+    "file_": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {},
+      "fieldsDescending": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 1144478080
+  },
+  {
+    "level_": 0,
+    "message_": "JSON \u0027C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\6j2q2o49\\arm64-v8a\\android_gradle_build.json\u0027 was up-to-date",
+    "file_": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {},
+      "fieldsDescending": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 446131568
+  },
+  {
+    "level_": 0,
+    "message_": "JSON generation completed without problems",
+    "file_": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {},
+      "fieldsDescending": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 843567794
+  }
+]

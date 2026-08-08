@@ -1,0 +1,12 @@
+-- Setting GGML_NATIVE_DEFAULT to OFF
+-- Warning: ccache not found - consider installing it for faster compilation or disable this warning with GGML_CCACHE=OFF
+-- CMAKE_SYSTEM_PROCESSOR: x86_64
+-- GGML_SYSTEM_ARCH: x86
+-- Including CPU backend
+-- x86 detected
+-- Adding CPU backend variant ggml-cpu:  
+-- ggml version: 0.19.0
+-- ggml commit:  69bf643
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/Users/dines/Documents/01-WORK/NOEON(The 1st AB)/Projects/App/Memossist/app/.cxx/Release/6j2q2o49/x86_64

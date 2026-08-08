@@ -1,6 +1,8 @@
 package com.example.apptempleate
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -9,11 +11,162 @@ import java.util.UUID
 object ChatRepository {
 
     private const val FILE_NAME = "memossist_conversations.json"
+    private val mainHandler = Handler(Looper.getMainLooper())
+
+    interface ChatPipelineCallback {
+        fun onStepUpdate(stepText: String)
+        fun onTokenStream(partialText: String)
+        fun onCompleted(cleanHumanoidAnswer: String, debugLogText: String)
+    }
+
+    private fun buildLlmSystemPrompt(userPrompt: String, candidateExperiences: List<MemoryItem>): String {
+        val sb = StringBuilder()
+        sb.append("=== SYSTEM INSTRUCTION FOR MEMOSSIST LLM ENGINE ===\n")
+        sb.append("You are Memossist, an intelligent humanoid AI assistant with access to the user's Memory Vault.\n")
+        sb.append("Use the top candidate experiences provided below to answer the user's question.\n\n")
+        sb.append("INSTRUCTION RULES:\n")
+        sb.append("1. Provide a natural, humanoid, insightful answer synthesized in your own conversational words.\n")
+        sb.append("2. DO NOT just copy-paste exact statements or dump raw memory text verbatim.\n")
+        sb.append("3. Declare ONLY the IDs of experiences actually used to answer in format: [USED_EXPERIENCES: EXP-ID1, EXP-ID2]\n\n")
+        sb.append("=== RETRIEVED CANDIDATE EXPERIENCES (TOP 5) ===\n")
+
+        if (candidateExperiences.isEmpty()) {
+            sb.append("(No relevant stored experiences found in Memory Vault)\n")
+        } else {
+            for ((index, exp) in candidateExperiences.withIndex()) {
+                sb.append("${index + 1}. [ID: ${exp.id}] Title: ${exp.title}\n")
+                sb.append("   Content: ${exp.message}\n\n")
+            }
+        }
+
+        sb.append("=== USER QUESTION ===\n")
+        sb.append("\"$userPrompt\"\n")
+
+        return sb.toString()
+    }
+
+    /**
+     * Executes the 6-step workflow:
+     * Step 1: Send user message & top 5 candidate experiences to LLM.
+     * Step 2: LLM intent understanding (asking vs telling) & selective fact extraction into Memory Vault.
+     * Step 3: LLM returns humanoid answer, relevant experience IDs (if used), & extracted fact.
+     * Step 4: Extract relevant experience IDs & user message.
+     * Step 5: Calculate DAG connection strengths using ONLY the relevant IDs returned.
+     * Step 6: Show ONLY the clean humanoid answer in chat bubble (Long press opens full debug log).
+     */
+    fun processChatMessageWithPipeline(
+        context: Context,
+        userMessage: String,
+        callback: ChatPipelineCallback
+    ) {
+        val executor = java.util.concurrent.Executors.newSingleThreadExecutor()
+
+        executor.execute {
+            // Step 1: Send message & retrieve top 5 candidate experiences from Memory Vault
+            mainHandler.post { callback.onStepUpdate("Step 1/6: Retrieving candidate memories…") }
+
+            val topCandidates = ExperienceDagRepository.retrieveTopMatchingExperiences(context, userMessage, topK = 5)
+            val systemPromptStr = NoeonAiEngine.buildSystemPrompt(topCandidates)
+
+            // Step 2 & 3: LLM intent understanding, selective fact extraction, & humanoid answer synthesis
+            mainHandler.post { callback.onStepUpdate("Step 2/6: LLM generating response…") }
+
+            val tokenBuffer = StringBuilder()
+            val llmResult = NoeonAiEngine.processMessagePipeline(
+                context = context,
+                userMessage = userMessage,
+                candidateExperiences = topCandidates,
+                onTokenGenerated = { token ->
+                    tokenBuffer.append(token)
+                    val currentStreamText = tokenBuffer.toString()
+                    mainHandler.post { callback.onTokenStream(currentStreamText) }
+                }
+            )
+
+            mainHandler.post { callback.onStepUpdate("Step 3/6: Reading used memories and user facts…") }
+            // Save only facts explicitly extracted by the LLM; questions are never vault entries.
+            for (fact in llmResult.extractedInformativeFacts) {
+                val expId = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}"
+                val memoryItem = MemoryItem(
+                    id = expId,
+                    title = if (fact.length > 32) fact.take(32) + "..." else fact,
+                    snippet = if (fact.length > 70) fact.take(70) + "..." else fact,
+                    message = fact,
+                    timestamp = MemoryVaultRepository.formatCurrentTime(),
+                    location = MemoryVaultRepository.getCurrentLocation(),
+                    tag = "Chat Fact",
+                    timeAgo = "Just now"
+                )
+                MemoryVaultRepository.saveMemory(context, memoryItem)
+            }
+
+            mainHandler.post { callback.onStepUpdate("Step 4/6: Saving informative facts to the vault…") }
+
+            // Step 4 & 5: Calculate DAG connection strengths using ONLY the relevant IDs returned from LLM
+            mainHandler.post { callback.onStepUpdate("Step 5/6: Updating used-memory connections…") }
+
+            val returnedUsedIdsSet = llmResult.relevantExperienceIds.toSet()
+
+            val dagSummary = ExperienceDagRepository.updateDagConnections(
+                context = context,
+                userQuestion = userMessage,
+                candidateExperiences = topCandidates,
+                usedExperienceIds = returnedUsedIdsSet
+            )
+
+            // Build detailed developer diagnostic log string
+            val debugLogBuilder = StringBuilder()
+            debugLogBuilder.append("=== 🤖 LLM ENGINE & MODEL ===\n")
+            debugLogBuilder.append("Model: ${llmResult.modelName}\n")
+            debugLogBuilder.append("Engine Path: ${NoeonAiEngine.getActiveModelFilePath(context)}\n\n")
+
+            debugLogBuilder.append("=== 💬 FULL SYSTEM PROMPT SENT TO LLM ===\n")
+            debugLogBuilder.append(systemPromptStr)
+            debugLogBuilder.append("\n\n")
+
+            debugLogBuilder.append("=== 📤 RAW LLM OUTPUT ===\n")
+            debugLogBuilder.append(llmResult.cleanHumanoidAnswer)
+            debugLogBuilder.append("\n\n[USED_EXPERIENCES: ${llmResult.relevantExperienceIds.joinToString(", ")}]\n")
+            debugLogBuilder.append("[EXTRACTED_FACTS: ${llmResult.extractedInformativeFacts}]\n")
+            debugLogBuilder.append("\n")
+
+            debugLogBuilder.append("=== 🧠 INTENT UNDERSTANDING & VAULT ACTION ===\n")
+            debugLogBuilder.append("Intent Classified: ${llmResult.intent}\n")
+            debugLogBuilder.append("Saved facts: ${llmResult.extractedInformativeFacts.ifEmpty { listOf("None") }.joinToString()}\n\n")
+
+            debugLogBuilder.append("=== 🧮 MATHEMATICAL DAG CONNECTION STRENGTH CALCULATIONS ===\n")
+            debugLogBuilder.append("Retrived Top 5 Candidate Experiences: ${topCandidates.size}\n")
+            debugLogBuilder.append("Union Vocabulary Size (N): ${dagSummary.unionN} POS terms (Nouns, Verbs, Adjectives, Adverbs)\n")
+            debugLogBuilder.append("LLM Returned Used Experience IDs (t=1): ${llmResult.relevantExperienceIds.joinToString(", ")}\n")
+            debugLogBuilder.append("Formula Applied: S_ij_new = S_ij_old + (|Q ∩ Ni ∩ Nj| × t) / N\n\n")
+
+            if (dagSummary.updatedEdges.isNotEmpty()) {
+                for (edge in dagSummary.updatedEdges) {
+                    val deltaStr = String.format("%.4f", edge.deltaS)
+                    val newSStr = String.format("%.4f", edge.newStrengthS)
+                    val tLabel = if (edge.usedT == 1) "t=1 (Both Used)" else "t=0 (Unused)"
+                    debugLogBuilder.append("• Edge: [${edge.exp1Title}] ↔ [${edge.exp2Title}]\n")
+                    debugLogBuilder.append("  ↳ C = |Q ∩ N1 ∩ N2| = ${edge.commonCountC} shared POS terms (${edge.commonTerms.joinToString(", ")})\n")
+                    debugLogBuilder.append("  ↳ ΔS = (${edge.commonCountC} × ${edge.usedT}) / ${dagSummary.unionN} = +$deltaStr | New S_ij = $newSStr ($tLabel)\n\n")
+                }
+            } else {
+                debugLogBuilder.append("No active candidate pairs available for edge calculation.\n")
+            }
+
+            val finalDebugLog = debugLogBuilder.toString()
+
+            mainHandler.post { callback.onStepUpdate("Step 6/6: Preparing the answer…") }
+            // Show only the answer in chat; the temporary progress bubble is replaced.
+            mainHandler.post {
+                callback.onCompleted(llmResult.cleanHumanoidAnswer, finalDebugLog)
+            }
+        }
+    }
 
     fun loadAllConversations(context: Context): MutableList<Conversation> {
         val file = File(context.filesDir, FILE_NAME)
         if (!file.exists()) {
-            val defaultList = createDefaultConversations()
+            val defaultList = mutableListOf<Conversation>()
             saveAllConversations(context, defaultList)
             return defaultList
         }
@@ -39,18 +192,18 @@ object ChatRepository {
                     val text = msgObj.getString("text")
                     val isUser = msgObj.getBoolean("isUser")
                     val timestamp = msgObj.optLong("timestamp", System.currentTimeMillis())
+                    val debugLog = msgObj.optString("debugLog", null)
 
-                    messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp))
+                    messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, false, null as String?, debugLog))
                 }
 
                 conversations.add(Conversation(id, title, lastUpdated, isPinned, messagesList))
             }
             
-            // Sort: Pinned first, then newest lastUpdated first
             conversations.sortWith(compareByDescending<Conversation> { it.isPinned }.thenByDescending { it.lastUpdated })
             conversations
         } catch (e: Exception) {
-            val defaultList = createDefaultConversations()
+            val defaultList = mutableListOf<Conversation>()
             saveAllConversations(context, defaultList)
             defaultList
         }
@@ -74,6 +227,7 @@ object ChatRepository {
                             put("text", msg.text)
                             put("isUser", msg.isUser)
                             put("timestamp", msg.timestamp)
+                            put("debugLog", msg.debugLog)
                         }
                         msgArray.put(msgObj)
                     }
@@ -113,10 +267,6 @@ object ChatRepository {
         saveAllConversations(context, conversations)
     }
 
-    fun getConversationById(context: Context, id: String): Conversation? {
-        return loadAllConversations(context).find { it.id == id }
-    }
-
     fun saveOrUpdateConversation(context: Context, conversation: Conversation) {
         val conversations = loadAllConversations(context)
         val index = conversations.indexOfFirst { it.id == conversation.id }
@@ -129,80 +279,30 @@ object ChatRepository {
     }
 
     fun generateAiResponse(context: Context, userPrompt: String): String {
-        val activeModel = NoeonAiEngine.getSelectedModel(context)
-        val modelFile = RealModelDownloader.getModelFile(context, activeModel)
-        val fileStatus = if (modelFile.exists() && modelFile.length() > 0) {
-            "Local GGUF File: ${modelFile.name} (${String.format("%.1f", modelFile.length() / (1024.0 * 1024.0))} MB)"
-        } else {
-            "System Default Engine"
+        val topCandidates = ExperienceDagRepository.retrieveTopMatchingExperiences(context, userPrompt, topK = 5)
+        val llmResult = NoeonAiEngine.processMessagePipeline(context, userPrompt, topCandidates)
+
+        llmResult.extractedInformativeFacts.forEach { fact ->
+            MemoryVaultRepository.saveMemory(context, MemoryItem(
+                id = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}",
+                title = fact.take(32),
+                snippet = fact.take(70),
+                message = fact,
+                timestamp = MemoryVaultRepository.formatCurrentTime(),
+                location = MemoryVaultRepository.getCurrentLocation(),
+                tag = "Chat Fact",
+                timeAgo = "Just now"
+            ))
         }
 
-        val lower = userPrompt.lowercase()
-        val modelTag = "${activeModel.icon} [${activeModel.name} | $fileStatus]"
-
-        val baseResponse = when {
-            lower.contains("hello") || lower.contains("hi") || lower.contains("hey") ->
-                "Hello! I am executing local inference via $modelTag. How can I assist you with your memory vault or notes today?"
-            lower.contains("vault") || lower.contains("memory") ->
-                "I've indexed your Memory Vault using $modelTag. All your memories and concept nodes remain perfectly synced regardless of model switches."
-            lower.contains("insight") || lower.contains("recall") ->
-                "Based on your cognitive metrics processed via $modelTag, your recall efficiency peaked at 98.4% across 142 active contexts."
-            lower.contains("connection") || lower.contains("link") ->
-                "Correlated 248 concept nodes in Memory Vault via $modelTag, linking Product Strategy to your active UI tokens."
-            else ->
-                "Processed via $modelTag: \"$userPrompt\". Memossist has linked this insight into your active cognitive context graph."
-        }
-
-        return baseResponse
-    }
-
-    // Overload for backward compatibility if called without context
-    fun generateAiResponse(userPrompt: String): String {
-        val lower = userPrompt.lowercase()
-        return when {
-            lower.contains("hello") || lower.contains("hi") || lower.contains("hey") ->
-                "Hello! How can I assist you with your memory vault or notes today?"
-            lower.contains("vault") || lower.contains("memory") ->
-                "I've indexed your Memory Vault. You have saved entries spanning audio transcripts, strategy documents, and cognitive notes."
-            else ->
-                "I've processed your query: \"$userPrompt\". Memossist has linked this insight into your active cognitive context index."
-        }
-    }
-
-    private fun createDefaultConversations(): MutableList<Conversation> {
-        val conv1 = Conversation(
-            id = "conv-101",
-            title = "AI System Architecture",
-            lastUpdated = System.currentTimeMillis() - 3600000,
-            isPinned = true,
-            messages = mutableListOf(
-                ChatMessage("m1", "conv-101", "What are the core modules of the AI agent architecture?", true),
-                ChatMessage("m2", "conv-101", "The core modules comprise Cognitive Memory Vault, Context Graph Engine, and Live Voice Synthesizer.", false)
-            )
+        ExperienceDagRepository.updateDagConnections(
+            context = context,
+            userQuestion = userPrompt,
+            candidateExperiences = topCandidates,
+            usedExperienceIds = llmResult.relevantExperienceIds.toSet()
         )
 
-        val conv2 = Conversation(
-            id = "conv-2",
-            title = "Voice Transcript - Aug 7",
-            lastUpdated = System.currentTimeMillis() - 7200000,
-            isPinned = false,
-            messages = mutableListOf(
-                ChatMessage("m3", "conv-2", "Summarize my morning audio voice note.", true),
-                ChatMessage("m4", "conv-2", "Morning voice transcript summarized: Focused on UI polish, white background alignment, and sidebar menu gesture polish.", false)
-            )
-        )
-
-        val conv3 = Conversation(
-            id = "conv-3",
-            title = "Product Roadmap & Tokens",
-            lastUpdated = System.currentTimeMillis() - 10800000,
-            isPinned = false,
-            messages = mutableListOf(
-                ChatMessage("m5", "conv-3", "Show connected concept nodes for product strategy.", true),
-                ChatMessage("m6", "conv-3", "Product Strategy is linked with 34 reference nodes to UI Tokens and Memory Vault indexes.", false)
-            )
-        )
-
-        return mutableListOf(conv1, conv2, conv3)
+        return llmResult.cleanHumanoidAnswer
     }
+
 }

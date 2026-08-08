@@ -73,6 +73,7 @@
                     android:letterSpacing="0.1" />
 
                 <TextView
+                    android:id="@+id/tvConnectionsCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
@@ -97,11 +98,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="LINKED CONCEPT NODES"
+                android:text="LINKED CONCEPT NODES IN DAG"
                 android:textColor="#6B7280"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.1" />
+
+            <!-- Dynamic DAG Edges Container -->
+            <LinearLayout
+                android:id="@+id/llDagEdgesContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
 
             <!-- Connection Node 1 -->
             <LinearLayout

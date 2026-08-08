@@ -131,7 +131,21 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize Active Chat RecyclerView
         rvChatMessages = findViewById(R.id.rvChatMessages)
-        chatAdapter = ChatAdapter()
+        chatAdapter = ChatAdapter(
+            onMessageLongClick = { message ->
+                if (!message.isUser && !message.isThinking) {
+                    val logText = message.debugLog ?: "=== 🧠 MEMOSSIST AI DIAGNOSTIC LOGS ===\n" +
+                            "Model Engine: ${NoeonAiEngine.getSelectedModel(this).name}\n\n" +
+                            "=== CLEAN HUMANOID ANSWER ===\n${message.text}\n\n" +
+                            "=== DAG NODE CONNECTION STRENGTH CALCULATIONS ===\n" +
+                            "Formula Applied: S_ij_new = S_ij_old + (|Q ∩ Ni ∩ Nj| × t) / N\n" +
+                            "POS Sets Filtered: Nouns, Verbs, Adjectives, Adverbs"
+
+                    val logsSheet = AiMessageLogsBottomSheet(logText)
+                    logsSheet.show(supportFragmentManager, "AiMessageLogsBottomSheet")
+                }
+            }
+        )
         rvChatMessages.layoutManager = LinearLayoutManager(this)
         rvChatMessages.adapter = chatAdapter
 
@@ -446,49 +460,55 @@ class MainActivity : AppCompatActivity() {
         activeConv.messages.add(userMsg)
         activeConv.lastUpdated = System.currentTimeMillis()
 
-        // Automatically save message experience into Memory Vault
-        val expId = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}"
-        val memoryItem = MemoryItem(
-            id = expId,
-            title = if (userText.length > 32) userText.take(32) + "..." else userText,
-            snippet = if (userText.length > 70) userText.take(70) + "..." else userText,
-            message = userText,
-            timestamp = MemoryVaultRepository.formatCurrentTime(),
-            location = MemoryVaultRepository.getCurrentLocation(),
-            tag = "Chat",
-            timeAgo = "Just now"
-        )
-        MemoryVaultRepository.saveMemory(this, memoryItem)
-
         // Show active chat list & hide greeting
         llGreetingContainer.visibility = View.GONE
         rvChatMessages.visibility = View.VISIBLE
         btnDeleteCurrentChat.visibility = View.VISIBLE
 
+        // Add temporary thinking message for live step progress animation
+        val aiMsg = ChatMessage(
+            conversationId = activeConv.id,
+            text = "",
+            isUser = false,
+            isThinking = true,
+            thinkingStatus = "🔍 Step 1/4: Retrieving candidate experiences..."
+        )
+        activeConv.messages.add(aiMsg)
+        val aiMsgPosition = activeConv.messages.size - 1
+
         chatAdapter.setMessages(activeConv.messages)
-        rvChatMessages.smoothScrollToPosition(chatAdapter.itemCount - 1)
+        rvChatMessages.smoothScrollToPosition(aiMsgPosition)
 
-        // Save progress to local chat repository
-        ChatRepository.saveOrUpdateConversation(this, activeConv)
-        refreshSidebarHistory()
+        // Execute 6-Step Chat Pipeline with realtime step updates & live LLM token streaming
+        ChatRepository.processChatMessageWithPipeline(
+            context = this@MainActivity,
+            userMessage = userText,
+            callback = object : ChatRepository.ChatPipelineCallback {
+                override fun onStepUpdate(stepText: String) {
+                    aiMsg.thinkingStatus = stepText
+                    chatAdapter.updateMessage(aiMsgPosition, aiMsg)
+                }
 
-        // Generate AI Response with simulated typing delay
-        Handler(Looper.getMainLooper()).postDelayed({
-            val aiResponseText = ChatRepository.generateAiResponse(this@MainActivity, userText)
-            val aiMsg = ChatMessage(
-                conversationId = activeConv.id,
-                text = aiResponseText,
-                isUser = false
-            )
-            activeConv.messages.add(aiMsg)
-            activeConv.lastUpdated = System.currentTimeMillis()
+                override fun onTokenStream(partialText: String) {
+                    aiMsg.text = partialText
+                    chatAdapter.updateMessage(aiMsgPosition, aiMsg)
+                    rvChatMessages.smoothScrollToPosition(aiMsgPosition)
+                }
 
-            chatAdapter.setMessages(activeConv.messages)
-            rvChatMessages.smoothScrollToPosition(chatAdapter.itemCount - 1)
+                override fun onCompleted(cleanHumanoidAnswer: String, debugLogText: String) {
+                    aiMsg.isThinking = false
+                    aiMsg.text = cleanHumanoidAnswer
+                    aiMsg.debugLog = debugLogText
+                    activeConv.lastUpdated = System.currentTimeMillis()
 
-            ChatRepository.saveOrUpdateConversation(this@MainActivity, activeConv)
-            refreshSidebarHistory()
-        }, 600)
+                    chatAdapter.updateMessage(aiMsgPosition, aiMsg)
+                    rvChatMessages.smoothScrollToPosition(aiMsgPosition)
+
+                    ChatRepository.saveOrUpdateConversation(this@MainActivity, activeConv)
+                    refreshSidebarHistory()
+                }
+            }
+        )
     }
 
     private fun loadConversationIntoView(conversation: Conversation, restoreScroll: Boolean = false) {

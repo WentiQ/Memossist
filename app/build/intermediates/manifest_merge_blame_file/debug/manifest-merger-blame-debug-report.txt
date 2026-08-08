@@ -5,7 +5,7 @@
 5    android:versionName="1.0" >
 6
 7    <uses-sdk
-8        android:minSdkVersion="21"
+8        android:minSdkVersion="28"
 8-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml
 9        android:targetSdkVersion="33" />
 9-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml
@@ -21,111 +21,116 @@
 13-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:7:22-76
 14
 15    <application
-15-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:9:5-57:19
+15-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:9:5-59:19
 16        android:allowBackup="true"
 16-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:10:9-35
 17        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 17-->[androidx.core:core:1.8.0] C:\Users\dines\.gradle\caches\transforms-3\76411c7520f0d995d1e8fc516856d8c3\transformed\core-1.8.0\AndroidManifest.xml:24:18-86
 18        android:debuggable="true"
-19        android:icon="@mipmap/ic_launcher"
-19-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:12:9-43
-20        android:label="Memossist"
-20-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:11:9-34
-21        android:roundIcon="@mipmap/ic_launcher_round"
-21-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:13:9-54
-22        android:supportsRtl="true"
-22-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:14:9-35
-23        android:theme="@style/Theme.AppTempeLate" >
-23-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:15:9-50
-24        <activity
-24-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:17:9-25:20
-25            android:name="com.example.apptempleate.MainActivity"
-25-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:18:13-41
-26            android:exported="true"
-26-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:19:13-36
-27            android:theme="@style/Theme.AppTempeLate" >
-27-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:20:13-54
-28            <intent-filter>
-28-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:21:13-24:29
-29                <action android:name="android.intent.action.MAIN" />
-29-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:22:17-69
-29-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:22:25-66
-30
-31                <category android:name="android.intent.category.LAUNCHER" />
-31-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:23:17-77
-31-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:23:27-74
-32            </intent-filter>
-33        </activity>
-34        <activity
-34-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:27:9-30:57
-35            android:name="com.example.apptempleate.VoiceConversationActivity"
-35-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:28:13-54
-36            android:exported="false"
-36-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:29:13-37
-37            android:theme="@style/Theme.AppTempeLate" />
-37-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:30:13-54
-38        <activity
-38-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:32:9-35:57
-39            android:name="com.example.apptempleate.MemoryVaultActivity"
-39-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:33:13-48
-40            android:exported="false"
-40-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:34:13-37
-41            android:theme="@style/Theme.AppTempeLate" />
-41-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:35:13-54
-42        <activity
-42-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:37:9-40:57
-43            android:name="com.example.apptempleate.CognitiveInsightsActivity"
-43-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:38:13-54
-44            android:exported="false"
-44-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:39:13-37
-45            android:theme="@style/Theme.AppTempeLate" />
-45-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:40:13-54
-46        <activity
-46-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:42:9-45:57
-47            android:name="com.example.apptempleate.ConnectionsActivity"
-47-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:43:13-48
-48            android:exported="false"
-48-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:44:13-37
-49            android:theme="@style/Theme.AppTempeLate" />
-49-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:45:13-54
-50        <activity
-50-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:47:9-50:57
-51            android:name="com.example.apptempleate.SettingsActivity"
-51-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:48:13-45
-52            android:exported="false"
-52-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:49:13-37
-53            android:theme="@style/Theme.AppTempeLate" />
-53-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:50:13-54
-54        <activity
-54-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:52:9-55:57
-55            android:name="com.example.apptempleate.ModelMarketplaceActivity"
-55-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:53:13-53
-56            android:exported="false"
-56-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:54:13-37
-57            android:theme="@style/Theme.AppTempeLate" />
-57-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:55:13-54
-58
-59        <provider
-59-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
-60            android:name="androidx.startup.InitializationProvider"
-60-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:25:13-67
-61            android:authorities="com.example.apptempleate.androidx-startup"
-61-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:26:13-68
-62            android:exported="false" >
-62-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:27:13-37
-63            <meta-data
-63-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
-64                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-64-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:30:17-75
-65                android:value="androidx.startup" />
-65-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:31:17-49
+19        android:extractNativeLibs="false"
+20        android:icon="@mipmap/ic_launcher"
+20-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:14:9-43
+21        android:label="Memossist"
+21-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:13:9-34
+22        android:largeHeap="true"
+22-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:11:9-33
+23        android:requestLegacyExternalStorage="true"
+23-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:12:9-52
+24        android:roundIcon="@mipmap/ic_launcher_round"
+24-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:15:9-54
+25        android:supportsRtl="true"
+25-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:16:9-35
+26        android:theme="@style/Theme.AppTempeLate" >
+26-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:17:9-50
+27        <activity
+27-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:19:9-27:20
+28            android:name="com.example.apptempleate.MainActivity"
+28-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:20:13-41
+29            android:exported="true"
+29-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:21:13-36
+30            android:theme="@style/Theme.AppTempeLate" >
+30-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:22:13-54
+31            <intent-filter>
+31-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:23:13-26:29
+32                <action android:name="android.intent.action.MAIN" />
+32-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:24:17-69
+32-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:24:25-66
+33
+34                <category android:name="android.intent.category.LAUNCHER" />
+34-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:25:17-77
+34-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:25:27-74
+35            </intent-filter>
+36        </activity>
+37        <activity
+37-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:29:9-32:57
+38            android:name="com.example.apptempleate.VoiceConversationActivity"
+38-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:30:13-54
+39            android:exported="false"
+39-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:31:13-37
+40            android:theme="@style/Theme.AppTempeLate" />
+40-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:32:13-54
+41        <activity
+41-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:34:9-37:57
+42            android:name="com.example.apptempleate.MemoryVaultActivity"
+42-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:35:13-48
+43            android:exported="false"
+43-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:36:13-37
+44            android:theme="@style/Theme.AppTempeLate" />
+44-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:37:13-54
+45        <activity
+45-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:39:9-42:57
+46            android:name="com.example.apptempleate.CognitiveInsightsActivity"
+46-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:40:13-54
+47            android:exported="false"
+47-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:41:13-37
+48            android:theme="@style/Theme.AppTempeLate" />
+48-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:42:13-54
+49        <activity
+49-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:44:9-47:57
+50            android:name="com.example.apptempleate.ConnectionsActivity"
+50-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:45:13-48
+51            android:exported="false"
+51-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:46:13-37
+52            android:theme="@style/Theme.AppTempeLate" />
+52-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:47:13-54
+53        <activity
+53-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:49:9-52:57
+54            android:name="com.example.apptempleate.SettingsActivity"
+54-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:50:13-45
+55            android:exported="false"
+55-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:51:13-37
+56            android:theme="@style/Theme.AppTempeLate" />
+56-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:52:13-54
+57        <activity
+57-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:54:9-57:57
+58            android:name="com.example.apptempleate.ModelMarketplaceActivity"
+58-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:55:13-53
+59            android:exported="false"
+59-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:56:13-37
+60            android:theme="@style/Theme.AppTempeLate" />
+60-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:57:13-54
+61
+62        <provider
+62-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+63            android:name="androidx.startup.InitializationProvider"
+63-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:25:13-67
+64            android:authorities="com.example.apptempleate.androidx-startup"
+64-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:26:13-68
+65            android:exported="false" >
+65-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:27:13-37
 66            <meta-data
-66-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\dines\.gradle\caches\transforms-3\cc28b3cef285540baa54cd92fdd92fcf\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
-67                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-67-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\dines\.gradle\caches\transforms-3\cc28b3cef285540baa54cd92fdd92fcf\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
+66-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+67                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+67-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:30:17-75
 68                android:value="androidx.startup" />
-68-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\dines\.gradle\caches\transforms-3\cc28b3cef285540baa54cd92fdd92fcf\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
-69        </provider>
-70    </application>
-71
-72</manifest>
+68-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:31:17-49
+69            <meta-data
+69-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\dines\.gradle\caches\transforms-3\cc28b3cef285540baa54cd92fdd92fcf\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
+70                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+70-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\dines\.gradle\caches\transforms-3\cc28b3cef285540baa54cd92fdd92fcf\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
+71                android:value="androidx.startup" />
+71-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\dines\.gradle\caches\transforms-3\cc28b3cef285540baa54cd92fdd92fcf\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
+72        </provider>
+73    </application>
+74
+75</manifest>

@@ -10,131 +10,159 @@ data class WordSynonymItem(
 
 object LinguisticAnalyzer {
 
-    // Common non-content stopwords (pronouns, prepositions, conjunctions, auxiliary verbs, determiners)
-    private val STOP_WORDS = setOf(
-        "a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't",
-        "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by",
-        "can", "cannot", "could", "couldn't", "did", "didn't", "do", "does", "doesn't", "doing", "don't",
-        "down", "during", "each", "few", "for", "from", "further", "had", "hadn't", "has", "hasn't",
-        "have", "haven't", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers",
-        "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if",
-        "in", "into", "is", "isn't", "it", "it's", "its", "itself", "let's", "me", "more", "most",
-        "mustn't", "my", "myself", "no", "nor", "not", "of", "off", "on", "once", "only", "or",
-        "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "shan't", "she",
-        "she'd", "she'll", "she's", "should", "shouldn't", "so", "some", "such", "than", "that",
-        "that's", "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these",
-        "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too",
-        "under", "until", "up", "very", "was", "wasn't", "we", "we'd", "we'll", "we're", "we've",
-        "were", "weren't", "what", "what's", "when", "when's", "where", "where's", "which", "while",
-        "who", "who's", "whom", "why", "why's", "with", "won't", "would", "wouldn't", "you", "you'd",
-        "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves", "just", "now"
+    // Non-content function words to exclude (pronouns, prepositions, conjunctions, determiners, auxiliary verbs, quantifiers, fillers)
+    private val NON_CONTENT_WORDS = setOf(
+        // Pronouns
+        "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves",
+        "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their",
+        "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "whose", "whatever",
+        "whoever", "whomever", "whichever", "anything", "something", "nothing", "everything", "anyone", "someone",
+        "everyone", "nobody", "noone", "anybody", "somebody", "everybody",
+
+        // Prepositions
+        "about", "above", "across", "after", "against", "along", "among", "around", "at", "before", "behind",
+        "below", "beneath", "beside", "between", "beyond", "by", "down", "during", "except", "for", "from",
+        "in", "inside", "into", "near", "of", "off", "on", "onto", "out", "outside", "over", "past", "since",
+        "through", "throughout", "to", "toward", "towards", "under", "underneath", "until", "unto", "up", "upon",
+        "with", "within", "without",
+
+        // Conjunctions
+        "and", "but", "or", "nor", "so", "for", "yet", "because", "if", "although", "unless", "since", "while",
+        "whereas", "wherever", "whenever", "whether", "than",
+
+        // Determiners & Articles & Quantifiers
+        "a", "an", "the", "each", "every", "either", "neither", "some", "any", "no", "much", "many", "more",
+        "most", "few", "little", "less", "least", "several", "both", "all", "other", "another", "such",
+
+        // Auxiliary Verbs & Modal Verbs
+        "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does",
+        "did", "doing", "done", "can", "could", "shall", "should", "will", "would", "may", "might", "must",
+        "ought", "let", "let's", "isn't", "aren't", "wasn't", "weren't", "hasn't", "haven't", "hadn't",
+        "doesn't", "don't", "didn't", "can't", "cannot", "couldn't", "won't", "wouldn't", "shouldn't",
+
+        // Fillers, Interjections & Conversational Starters
+        "just", "now", "then", "there", "here", "here's", "there's", "how", "how's", "why", "why's", "when",
+        "when's", "where", "where's", "what's", "who's", "that's", "very", "too", "also", "well", "oh", "ah",
+        "hey", "hello", "hi", "please", "okay", "ok", "etc", "yeah", "yes", "nope", "maybe"
     )
 
-    // Comprehensive content vocabulary synonym database
+    // Comprehensive content vocabulary database (Nouns, Verbs, Adjectives, Adverbs)
     private val SYNONYM_DATABASE = mapOf(
+        // Nouns
         "strategy" to listOf("plan", "masterplan", "approach", "scheme", "tactics"),
-        "cognitive" to listOf("mental", "intellectual", "cerebral", "rational"),
         "notes" to listOf("memos", "records", "annotations", "jottings", "minutes"),
         "session" to listOf("meeting", "assembly", "gathering", "conference"),
-        "neural" to listOf("synaptic", "nervous", "cerebral"),
         "architecture" to listOf("design", "structure", "framework", "layout", "blueprint"),
         "memory" to listOf("recollection", "remembrance", "retention", "mind"),
         "retrieval" to listOf("recovery", "fetching", "extraction", "recall"),
         "benchmarks" to listOf("standards", "criteria", "baselines", "touchstones"),
         "flow" to listOf("stream", "current", "movement", "progression"),
         "ideas" to listOf("concepts", "thoughts", "notions", "impressions"),
-        "explored" to listOf("investigated", "examined", "researched", "probed", "surveyed"),
-        "agentic" to listOf("autonomous", "self-directed", "proactive"),
         "workflow" to listOf("process", "procedure", "pipeline", "sequence"),
         "delegation" to listOf("assignment", "deputation", "empowerment", "devolution"),
         "patterns" to listOf("models", "templates", "designs", "archetypes"),
-        "autonomous" to listOf("independent", "self-governing", "sovereign", "uncontrolled"),
-        "contextual" to listOf("situational", "conditional", "environmental"),
         "search" to listOf("hunt", "quest", "lookup", "inquiry", "exploration"),
-        "tactile" to listOf("tangible", "physical", "touchable", "palpable"),
         "background" to listOf("backdrop", "setting", "environment", "context"),
-        "rendering" to listOf("depiction", "portrayal", "representation", "translation"),
         "product" to listOf("item", "creation", "output", "commodity"),
         "roadmap" to listOf("plan", "timeline", "guide", "blueprint"),
-        "polish" to listOf("refine", "perfect", "buff", "enhance", "glaze"),
         "transcript" to listOf("record", "text", "copy", "manuscript", "document"),
         "voice" to listOf("speech", "vocalization", "tone", "expression"),
         "conversation" to listOf("dialogue", "chat", "discourse", "talk", "discussion"),
-        "discussing" to listOf("debating", "conversing", "deliberating", "exchanging"),
-        "smooth" to listOf("sleek", "seamless", "fluid", "polished", "silky"),
-        "swipe" to listOf("slide", "glide", "sweep"),
         "gestures" to listOf("signals", "motions", "indications", "movements"),
         "sidebar" to listOf("panel", "margin", "drawer"),
         "navigation" to listOf("steering", "routing", "guidance", "traversal"),
-        "clean" to listOf("spotless", "neat", "tidy", "pure", "immaculate"),
-        "white" to listOf("ivory", "pale", "milky", "snowy"),
         "interface" to listOf("boundary", "connection", "link", "medium"),
-        "styling" to listOf("designing", "fashioning", "formatting", "customizing"),
-        "quick" to listOf("fast", "rapid", "swift", "speedy", "brisk"),
-        "beautiful" to listOf("gorgeous", "stunning", "attractive", "lovely", "exquisite"),
-        "analyze" to listOf("examine", "inspect", "evaluate", "scrutinize", "study"),
         "workspace" to listOf("office", "studio", "environment", "workstation"),
-        "chat" to listOf("talk", "conversation", "discourse", "dialogue"),
-        "create" to listOf("generate", "build", "produce", "make", "construct"),
-        "happy" to listOf("joyful", "cheerful", "delighted", "content"),
         "thought" to listOf("idea", "concept", "notion", "reflection"),
         "code" to listOf("script", "program", "syntax", "source"),
         "system" to listOf("structure", "framework", "network", "mechanism"),
-        "smart" to listOf("intelligent", "clever", "bright", "sharp"),
-        "help" to listOf("assist", "aid", "support", "guide"),
-        "quantum" to listOf("atomic", "molecular", "particle"),
-        "computing" to listOf("calculation", "processing", "reckoning"),
-        "learn" to listOf("master", "grasp", "absorb", "comprehend"),
         "future" to listOf("destiny", "prospects", "tomorrow", "ahead"),
-        "deep" to listOf("profound", "intense", "thorough", "bottomless"),
         "vision" to listOf("insight", "sight", "perception", "foresight"),
         "speech" to listOf("oratory", "talk", "utterance", "address"),
+        "message" to listOf("note", "dispatch", "communication", "memo"),
+
+        // Verbs
+        "explored" to listOf("investigated", "examined", "researched", "probed", "surveyed"),
+        "rendering" to listOf("depiction", "portrayal", "representation", "translation"),
+        "polish" to listOf("refine", "perfect", "buff", "enhance", "glaze"),
+        "discussing" to listOf("debating", "conversing", "deliberating", "exchanging"),
+        "styling" to listOf("designing", "fashioning", "formatting", "customizing"),
+        "analyze" to listOf("examine", "inspect", "evaluate", "scrutinize", "study"),
+        "chat" to listOf("talk", "converse", "speak", "dialogue"),
+        "create" to listOf("generate", "build", "produce", "make", "construct"),
+        "learn" to listOf("master", "grasp", "absorb", "comprehend"),
         "speak" to listOf("talk", "converse", "articulate", "voice"),
         "listen" to listOf("hear", "attend", "hearken", "heed"),
-        "hear" to listOf("listen", "perceive", "catch"),
         "remember" to listOf("recall", "recollect", "retain", "mind"),
         "recall" to listOf("remember", "recollect", "retrieve"),
-        "message" to listOf("note", "dispatch", "communication", "memo"),
         "send" to listOf("dispatch", "transmit", "forward", "convey"),
         "read" to listOf("scan", "peruse", "study", "examine"),
         "write" to listOf("compose", "draft", "inscribe", "record"),
         "build" to listOf("construct", "assemble", "erect", "create"),
-        "design" to listOf("layout", "draft", "pattern", "plan", "format"),
+        "design" to listOf("layout", "draft", "pattern", "plan"),
+
+        // Adjectives
+        "cognitive" to listOf("mental", "intellectual", "cerebral", "rational"),
+        "neural" to listOf("synaptic", "nervous", "cerebral"),
+        "agentic" to listOf("autonomous", "self-directed", "proactive"),
+        "autonomous" to listOf("independent", "self-governing", "sovereign"),
+        "contextual" to listOf("situational", "conditional", "environmental"),
+        "tactile" to listOf("tangible", "physical", "touchable", "palpable"),
+        "smooth" to listOf("sleek", "seamless", "fluid", "polished"),
+        "clean" to listOf("spotless", "neat", "tidy", "pure"),
+        "white" to listOf("ivory", "pale", "milky", "snowy"),
+        "quick" to listOf("fast", "rapid", "swift", "speedy"),
         "fast" to listOf("quick", "rapid", "swift", "brisk"),
-        "slow" to listOf("unhurried", "leisurely", "sluggish", "gradual"),
+        "beautiful" to listOf("gorgeous", "stunning", "attractive", "lovely"),
+        "happy" to listOf("joyful", "cheerful", "delighted", "content"),
+        "smart" to listOf("intelligent", "clever", "bright", "sharp"),
+        "deep" to listOf("profound", "intense", "thorough"),
+        "quantum" to listOf("atomic", "molecular", "particle"),
         "bright" to listOf("luminous", "radiant", "vivid", "brilliant"),
-        "dark" to listOf("dim", "somber", "shadowy", "gloomy"),
         "strong" to listOf("robust", "sturdy", "powerful", "firm"),
         "weak" to listOf("frail", "delicate", "feeble", "flimsy"),
-        "big" to listOf("large", "huge", "massive", "sizeable"),
-        "small" to listOf("tiny", "compact", "miniature", "little"),
         "good" to listOf("excellent", "superb", "fine", "great"),
         "great" to listOf("grand", "outstanding", "remarkable", "terrific"),
-        "new" to listOf("fresh", "novel", "modern", "recent"),
-        "old" to listOf("ancient", "aged", "veteran", "vintage"),
-        "first" to listOf("initial", "primary", "premier", "lead"),
-        "last" to listOf("final", "ultimate", "concluding", "terminal")
+
+        // Adverbs
+        "swiftly" to listOf("rapidly", "promptly", "quickly", "speedily"),
+        "smoothly" to listOf("flawlessly", "seamlessly", "fluidly"),
+        "deeply" to listOf("profoundly", "intensely", "thoroughly"),
+        "dynamically" to listOf("actively", "energetically", "vividly"),
+        "offline" to listOf("locally", "disconnectedly", "autonomously")
     )
 
+    /**
+     * Strictly verifies whether a word is a valid content word (Noun, Verb, Adjective, or Adverb).
+     * Excludes pronouns, prepositions, conjunctions, determiners, auxiliary verbs, numbers, and stop words.
+     */
+    fun isContentPosWord(word: String): Boolean {
+        val w = word.lowercase().trim()
+        if (w.length < 3) return false
+        if (!w.all { it.isLetter() }) return false
+        if (NON_CONTENT_WORDS.contains(w)) return false
+        return true
+    }
+
+    /**
+     * Extracts ONLY Nouns, Verbs, Adjectives, and Adverbs and their synonyms from text.
+     */
     fun extractWordsAndSynonyms(text: String): List<WordSynonymItem> {
         if (text.isBlank()) return emptyList()
 
-        // Extract tokens (alphabetic words)
+        // Extract tokens (alphabetic content words only)
         val tokens = text.lowercase()
             .replace(Regex("[^a-z\\s]"), " ")
             .split(Regex("\\s+"))
             .filter { token ->
-                token.length >= 3 && !STOP_WORDS.contains(token)
+                isContentPosWord(token)
             }
 
-        // Distinct content words in order of appearance
         val distinctWords = tokens.distinct()
-
         val results = mutableListOf<WordSynonymItem>()
 
         for (word in distinctWords) {
-            val synonyms = lookupSynonyms(word)
-            // Store word and its synonyms (even if empty or 1..5)
+            val synonyms = lookupSynonyms(word).filter { isContentPosWord(it) }
             results.add(WordSynonymItem(word = word, synonyms = synonyms))
         }
 
@@ -142,10 +170,9 @@ object LinguisticAnalyzer {
     }
 
     private fun lookupSynonyms(word: String): List<String> {
-        // Direct match in DB
         val direct = SYNONYM_DATABASE[word]
         if (direct != null) {
-            return direct.take(5)
+            return direct.filter { isContentPosWord(it) }.take(5)
         }
 
         // Stem matching (try removing 's', 'ed', 'ing', 'ly')
@@ -160,10 +187,9 @@ object LinguisticAnalyzer {
 
         val stemMatch = SYNONYM_DATABASE[stem]
         if (stemMatch != null) {
-            return stemMatch.take(5)
+            return stemMatch.filter { isContentPosWord(it) }.take(5)
         }
 
-        // If no synonyms found in database for this specific word, return empty list (DO NOT invent fake filler words!)
         return emptyList()
     }
 
@@ -181,7 +207,7 @@ object LinguisticAnalyzer {
     }
 
     fun fromJsonString(jsonStr: String?): List<WordSynonymItem> {
-        if (jsonStr.isNull_or_Empty()) return emptyList()
+        if (jsonStr.isNullOrEmpty()) return emptyList()
         return try {
             val array = JSONArray(jsonStr)
             val list = mutableListOf<WordSynonymItem>()
@@ -191,17 +217,16 @@ object LinguisticAnalyzer {
                 val synArray = obj.getJSONArray("synonyms")
                 val synonyms = mutableListOf<String>()
                 for (j in 0 until synArray.length()) {
-                    synonyms.add(synArray.getString(j))
+                    val syn = synArray.getString(j)
+                    if (isContentPosWord(syn)) synonyms.add(syn)
                 }
-                list.add(WordSynonymItem(word, synonyms))
+                if (isContentPosWord(word)) {
+                    list.add(WordSynonymItem(word, synonyms))
+                }
             }
             list
         } catch (e: Exception) {
             emptyList()
         }
-    }
-
-    private fun String?.isNull_or_Empty(): Boolean {
-        return this == null || this.trim().isEmpty()
     }
 }

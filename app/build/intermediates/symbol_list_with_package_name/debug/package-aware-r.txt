@@ -2791,7 +2791,9 @@ id btnBackMarketplace
 id btnChangeAvatar
 id btnClearCache
 id btnCloseDetail
+id btnCloseLogs
 id btnClosePicker
+id btnCopyLog
 id btnDeleteCurrentChat
 id btnDeleteModel
 id btnDetailAction
@@ -2982,6 +2984,7 @@ id list_item
 id llBestForContainer
 id llBottomControls
 id llChatInputBar
+id llDagEdgesContainer
 id llFilterCategoryContainer
 id llFixedSidebarHeader
 id llGreetingContainer
@@ -2990,6 +2993,7 @@ id llNotIdealForContainer
 id llPickerModelsContainer
 id llPinnedSettings
 id llSearchContainer
+id llThinkingContainer
 id mainContentContainer
 id marquee
 id masked
@@ -3229,10 +3233,12 @@ id transition_position
 id transition_scene_layoutid_cache
 id transition_transform
 id triangle
+id tvAiAvatar
 id tvAiMsg
 id tvAvatarInitials
 id tvCatalogCountHeader
 id tvCodingScore
+id tvConnectionsCount
 id tvConnectionsTitle
 id tvDetailBadge
 id tvDetailDescription
@@ -3261,6 +3267,7 @@ id tvItemSynonymCount
 id tvItemSynonymsList
 id tvItemWord
 id tvLiveBadge
+id tvLogContent
 id tvLongContextScore
 id tvMarketplaceTitle
 id tvMemoryScore
@@ -3285,6 +3292,7 @@ id tvSettingsModelIcon
 id tvSettingsTitle
 id tvSpeedScore
 id tvSpeedStars
+id tvThinkingStep
 id tvUserEmail
 id tvUserMsg
 id tvUserName
@@ -3293,6 +3301,7 @@ id tvVoiceStatus
 id tvVoiceSubStatus
 id tvWordsDialogTitle
 id tvWordsSubHeader
+id typingDotsView
 id unchecked
 id uniform
 id unlabeled
@@ -3463,6 +3472,7 @@ layout design_navigation_menu
 layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
+layout dialog_ai_message_logs
 layout dialog_chat_model_picker
 layout dialog_chat_options
 layout dialog_edit_experience

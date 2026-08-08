@@ -8,6 +8,8 @@
 
     <application
         android:allowBackup="true"
+        android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
         android:label="Memossist"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"

@@ -169,21 +169,21 @@ class ModelDetailBottomSheet(
             val currentIsSelected = NoeonAiEngine.getSelectedModel(context).id == model.id
             val currentIsDownloaded = NoeonAiEngine.isModelDownloaded(context, model.id)
 
-            if (currentIsSelected) {
+            if (!currentIsDownloaded) {
+                // Model file is NOT downloaded on disk -> ALWAYS start download!
+                BackgroundModelDownloadManager.startDownload(context, model)
+                Toast.makeText(context, "Started background download for ${model.name} (${model.downloadSizeMb} MB)", Toast.LENGTH_LONG).show()
+                updateUIState()
+            } else if (currentIsSelected) {
+                // Model IS downloaded and already selected
+                Toast.makeText(context, "${model.name} is currently active", Toast.LENGTH_SHORT).show()
                 dismiss()
-                return@setOnClickListener
-            }
-
-            if (currentIsDownloaded) {
+            } else {
+                // Model IS downloaded but NOT selected -> Switch active model
                 NoeonAiEngine.setSelectedModel(context, model.id)
                 onModelSelected(model)
                 Toast.makeText(context, "Switched AI Engine to ${model.name}", Toast.LENGTH_SHORT).show()
                 dismiss()
-            } else {
-                // Start persistent background download
-                BackgroundModelDownloadManager.startDownload(context, model)
-                Toast.makeText(context, "Started background download for ${model.name}", Toast.LENGTH_SHORT).show()
-                updateUIState()
             }
         }
 

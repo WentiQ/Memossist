@@ -1,0 +1,156 @@
+[
+  {
+    "level_": 0,
+    "message_": "Start JSON generation. Platform version: 21 min SDK version: arm64-v8a",
+    "file_": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {},
+      "fieldsDescending": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 69360964
+  },
+  {
+    "level_": 0,
+    "message_": "rebuilding JSON C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\30711h3j\\arm64-v8a\\android_gradle_build.json due to:",
+    "file_": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {},
+      "fieldsDescending": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": -165991718
+  },
+  {
+    "level_": 0,
+    "message_": "- a dependent build file changed",
+    "file_": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {},
+      "fieldsDescending": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 369868567
+  },
+  {
+    "level_": 0,
+    "message_": "  - C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "file_": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {},
+      "fieldsDescending": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 2061447792
+  },
+  {
+    "level_": 0,
+    "message_": "keeping json folder \u0027C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\30711h3j\\arm64-v8a\u0027 but regenerating project",
+    "file_": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {},
+      "fieldsDescending": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 633667182
+  },
+  {
+    "level_": 0,
+    "message_": "executing cmake @echo off\n\"C:\\\\Users\\\\dines\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\cmake\\\\3.22.1\\\\bin\\\\cmake.exe\" ^\n  \"-HC:\\\\Users\\\\dines\\\\Documents\\\\01-WORK\\\\NOEON(The 1st AB)\\\\Projects\\\\App\\\\Memossist\\\\app\\\\src\\\\main\\\\cpp\" ^\n  \"-DCMAKE_SYSTEM_NAME\u003dAndroid\" ^\n  \"-DCMAKE_EXPORT_COMPILE_COMMANDS\u003dON\" ^\n  \"-DCMAKE_SYSTEM_VERSION\u003d21\" ^\n  \"-DANDROID_PLATFORM\u003dandroid-21\" ^\n  \"-DANDROID_ABI\u003darm64-v8a\" ^\n  \"-DCMAKE_ANDROID_ARCH_ABI\u003darm64-v8a\" ^\n  \"-DANDROID_NDK\u003dC:\\\\Users\\\\dines\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\ndk\\\\25.2.9519653\" ^\n  \"-DCMAKE_ANDROID_NDK\u003dC:\\\\Users\\\\dines\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\ndk\\\\25.2.9519653\" ^\n  \"-DCMAKE_TOOLCHAIN_FILE\u003dC:\\\\Users\\\\dines\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\ndk\\\\25.2.9519653\\\\build\\\\cmake\\\\android.toolchain.cmake\" ^\n  \"-DCMAKE_MAKE_PROGRAM\u003dC:\\\\Users\\\\dines\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\cmake\\\\3.22.1\\\\bin\\\\ninja.exe\" ^\n  \"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003dC:\\\\Users\\\\dines\\\\Documents\\\\01-WORK\\\\NOEON(The 1st AB)\\\\Projects\\\\App\\\\Memossist\\\\app\\\\build\\\\intermediates\\\\cxx\\\\Release\\\\30711h3j\\\\obj\\\\arm64-v8a\" ^\n  \"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY\u003dC:\\\\Users\\\\dines\\\\Documents\\\\01-WORK\\\\NOEON(The 1st AB)\\\\Projects\\\\App\\\\Memossist\\\\app\\\\build\\\\intermediates\\\\cxx\\\\Release\\\\30711h3j\\\\obj\\\\arm64-v8a\" ^\n  \"-BC:\\\\Users\\\\dines\\\\Documents\\\\01-WORK\\\\NOEON(The 1st AB)\\\\Projects\\\\App\\\\Memossist\\\\app\\\\.cxx\\\\Release\\\\30711h3j\\\\arm64-v8a\" ^\n  -GNinja ^\n  \"-DCMAKE_BUILD_TYPE\u003dRelease\"\n",
+    "file_": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {},
+      "fieldsDescending": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": -2050454018
+  },
+  {
+    "level_": 0,
+    "message_": "@echo off\n\"C:\\\\Users\\\\dines\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\cmake\\\\3.22.1\\\\bin\\\\cmake.exe\" ^\n  \"-HC:\\\\Users\\\\dines\\\\Documents\\\\01-WORK\\\\NOEON(The 1st AB)\\\\Projects\\\\App\\\\Memossist\\\\app\\\\src\\\\main\\\\cpp\" ^\n  \"-DCMAKE_SYSTEM_NAME\u003dAndroid\" ^\n  \"-DCMAKE_EXPORT_COMPILE_COMMANDS\u003dON\" ^\n  \"-DCMAKE_SYSTEM_VERSION\u003d21\" ^\n  \"-DANDROID_PLATFORM\u003dandroid-21\" ^\n  \"-DANDROID_ABI\u003darm64-v8a\" ^\n  \"-DCMAKE_ANDROID_ARCH_ABI\u003darm64-v8a\" ^\n  \"-DANDROID_NDK\u003dC:\\\\Users\\\\dines\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\ndk\\\\25.2.9519653\" ^\n  \"-DCMAKE_ANDROID_NDK\u003dC:\\\\Users\\\\dines\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\ndk\\\\25.2.9519653\" ^\n  \"-DCMAKE_TOOLCHAIN_FILE\u003dC:\\\\Users\\\\dines\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\ndk\\\\25.2.9519653\\\\build\\\\cmake\\\\android.toolchain.cmake\" ^\n  \"-DCMAKE_MAKE_PROGRAM\u003dC:\\\\Users\\\\dines\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\cmake\\\\3.22.1\\\\bin\\\\ninja.exe\" ^\n  \"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003dC:\\\\Users\\\\dines\\\\Documents\\\\01-WORK\\\\NOEON(The 1st AB)\\\\Projects\\\\App\\\\Memossist\\\\app\\\\build\\\\intermediates\\\\cxx\\\\Release\\\\30711h3j\\\\obj\\\\arm64-v8a\" ^\n  \"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY\u003dC:\\\\Users\\\\dines\\\\Documents\\\\01-WORK\\\\NOEON(The 1st AB)\\\\Projects\\\\App\\\\Memossist\\\\app\\\\build\\\\intermediates\\\\cxx\\\\Release\\\\30711h3j\\\\obj\\\\arm64-v8a\" ^\n  \"-BC:\\\\Users\\\\dines\\\\Documents\\\\01-WORK\\\\NOEON(The 1st AB)\\\\Projects\\\\App\\\\Memossist\\\\app\\\\.cxx\\\\Release\\\\30711h3j\\\\arm64-v8a\" ^\n  -GNinja ^\n  \"-DCMAKE_BUILD_TYPE\u003dRelease\"\n",
+    "file_": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {},
+      "fieldsDescending": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 1785318653
+  },
+  {
+    "level_": 0,
+    "message_": "Exiting generation of C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\30711h3j\\arm64-v8a\\compile_commands.json.bin normally",
+    "file_": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {},
+      "fieldsDescending": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": -1971125532
+  },
+  {
+    "level_": 0,
+    "message_": "done executing cmake",
+    "file_": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {},
+      "fieldsDescending": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": -766006041
+  },
+  {
+    "level_": 0,
+    "message_": "write command file C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\.cxx\\Release\\30711h3j\\arm64-v8a\\metadata_generation_command.txt",
+    "file_": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {},
+      "fieldsDescending": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": -1193059506
+  },
+  {
+    "level_": 0,
+    "message_": "JSON generation completed without problems",
+    "file_": "C:\\Users\\dines\\Documents\\01-WORK\\NOEON(The 1st AB)\\Projects\\App\\Memossist\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {},
+      "fieldsDescending": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 1172067043
+  }
+]

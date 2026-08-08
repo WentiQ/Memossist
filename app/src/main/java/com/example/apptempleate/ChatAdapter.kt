@@ -3,11 +3,13 @@ package com.example.apptempleate
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class ChatAdapter(
-    private val messages: MutableList<ChatMessage> = mutableListOf()
+    private val messages: MutableList<ChatMessage> = mutableListOf(),
+    private val onMessageLongClick: ((ChatMessage) -> Unit)? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -24,6 +26,13 @@ class ChatAdapter(
     fun addMessage(message: ChatMessage) {
         messages.add(message)
         notifyItemInserted(messages.size - 1)
+    }
+
+    fun updateMessage(position: Int, message: ChatMessage) {
+        if (position in 0 until messages.size) {
+            messages[position] = message
+            notifyItemChanged(position)
+        }
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -46,7 +55,28 @@ class ChatAdapter(
         if (holder is UserViewHolder) {
             holder.tvUserMsg.text = message.text
         } else if (holder is AiViewHolder) {
-            holder.tvAiMsg.text = message.text
+            if (message.isThinking) {
+                holder.llThinkingContainer.visibility = View.VISIBLE
+                holder.typingDotsView.startAnimation()
+                holder.tvThinkingStep.text = message.thinkingStatus ?: "Thinking..."
+                if (message.text.isNotEmpty()) {
+                    holder.tvAiMsg.visibility = View.VISIBLE
+                    holder.tvAiMsg.text = message.text
+                } else {
+                    holder.tvAiMsg.visibility = View.GONE
+                }
+            } else {
+                holder.llThinkingContainer.visibility = View.GONE
+                holder.typingDotsView.stopAnimation()
+                holder.tvAiMsg.visibility = View.VISIBLE
+                holder.tvAiMsg.text = message.text
+
+                // Enable Long Press Inspection for AI response messages
+                holder.itemView.setOnLongClickListener {
+                    onMessageLongClick?.invoke(message)
+                    true
+                }
+            }
         }
     }
 
@@ -57,6 +87,9 @@ class ChatAdapter(
     }
 
     class AiViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val llThinkingContainer: LinearLayout = itemView.findViewById(R.id.llThinkingContainer)
+        val typingDotsView: TypingDotsView = itemView.findViewById(R.id.typingDotsView)
+        val tvThinkingStep: TextView = itemView.findViewById(R.id.tvThinkingStep)
         val tvAiMsg: TextView = itemView.findViewById(R.id.tvAiMsg)
     }
 }
