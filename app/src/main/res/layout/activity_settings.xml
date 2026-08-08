@@ -424,6 +424,52 @@
 
             </LinearLayout>
 
+            <!-- Delete All User Data Button -->
+            <LinearLayout
+                android:id="@+id/btnDeleteUserData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_metallic_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Delete All User Data"
+                        android:textColor="#DC2626"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Wipe all chats, experiences &amp; DAG graph (Screen lock required)"
+                        android:textColor="#4B5563"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_trash"
+                    app:tint="#DC2626"
+                    android:contentDescription="Delete Icon" />
+
+            </LinearLayout>
+
             <!-- App Version Label -->
             <TextView
                 android:layout_width="wrap_content"

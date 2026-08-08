@@ -306,4 +306,11 @@ object ChatRepository {
         return llmResult.cleanHumanoidAnswer
     }
 
+    fun clearAllConversations(context: Context) {
+        val file = File(context.filesDir, FILE_NAME)
+        if (file.exists()) {
+            file.delete()
+        }
+    }
+
 }

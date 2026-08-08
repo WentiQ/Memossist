@@ -276,6 +276,10 @@ object ExperienceDagRepository {
         }
     }
 
+    fun clearAllEdges(context: Context) {
+        saveAllEdges(context, emptyList())
+    }
+
     private fun createInitialDagEdges(context: Context): MutableList<DagEdge> {
         val memories = MemoryVaultRepository.loadAllMemories(context)
         if (memories.size < 2) return mutableListOf()

@@ -98,6 +98,10 @@ object MemoryVaultRepository {
         }
     }
 
+    fun clearAllMemories(context: Context) {
+        saveAllMemories(context, emptyList())
+    }
+
     fun saveAllMemories(context: Context, memories: List<MemoryItem>) {
         try {
             val array = JSONArray()

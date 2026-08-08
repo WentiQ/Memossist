@@ -1,5 +1,6 @@
 package com.example.apptempleate
 
+import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -22,6 +23,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var btnBack: ImageButton
     private lateinit var btnClearCache: LinearLayout
+    private lateinit var btnDeleteUserData: LinearLayout
     private lateinit var btnOpenModelMarketplace: LinearLayout
     private lateinit var tvSettingsModelIcon: TextView
     private lateinit var tvSettingsActiveModelName: TextView
@@ -37,9 +39,18 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var prefs: SharedPreferences
 
+    private val deviceCredentialAuthLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            executeDeleteAllUserData()
+        } else {
+            Toast.makeText(this, "Authentication failed. Data preserved.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private val selectImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
-            // Persist permission for persistent URI access if available
             try {
                 contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
             } catch (e: Exception) {
@@ -64,6 +75,7 @@ class SettingsActivity : AppCompatActivity() {
 
         btnBack = findViewById(R.id.btnBack)
         btnClearCache = findViewById(R.id.btnClearCache)
+        btnDeleteUserData = findViewById(R.id.btnDeleteUserData)
         btnOpenModelMarketplace = findViewById(R.id.btnOpenModelMarketplace)
         tvSettingsModelIcon = findViewById(R.id.tvSettingsModelIcon)
         tvSettingsActiveModelName = findViewById(R.id.tvSettingsActiveModelName)
@@ -92,6 +104,10 @@ class SettingsActivity : AppCompatActivity() {
 
         btnClearCache.setOnClickListener {
             Toast.makeText(this, "Cached index data cleared", Toast.LENGTH_SHORT).show()
+        }
+
+        btnDeleteUserData.setOnClickListener {
+            promptDeleteUserDataWithAuth()
         }
 
         // Tap avatar container to pick profile picture
@@ -194,6 +210,50 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun String?.isNull_or_Empty(): Boolean {
         return this == null || this.trim().isEmpty()
+    }
+
+    private fun promptDeleteUserDataWithAuth() {
+        AlertDialog.Builder(this)
+            .setTitle("Delete All User Data?")
+            .setMessage("This action will permanently delete all chat history, memory experiences, and DAG graph connections.\n\nYour username, profile picture, and downloaded AI models will be preserved.\n\nPhone screen lock authentication is required to proceed.")
+            .setPositiveButton("Authenticate & Delete") { dialog, _ ->
+                dialog.dismiss()
+                authenticateDeviceLockAndExecute()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun authenticateDeviceLockAndExecute() {
+        val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        if (keyguardManager.isDeviceSecure) {
+            val intent = keyguardManager.createConfirmDeviceCredentialIntent(
+                "Confirm Data Deletion",
+                "Authenticate with your phone screen lock to permanently delete all chats and memory vault data."
+            )
+            if (intent != null) {
+                deviceCredentialAuthLauncher.launch(intent)
+            } else {
+                executeDeleteAllUserData()
+            }
+        } else {
+            executeDeleteAllUserData()
+        }
+    }
+
+    private fun executeDeleteAllUserData() {
+        // 1. Wipe chat history
+        ChatRepository.clearAllConversations(this)
+
+        // 2. Wipe memory vault experiences
+        MemoryVaultRepository.clearAllMemories(this)
+
+        // 3. Wipe DAG graph connection edges
+        ExperienceDagRepository.clearAllEdges(this)
+
+        Toast.makeText(this, "All user chats, memory experiences & DAG graph data deleted.", Toast.LENGTH_LONG).show()
     }
 
     override fun onBackPressed() {
