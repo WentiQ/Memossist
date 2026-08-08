@@ -90,6 +90,7 @@ class MemoryVaultActivity : AppCompatActivity() {
         val tvFullMessage: TextView = dialogView.findViewById(R.id.tvDetailFullMessage)
         val ibEdit: ImageButton = dialogView.findViewById(R.id.ibDetailEdit)
         val ibDelete: ImageButton = dialogView.findViewById(R.id.ibDetailDelete)
+        val btnWordsSynonyms: View = dialogView.findViewById(R.id.btnDetailWordsSynonyms)
         val btnClose: View = dialogView.findViewById(R.id.btnDetailClose)
 
         tvExpId.text = memory.id
@@ -108,9 +109,51 @@ class MemoryVaultActivity : AppCompatActivity() {
             showDeleteMemoryConfirmationDialog(memory)
         }
 
+        btnWordsSynonyms.setOnClickListener {
+            showWordsAndSynonymsDialog(memory)
+        }
+
         btnClose.setOnClickListener {
             dialog.dismiss()
         }
+
+        dialog.show()
+    }
+
+    private fun showWordsAndSynonymsDialog(memory: MemoryItem) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_word_synonyms, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val tvTitle: TextView = dialogView.findViewById(R.id.tvWordsDialogTitle)
+        val ibClose: ImageButton = dialogView.findViewById(R.id.ibWordsClose)
+        val btnDone: TextView = dialogView.findViewById(R.id.btnWordsDone)
+        val rvList: RecyclerView = dialogView.findViewById(R.id.rvWordsSynonyms)
+        val tvEmpty: TextView = dialogView.findViewById(R.id.tvEmptyWordsMessage)
+
+        tvTitle.text = "${memory.id} Vocabulary & Synonyms"
+
+        val wordItems = if (!memory.wordSynonymsJson.isNullOrEmpty()) {
+            LinguisticAnalyzer.fromJsonString(memory.wordSynonymsJson)
+        } else {
+            LinguisticAnalyzer.extractWordsAndSynonyms(memory.message)
+        }
+
+        if (wordItems.isEmpty()) {
+            tvEmpty.visibility = View.VISIBLE
+            rvList.visibility = View.GONE
+        } else {
+            tvEmpty.visibility = View.GONE
+            rvList.visibility = View.VISIBLE
+            rvList.layoutManager = LinearLayoutManager(this)
+            rvList.adapter = WordsSynonymsAdapter(wordItems)
+        }
+
+        ibClose.setOnClickListener { dialog.dismiss() }
+        btnDone.setOnClickListener { dialog.dismiss() }
 
         dialog.show()
     }

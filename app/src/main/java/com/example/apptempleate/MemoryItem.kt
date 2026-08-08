@@ -9,5 +9,6 @@ data class MemoryItem(
     val location: String,
     val tag: String = "Chat",
     val timeAgo: String = "Just now",
-    val isPinned: Boolean = false
+    val isPinned: Boolean = false,
+    val wordSynonymsJson: String? = null
 )

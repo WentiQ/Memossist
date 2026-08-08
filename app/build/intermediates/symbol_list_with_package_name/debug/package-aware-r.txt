@@ -2783,6 +2783,7 @@ id btnChangeAvatar
 id btnClearCache
 id btnDeleteCurrentChat
 id btnDetailClose
+id btnDetailWordsSynonyms
 id btnDialogCancel
 id btnDialogSave
 id btnEditExpCancel
@@ -2804,6 +2805,7 @@ id btnOptRename
 id btnPlus
 id btnSidebarNewChat
 id btnSpeakerToggle
+id btnWordsDone
 id buttonPanel
 id cache_measures
 id callMeasure
@@ -2928,6 +2930,7 @@ id honorRequest
 id horizontal_only
 id ibDetailDelete
 id ibDetailEdit
+id ibWordsClose
 id icon
 id icon_group
 id ifRoom
@@ -3086,6 +3089,7 @@ id row_index_key
 id rvChatMessages
 id rvMemoryList
 id rvSidebarHistory
+id rvWordsSynonyms
 id save_non_transition_alpha
 id save_overlay_view
 id sawtooth
@@ -3205,10 +3209,14 @@ id tvDetailLocation
 id tvDetailTag
 id tvDetailTimestamp
 id tvEditExpDialogTitle
+id tvEmptyWordsMessage
 id tvGreetingPrompt
 id tvGreetingTitle
 id tvHistoryTitle
 id tvInsightsTitle
+id tvItemSynonymCount
+id tvItemSynonymsList
+id tvItemWord
 id tvLiveBadge
 id tvMemorySnippet
 id tvMemoryTag
@@ -3223,6 +3231,8 @@ id tvUserName
 id tvVaultTitle
 id tvVoiceStatus
 id tvVoiceSubStatus
+id tvWordsDialogTitle
+id tvWordsSubHeader
 id unchecked
 id uniform
 id unlabeled
@@ -3396,10 +3406,12 @@ layout dialog_chat_options
 layout dialog_edit_experience
 layout dialog_edit_username
 layout dialog_memory_detail
+layout dialog_word_synonyms
 layout item_chat_ai
 layout item_chat_user
 layout item_memory_vault
 layout item_sidebar_history
+layout item_word_synonym
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
 layout m3_alert_dialog_title

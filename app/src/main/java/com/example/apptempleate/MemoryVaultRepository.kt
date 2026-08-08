@@ -7,7 +7,6 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.UUID
 
 object MemoryVaultRepository {
 
@@ -37,6 +36,12 @@ object MemoryVaultRepository {
                 val tag = obj.optString("tag", "Chat")
                 val timeAgo = obj.optString("timeAgo", "Recent")
                 val isPinned = obj.optBoolean("isPinned", false)
+                var wordSynonymsJson = obj.optString("wordSynonymsJson", null)
+
+                if (wordSynonymsJson.isNullOrEmpty()) {
+                    val extracted = LinguisticAnalyzer.extractWordsAndSynonyms(message)
+                    wordSynonymsJson = LinguisticAnalyzer.toJsonString(extracted)
+                }
 
                 list.add(
                     MemoryItem(
@@ -48,7 +53,8 @@ object MemoryVaultRepository {
                         location = location,
                         tag = tag,
                         timeAgo = timeAgo,
-                        isPinned = isPinned
+                        isPinned = isPinned,
+                        wordSynonymsJson = wordSynonymsJson
                     )
                 )
             }
@@ -61,16 +67,25 @@ object MemoryVaultRepository {
     }
 
     fun saveMemory(context: Context, memoryItem: MemoryItem) {
+        val itemToSave = if (memoryItem.wordSynonymsJson.isNullOrEmpty()) {
+            val extracted = LinguisticAnalyzer.extractWordsAndSynonyms(memoryItem.message)
+            memoryItem.copy(wordSynonymsJson = LinguisticAnalyzer.toJsonString(extracted))
+        } else {
+            memoryItem
+        }
         val memories = loadAllMemories(context)
-        memories.add(0, memoryItem)
+        memories.add(0, itemToSave)
         saveAllMemories(context, memories)
     }
 
     fun updateMemory(context: Context, updatedMemory: MemoryItem) {
+        val extracted = LinguisticAnalyzer.extractWordsAndSynonyms(updatedMemory.message)
+        val itemToSave = updatedMemory.copy(wordSynonymsJson = LinguisticAnalyzer.toJsonString(extracted))
+        
         val memories = loadAllMemories(context)
-        val index = memories.indexOfFirst { it.id == updatedMemory.id }
+        val index = memories.indexOfFirst { it.id == itemToSave.id }
         if (index != -1) {
-            memories[index] = updatedMemory
+            memories[index] = itemToSave
             saveAllMemories(context, memories)
         }
     }
@@ -87,6 +102,13 @@ object MemoryVaultRepository {
         try {
             val array = JSONArray()
             for (item in memories) {
+                val synonymsJson = if (item.wordSynonymsJson.isNullOrEmpty()) {
+                    val extracted = LinguisticAnalyzer.extractWordsAndSynonyms(item.message)
+                    LinguisticAnalyzer.toJsonString(extracted)
+                } else {
+                    item.wordSynonymsJson
+                }
+
                 val obj = JSONObject().apply {
                     put("id", item.id)
                     put("title", item.title)
@@ -97,6 +119,7 @@ object MemoryVaultRepository {
                     put("tag", item.tag)
                     put("timeAgo", item.timeAgo)
                     put("isPinned", item.isPinned)
+                    put("wordSynonymsJson", synonymsJson)
                 }
                 array.put(obj)
             }
@@ -121,38 +144,49 @@ object MemoryVaultRepository {
         val now = formatCurrentTime()
         val loc = getCurrentLocation()
 
+        fun createWithAnalysis(id: String, title: String, snippet: String, message: String, tag: String, timeAgo: String, isPinned: Boolean): MemoryItem {
+            val extracted = LinguisticAnalyzer.extractWordsAndSynonyms(message)
+            return MemoryItem(
+                id = id,
+                title = title,
+                snippet = snippet,
+                message = message,
+                timestamp = now,
+                location = loc,
+                tag = tag,
+                timeAgo = timeAgo,
+                isPinned = isPinned,
+                wordSynonymsJson = LinguisticAnalyzer.toJsonString(extracted)
+            )
+        }
+
         return mutableListOf(
-            MemoryItem(
+            createWithAnalysis(
                 id = "EXP-9081",
                 title = "Quarterly Strategy & Cognitive Notes",
                 snippet = "Key takeaways from the strategy session covering neural architecture designs...",
                 message = "Key takeaways from the strategy session covering neural architecture designs, memory retrieval benchmarks, and UI state flows.",
-                timestamp = now,
-                location = loc,
                 tag = "Audio",
                 timeAgo = "4 mins ago",
                 isPinned = true
             ),
-            MemoryItem(
+            createWithAnalysis(
                 id = "EXP-7742",
                 title = "AI Agentic Workflow Ideas",
                 snippet = "Explored multi-agent delegation patterns for autonomous contextual search...",
                 message = "Explored multi-agent delegation patterns for autonomous contextual search and live tactile background rendering.",
-                timestamp = now,
-                location = loc,
                 tag = "Idea",
                 timeAgo = "2 hours ago",
                 isPinned = true
             ),
-            MemoryItem(
+            createWithAnalysis(
                 id = "EXP-6105",
                 title = "Product Roadmap & UI Polish Transcript",
                 snippet = "Transcript of live voice conversation discussing smooth swipe gestures...",
                 message = "Transcript of live voice conversation discussing smooth swipe gestures, sidebar navigation, and clean white interface styling.",
-                timestamp = now,
-                location = loc,
                 tag = "Document",
-                timeAgo = "Yesterday"
+                timeAgo = "Yesterday",
+                isPinned = false
             )
         )
     }

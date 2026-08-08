@@ -148,6 +148,9 @@ class MainActivity : AppCompatActivity() {
         btnMic = findViewById(R.id.btnMic)
         btnLiveVoice = findViewById(R.id.btnLiveVoice)
 
+        // Default to Fresh New Chat Greeting Session on App Start
+        startNewConversationSession()
+
         // Set Dynamic Premium Time-of-Day Greeting with User Name
         updateGreetingText()
 
