@@ -10,5 +10,6 @@ data class ChatMessage(
     val timestamp: Long = System.currentTimeMillis(),
     var isThinking: Boolean = false,
     var thinkingStatus: String? = null,
-    var debugLog: String? = null
+    var debugLog: String? = null,
+    var attachments: List<MediaAttachment> = emptyList()
 )

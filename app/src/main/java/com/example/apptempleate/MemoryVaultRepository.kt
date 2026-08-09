@@ -12,6 +12,47 @@ object MemoryVaultRepository {
 
     private const val FILE_NAME = "memossist_vault_memories.json"
 
+    fun parseAttachments(jsonStr: String?): List<MediaAttachment> {
+        if (jsonStr.isNullOrBlank()) return emptyList()
+        return try {
+            val array = JSONArray(jsonStr)
+            val list = mutableListOf<MediaAttachment>()
+            for (i in 0 until array.length()) {
+                val obj = array.getJSONObject(i)
+                list.add(
+                    MediaAttachment(
+                        id = obj.optString("id", java.util.UUID.randomUUID().toString()),
+                        fileName = obj.getString("fileName"),
+                        filePath = obj.getString("filePath"),
+                        mimeType = obj.getString("mimeType"),
+                        fileSize = obj.optLong("fileSize", 0L),
+                        formattedSize = obj.optString("formattedSize", "")
+                    )
+                )
+            }
+            list
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    fun serializeAttachments(list: List<MediaAttachment>): String {
+        if (list.isEmpty()) return "[]"
+        val array = JSONArray()
+        for (item in list) {
+            val obj = JSONObject().apply {
+                put("id", item.id)
+                put("fileName", item.fileName)
+                put("filePath", item.filePath)
+                put("mimeType", item.mimeType)
+                put("fileSize", item.fileSize)
+                put("formattedSize", item.formattedSize)
+            }
+            array.put(obj)
+        }
+        return array.toString()
+    }
+
     fun loadAllMemories(context: Context): MutableList<MemoryItem> {
         val file = File(context.filesDir, FILE_NAME)
         if (!file.exists()) {
@@ -37,6 +78,8 @@ object MemoryVaultRepository {
                 val timeAgo = obj.optString("timeAgo", "Recent")
                 val isPinned = obj.optBoolean("isPinned", false)
                 var wordSynonymsJson = obj.optString("wordSynonymsJson", null)
+                val rawAttachmentsJson = obj.optString("attachmentsJson", null)
+                val attachmentsList = parseAttachments(rawAttachmentsJson)
 
                 if (wordSynonymsJson.isNullOrEmpty()) {
                     val extracted = LinguisticAnalyzer.extractWordsAndSynonyms(message)
@@ -54,7 +97,9 @@ object MemoryVaultRepository {
                         tag = tag,
                         timeAgo = timeAgo,
                         isPinned = isPinned,
-                        wordSynonymsJson = wordSynonymsJson
+                        wordSynonymsJson = wordSynonymsJson,
+                        attachments = attachmentsList,
+                        attachmentsJson = rawAttachmentsJson
                     )
                 )
             }
@@ -69,9 +114,12 @@ object MemoryVaultRepository {
     fun saveMemory(context: Context, memoryItem: MemoryItem) {
         val itemToSave = if (memoryItem.wordSynonymsJson.isNullOrEmpty()) {
             val extracted = LinguisticAnalyzer.extractWordsAndSynonyms(memoryItem.message)
-            memoryItem.copy(wordSynonymsJson = LinguisticAnalyzer.toJsonString(extracted))
+            memoryItem.copy(
+                wordSynonymsJson = LinguisticAnalyzer.toJsonString(extracted),
+                attachmentsJson = serializeAttachments(memoryItem.attachments)
+            )
         } else {
-            memoryItem
+            memoryItem.copy(attachmentsJson = serializeAttachments(memoryItem.attachments))
         }
         val memories = loadAllMemories(context)
         memories.add(0, itemToSave)
@@ -80,7 +128,10 @@ object MemoryVaultRepository {
 
     fun updateMemory(context: Context, updatedMemory: MemoryItem) {
         val extracted = LinguisticAnalyzer.extractWordsAndSynonyms(updatedMemory.message)
-        val itemToSave = updatedMemory.copy(wordSynonymsJson = LinguisticAnalyzer.toJsonString(extracted))
+        val itemToSave = updatedMemory.copy(
+            wordSynonymsJson = LinguisticAnalyzer.toJsonString(extracted),
+            attachmentsJson = serializeAttachments(updatedMemory.attachments)
+        )
         
         val memories = loadAllMemories(context)
         val index = memories.indexOfFirst { it.id == itemToSave.id }
@@ -113,6 +164,12 @@ object MemoryVaultRepository {
                     item.wordSynonymsJson
                 }
 
+                val attJson = if (item.attachmentsJson.isNullOrEmpty() && item.attachments.isNotEmpty()) {
+                    serializeAttachments(item.attachments)
+                } else {
+                    item.attachmentsJson ?: "[]"
+                }
+
                 val obj = JSONObject().apply {
                     put("id", item.id)
                     put("title", item.title)
@@ -124,6 +181,7 @@ object MemoryVaultRepository {
                     put("timeAgo", item.timeAgo)
                     put("isPinned", item.isPinned)
                     put("wordSynonymsJson", synonymsJson)
+                    put("attachmentsJson", attJson)
                 }
                 array.put(obj)
             }

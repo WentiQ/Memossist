@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="6dp"
+    android:layout_marginEnd="6dp"
+    android:background="@drawable/bg_pill_tag"
+    android:backgroundTint="#F3F4F6"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="8dp"
+    android:paddingTop="6dp"
+    android:paddingEnd="10dp"
+    android:paddingBottom="6dp">
+
+    <!-- Thumbnail or Type Icon -->
+    <FrameLayout
+        android:layout_width="36dp"
+        android:layout_height="36dp">
+
+        <ImageView
+            android:id="@+id/ivAttachmentImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            android:contentDescription="Attachment thumbnail" />
+
+        <TextView
+            android:id="@+id/tvAttachmentIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="📄"
+            android:textSize="18sp" />
+
+    </FrameLayout>
+
+    <!-- File Info -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvAttachmentName"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="middle"
+            android:maxLines="1"
+            android:text="document.pdf"
+            android:textColor="#121417"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvAttachmentSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2.4 MB • Tap to open"
+            android:textColor="#6B7280"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

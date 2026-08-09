@@ -89,6 +89,7 @@ class MemoryVaultActivity : AppCompatActivity() {
         val tvTimestamp: TextView = dialogView.findViewById(R.id.tvDetailTimestamp)
         val tvLocation: TextView = dialogView.findViewById(R.id.tvDetailLocation)
         val tvFullMessage: TextView = dialogView.findViewById(R.id.tvDetailFullMessage)
+        val rvDetailAttachments: RecyclerView = dialogView.findViewById(R.id.rvDetailAttachments)
         val ibEdit: ImageButton = dialogView.findViewById(R.id.ibDetailEdit)
         val ibDelete: ImageButton = dialogView.findViewById(R.id.ibDetailDelete)
         val btnWordsSynonyms: View = dialogView.findViewById(R.id.btnDetailWordsSynonyms)
@@ -100,6 +101,14 @@ class MemoryVaultActivity : AppCompatActivity() {
         tvTimestamp.text = memory.timestamp
         tvLocation.text = memory.location
         tvFullMessage.text = memory.message
+
+        if (memory.attachments.isNotEmpty()) {
+            rvDetailAttachments.visibility = View.VISIBLE
+            rvDetailAttachments.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+            rvDetailAttachments.adapter = MediaAttachmentAdapter(memory.attachments)
+        } else {
+            rvDetailAttachments.visibility = View.GONE
+        }
 
         ibEdit.setOnClickListener {
             dialog.dismiss()

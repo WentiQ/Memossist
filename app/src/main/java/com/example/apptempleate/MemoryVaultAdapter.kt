@@ -16,6 +16,7 @@ class MemoryVaultAdapter(
         val tvTime: TextView = itemView.findViewById(R.id.tvMemoryTime)
         val tvTitle: TextView = itemView.findViewById(R.id.tvMemoryTitle)
         val tvSnippet: TextView = itemView.findViewById(R.id.tvMemorySnippet)
+        val rvMemoryAttachments: RecyclerView = itemView.findViewById(R.id.rvMemoryAttachments)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemoryViewHolder {
@@ -30,6 +31,14 @@ class MemoryVaultAdapter(
         holder.tvTime.text = item.timeAgo
         holder.tvTitle.text = item.title
         holder.tvSnippet.text = item.snippet
+
+        if (item.attachments.isNotEmpty()) {
+            holder.rvMemoryAttachments.visibility = View.VISIBLE
+            holder.rvMemoryAttachments.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(holder.itemView.context, RecyclerView.HORIZONTAL, false)
+            holder.rvMemoryAttachments.adapter = MediaAttachmentAdapter(item.attachments)
+        } else {
+            holder.rvMemoryAttachments.visibility = View.GONE
+        }
 
         holder.itemView.setOnClickListener {
             onItemClick(item)

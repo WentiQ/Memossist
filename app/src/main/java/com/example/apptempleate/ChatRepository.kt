@@ -16,7 +16,7 @@ object ChatRepository {
     interface ChatPipelineCallback {
         fun onStepUpdate(stepText: String)
         fun onTokenStream(partialText: String)
-        fun onCompleted(cleanHumanoidAnswer: String, debugLogText: String)
+        fun onCompleted(cleanHumanoidAnswer: String, debugLogText: String, usedAttachments: List<MediaAttachment>)
     }
 
     private fun buildLlmSystemPrompt(userPrompt: String, candidateExperiences: List<MemoryItem>): String {
@@ -59,6 +59,7 @@ object ChatRepository {
     fun processChatMessageWithPipeline(
         context: Context,
         userMessage: String,
+        userAttachments: List<MediaAttachment> = emptyList(),
         callback: ChatPipelineCallback
     ) {
         val executor = java.util.concurrent.Executors.newSingleThreadExecutor()
@@ -84,7 +85,7 @@ object ChatRepository {
                 }
             )
 
-            // STEP 3: Save Facts Extracted Strictly by LLM into Memory Vault
+            // STEP 3: Save Facts Extracted Strictly by LLM into Memory Vault (with user attachments)
             mainHandler.post { callback.onStepUpdate("Step 3/6: Reading LLM extracted facts & reminders…") }
             if (llmResult.extractedInformativeFacts.isNotEmpty()) {
                 for (fact in llmResult.extractedInformativeFacts) {
@@ -97,7 +98,8 @@ object ChatRepository {
                         timestamp = MemoryVaultRepository.formatCurrentTime(),
                         location = MemoryVaultRepository.getCurrentLocation(),
                         tag = "Chat Fact",
-                        timeAgo = "Just now"
+                        timeAgo = "Just now",
+                        attachments = userAttachments
                     )
                     MemoryVaultRepository.saveMemory(context, memoryItem)
                 }
@@ -124,6 +126,18 @@ object ChatRepository {
                 candidateExperiences = topCandidates,
                 usedExperienceIds = returnedUsedIdsSet
             )
+
+            // Gather any media attachments linked to the used experiences
+            val usedExperienceAttachments = mutableListOf<MediaAttachment>()
+            if (returnedUsedIdsSet.isNotEmpty()) {
+                val allVaultMemories = MemoryVaultRepository.loadAllMemories(context)
+                for (usedId in returnedUsedIdsSet) {
+                    val foundMem = allVaultMemories.find { it.id.equals(usedId, ignoreCase = true) }
+                    if (foundMem != null && foundMem.attachments.isNotEmpty()) {
+                        usedExperienceAttachments.addAll(foundMem.attachments)
+                    }
+                }
+            }
 
             // Build detailed developer diagnostic log string
             val debugLogBuilder = StringBuilder()
@@ -172,9 +186,9 @@ object ChatRepository {
             val finalAnswer = llmResult.cleanHumanoidAnswer + reminderConfirmationBanner
 
             mainHandler.post { callback.onStepUpdate("Step 6/6: Preparing the answer…") }
-            // Show only the answer in chat; the temporary progress bubble is replaced.
+            // Show answer and send any used experience attachments
             mainHandler.post {
-                callback.onCompleted(finalAnswer, finalDebugLog)
+                callback.onCompleted(finalAnswer, finalDebugLog, usedExperienceAttachments)
             }
         }
     }
@@ -209,8 +223,10 @@ object ChatRepository {
                     val isUser = msgObj.getBoolean("isUser")
                     val timestamp = msgObj.optLong("timestamp", System.currentTimeMillis())
                     val debugLog = msgObj.optString("debugLog", null)
+                    val rawAttJson = msgObj.optString("attachmentsJson", null)
+                    val msgAtts = MemoryVaultRepository.parseAttachments(rawAttJson)
 
-                    messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, false, null as String?, debugLog))
+                    messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, false, null as String?, debugLog, msgAtts))
                 }
 
                 conversations.add(Conversation(id, title, lastUpdated, isPinned, messagesList))
@@ -244,6 +260,7 @@ object ChatRepository {
                             put("isUser", msg.isUser)
                             put("timestamp", msg.timestamp)
                             put("debugLog", msg.debugLog)
+                            put("attachmentsJson", MemoryVaultRepository.serializeAttachments(msg.attachments))
                         }
                         msgArray.put(msgObj)
                     }

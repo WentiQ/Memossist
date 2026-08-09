@@ -10,5 +10,7 @@ data class MemoryItem(
     val tag: String = "Chat",
     val timeAgo: String = "Just now",
     val isPinned: Boolean = false,
-    val wordSynonymsJson: String? = null
+    val wordSynonymsJson: String? = null,
+    val attachments: List<MediaAttachment> = emptyList(),
+    val attachmentsJson: String? = null
 )

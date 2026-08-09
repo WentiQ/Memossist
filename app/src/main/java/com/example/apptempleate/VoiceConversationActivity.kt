@@ -293,7 +293,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
                     // Streaming progress during voice generation
                 }
 
-                override fun onCompleted(cleanHumanoidAnswer: String, debugLogText: String) {
+                override fun onCompleted(cleanHumanoidAnswer: String, debugLogText: String, usedAttachments: List<MediaAttachment>) {
                     runOnUiThread {
                         // 4. Add the LLM answer to the conversation in real-time with diagnostic logs
                         val aiMsg = ChatMessage(

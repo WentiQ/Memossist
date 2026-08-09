@@ -116,25 +116,45 @@
             android:padding="10dp"
             android:src="@drawable/ic_trash"
             android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@+id/btnHeaderNewChat"
+            app:layout_constraintEnd_toStartOf="@+id/flHeaderNotifications"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="#DC2626" />
 
-        <!-- Header New Chat Action Button -->
-        <ImageButton
-            android:id="@+id/btnHeaderNewChat"
+        <!-- Header Notification Center Action Button (Replaces top Plus icon) -->
+        <FrameLayout
+            android:id="@+id/flHeaderNotifications"
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp"
-            android:background="@drawable/bg_circle_icon_button"
-            android:contentDescription="Start New Chat"
             android:elevation="10dp"
-            android:padding="10dp"
-            android:src="@drawable/ic_plus"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="#121417" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/btnHeaderNotifications"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_circle_icon_button"
+                android:contentDescription="Open Notification Center"
+                android:padding="10dp"
+                android:src="@drawable/ic_bell"
+                app:tint="#121417" />
+
+            <!-- Red Unread Badge Indicator Dot -->
+            <View
+                android:id="@+id/vHeaderUnreadBadge"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/bg_circle_icon_button"
+                android:backgroundTint="#EF4444"
+                android:elevation="12dp"
+                android:visibility="gone" />
+
+        </FrameLayout>
 
         <!-- User Greeting Section (Visible when no active conversation) -->
         <LinearLayout
@@ -186,6 +206,30 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Attachment Previews Container (Visible when user selects attachments via + button) -->
+        <LinearLayout
+            android:id="@+id/llAttachmentPreviewContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:elevation="9dp"
+            app:layout_constraintBottom_toTopOf="@+id/llChatInputBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvAttachmentPreviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        </LinearLayout>
 
         <!-- Gemini-Style Floating Chat Input Bar & Buttons -->
         <LinearLayout

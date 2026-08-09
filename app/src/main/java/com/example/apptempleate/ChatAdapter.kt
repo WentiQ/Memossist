@@ -54,6 +54,13 @@ class ChatAdapter(
         val message = messages[position]
         if (holder is UserViewHolder) {
             holder.tvUserMsg.text = message.text
+            if (message.attachments.isNotEmpty()) {
+                holder.rvUserAttachments.visibility = View.VISIBLE
+                holder.rvUserAttachments.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(holder.itemView.context, RecyclerView.HORIZONTAL, false)
+                holder.rvUserAttachments.adapter = MediaAttachmentAdapter(message.attachments)
+            } else {
+                holder.rvUserAttachments.visibility = View.GONE
+            }
         } else if (holder is AiViewHolder) {
             if (message.isThinking) {
                 holder.llThinkingContainer.visibility = View.VISIBLE
@@ -65,11 +72,21 @@ class ChatAdapter(
                 } else {
                     holder.tvAiMsg.visibility = View.GONE
                 }
+                holder.rvAiAttachments.visibility = View.GONE
             } else {
                 holder.llThinkingContainer.visibility = View.GONE
                 holder.typingDotsView.stopAnimation()
                 holder.tvAiMsg.visibility = View.VISIBLE
                 holder.tvAiMsg.text = message.text
+
+                // Render attached media/files from used experiences
+                if (message.attachments.isNotEmpty()) {
+                    holder.rvAiAttachments.visibility = View.VISIBLE
+                    holder.rvAiAttachments.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(holder.itemView.context, RecyclerView.HORIZONTAL, false)
+                    holder.rvAiAttachments.adapter = MediaAttachmentAdapter(message.attachments)
+                } else {
+                    holder.rvAiAttachments.visibility = View.GONE
+                }
 
                 // Enable Long Press Inspection for AI response messages
                 holder.itemView.setOnLongClickListener {
@@ -84,6 +101,7 @@ class ChatAdapter(
 
     class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvUserMsg: TextView = itemView.findViewById(R.id.tvUserMsg)
+        val rvUserAttachments: RecyclerView = itemView.findViewById(R.id.rvUserAttachments)
     }
 
     class AiViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -91,5 +109,6 @@ class ChatAdapter(
         val typingDotsView: TypingDotsView = itemView.findViewById(R.id.typingDotsView)
         val tvThinkingStep: TextView = itemView.findViewById(R.id.tvThinkingStep)
         val tvAiMsg: TextView = itemView.findViewById(R.id.tvAiMsg)
+        val rvAiAttachments: RecyclerView = itemView.findViewById(R.id.rvAiAttachments)
     }
 }

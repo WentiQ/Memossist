@@ -172,6 +172,16 @@
 
     </ScrollView>
 
+    <!-- Attached Media & Files Section -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvDetailAttachments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
     <!-- Button to View Words & Synonyms -->
     <LinearLayout
         android:id="@+id/btnDetailWordsSynonyms"

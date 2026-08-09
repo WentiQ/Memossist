@@ -30,6 +30,18 @@ class ReminderReceiver : BroadcastReceiver() {
             ReminderRepository.markTriggerAsFired(context, triggerId)
         }
 
+        // Log Notification into 30-Day Notification History (Works even when app is closed)
+        val notifItem = NotificationItem(
+            id = "NOTIF_${System.currentTimeMillis()}_${(100..999).random()}",
+            reminderId = reminderId,
+            title = title,
+            message = message,
+            timestamp = System.currentTimeMillis(),
+            type = if (deliveryStyle == "FULLSCREEN_ALARM") "TEN_MIN_BEFORE" else "SYSTEM",
+            isRead = false
+        )
+        NotificationHistoryRepository.addNotification(context, notifItem)
+
         // Create System Notification Channel
         createNotificationChannel(context)
 

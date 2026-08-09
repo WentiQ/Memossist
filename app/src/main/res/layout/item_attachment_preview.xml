@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="8dp"
+    android:background="@drawable/bg_pill_tag"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="8dp"
+    android:paddingTop="6dp"
+    android:paddingEnd="6dp"
+    android:paddingBottom="6dp">
+
+    <!-- Thumbnail Image or File Icon -->
+    <FrameLayout
+        android:layout_width="32dp"
+        android:layout_height="32dp">
+
+        <ImageView
+            android:id="@+id/ivPreviewThumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            android:contentDescription="Attachment thumbnail" />
+
+        <TextView
+            android:id="@+id/tvPreviewIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="📄"
+            android:textSize="16sp" />
+
+    </FrameLayout>
+
+    <!-- File Info -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvPreviewName"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="middle"
+            android:maxLines="1"
+            android:text="report.pdf"
+            android:textColor="#121417"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvPreviewSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1.2 MB"
+            android:textColor="#6B7280"
+            android:textSize="10sp" />
+
+    </LinearLayout>
+
+    <!-- Remove Close Button -->
+    <ImageButton
+        android:id="@+id/btnRemoveAttachment"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="6dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Remove Attachment"
+        android:padding="4dp"
+        android:src="@drawable/ic_close"
+        app:tint="#6B7280" />
+
+</LinearLayout>

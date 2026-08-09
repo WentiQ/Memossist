@@ -2567,6 +2567,7 @@ drawable bg_metallic_button
 drawable bg_metallic_card
 drawable bg_model_pill
 drawable bg_overlay_vignette
+drawable bg_pill_tag
 drawable bg_procedural_metallic_soil
 drawable bg_profile_avatar_rounded
 drawable bg_rating_progress_bg
@@ -2824,9 +2825,10 @@ id btnEditReminder
 id btnEndCall
 id btnHamburger
 id btnHeaderModelPicker
-id btnHeaderNewChat
+id btnHeaderNotifications
 id btnLiveVoice
 id btnManageReminders
+id btnMarkAllRead
 id btnMic
 id btnMorningTime
 id btnMuteMic
@@ -2843,6 +2845,7 @@ id btnOptRename
 id btnPickDate
 id btnPickTime
 id btnPlus
+id btnRemoveAttachment
 id btnResetView
 id btnSelectModelCard
 id btnSidebarNewChat
@@ -2959,6 +2962,7 @@ id fitStart
 id fitToContents
 id fitXY
 id fixed
+id flHeaderNotifications
 id flip
 id floating
 id forever
@@ -3002,8 +3006,10 @@ id inward
 id italic
 id item_touch_helper_previous_elevation
 id ivAlarmIcon
+id ivAttachmentImage
 id ivHistoryIcon
 id ivOptPinIcon
+id ivPreviewThumbnail
 id ivProfilePic
 id jumpToEnd
 id jumpToStart
@@ -3020,10 +3026,12 @@ id listMode
 id list_item
 id llActionsContainer
 id llAlarmOrbContainer
+id llAttachmentPreviewContainer
 id llBestForContainer
 id llBottomControls
 id llChatInputBar
 id llDagConnectionsContainer
+id llEmptyNotifications
 id llEmptyState
 id llFilterCategoryContainer
 id llFilterChips
@@ -3162,11 +3170,17 @@ id right_side
 id rlAvatarContainer
 id rounded
 id row_index_key
+id rvAiAttachments
+id rvAttachmentPreviews
 id rvChatMessages
+id rvDetailAttachments
+id rvMemoryAttachments
 id rvMemoryList
 id rvModelCatalog
+id rvNotificationsList
 id rvRemindersList
 id rvSidebarHistory
+id rvUserAttachments
 id rvWordsSynonyms
 id save_non_transition_alpha
 id save_overlay_view
@@ -3286,6 +3300,9 @@ id tvAlarmBadge
 id tvAlarmEventTime
 id tvAlarmMessage
 id tvAlarmTitle
+id tvAttachmentIcon
+id tvAttachmentName
+id tvAttachmentSize
 id tvAvatarInitials
 id tvCatalogCountHeader
 id tvCategoryIcon
@@ -3341,8 +3358,16 @@ id tvModelParams
 id tvModelTagline
 id tvMorningTimeValue
 id tvNextEvent
+id tvNotifIcon
+id tvNotifMessage
+id tvNotifSubHeader
+id tvNotifTime
+id tvNotifTitle
 id tvOptDialogTitle
 id tvOptPinText
+id tvPreviewIcon
+id tvPreviewName
+id tvPreviewSize
 id tvReasoningScore
 id tvRecommendedModelText
 id tvReminderDescription
@@ -3374,7 +3399,9 @@ id unlabeled
 id up
 id useLogo
 id vBottomGradientOverlay
+id vHeaderUnreadBadge
 id vTopGradientOverlay
+id vUnreadDot
 id vertical_only
 id view_offset_helper
 id view_transition
@@ -3549,11 +3576,15 @@ layout dialog_edit_experience
 layout dialog_edit_username
 layout dialog_memory_detail
 layout dialog_model_detail
+layout dialog_notifications_sheet
 layout dialog_word_synonyms
+layout item_attachment_preview
 layout item_chat_ai
+layout item_chat_attachment
 layout item_chat_user
 layout item_memory_vault
 layout item_model_card
+layout item_notification_card
 layout item_reminder_card
 layout item_sidebar_history
 layout item_word_synonym
@@ -4966,3 +4997,4 @@ styleable ViewPager2 android_orientation
 styleable ViewStubCompat android_id android_layout android_inflatedId
 styleable ViewTransition android_id SharedValue SharedValueId clearsTag duration ifTagNotSet ifTagSet motionInterpolator motionTarget onStateTransition pathMotionArc setsTag transitionDisable upDuration viewTransitionMode
 styleable include constraintSet
+xml file_paths

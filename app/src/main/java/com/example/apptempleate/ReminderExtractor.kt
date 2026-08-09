@@ -151,9 +151,34 @@ object ReminderExtractor {
         )
     }
 
+    private fun isQuestionText(text: String): Boolean {
+        val trimmed = text.trim()
+        if (trimmed.endsWith("?")) return true
+        val lower = trimmed.lowercase(Locale.getDefault())
+        val questionKeywords = listOf(
+            "what ", "who ", "where ", "when ", "why ", "how ",
+            "can you", "could you", "do you", "tell me", "is there", "are there",
+            "which ", "would ", "will you", "show me", "please tell", "explain ",
+            "what's", "where's", "who's", "how's", "do i", "do we", "is it", "are we"
+        )
+        return questionKeywords.any { lower.startsWith(it) || lower.contains(" $it") }
+    }
+
     private fun parseReminderData(userMessage: String, llmTag: String?): ExtractedReminderData? {
-        // 1. Try parsing JSON format from LLM tag if available
-        if (!llmTag.isNullOrBlank() && llmTag != "NONE" && llmTag != "[]") {
+        val trimmedMsg = userMessage.trim()
+
+        // 0. If user message is a question or inquiry, NEVER set a reminder!
+        if (isQuestionText(trimmedMsg)) {
+            return null
+        }
+
+        // 1. If LLM tag is explicitly NONE or empty, respect LLM decision and return null immediately!
+        if (!llmTag.isNullOrBlank()) {
+            val upperTag = llmTag.trim().uppercase()
+            if (upperTag == "NONE" || upperTag == "[]" || upperTag == "[\"\"]" || upperTag == "NULL") {
+                return null
+            }
+
             try {
                 val cleanTag = llmTag.trim().removeSurrounding("[", "]").trim()
                 val jsonObj = if (cleanTag.startsWith("{")) JSONObject(cleanTag) else JSONObject("{ $cleanTag }")
@@ -163,31 +188,43 @@ object ReminderExtractor {
                 val imp = jsonObj.optString("importance", "MEDIUM").uppercase()
                 val cat = jsonObj.optString("category", inferCategory(title + " " + desc)).uppercase()
 
-                val timeMillis = parseNaturalLanguageDateTime(timeStr.ifBlank { userMessage })
-                if (title.isNotBlank() && timeMillis > 0) {
-                    return ExtractedReminderData(title, desc, timeMillis, cat, imp)
+                // Reject if title is a question
+                if (title.isNotBlank() && !isQuestionText(title)) {
+                    val timeMillis = parseNaturalLanguageDateTime(timeStr.ifBlank { userMessage })
+                    if (timeMillis > System.currentTimeMillis()) {
+                        return ExtractedReminderData(title, desc, timeMillis, cat, imp)
+                    }
                 }
             } catch (e: Exception) {
-                // Fallback to text parsing
+                // Fallback to strict text parsing
             }
         }
 
-        // 2. Direct Heuristic Extraction from User Message
+        // 2. Direct Heuristic Extraction (only for explicit non-question statements)
         val lower = userMessage.lowercase(Locale.getDefault())
 
         val reminderKeywords = listOf(
-            "remind me", "reminder", "i have", "have to", "got to", "need to",
-            "appointment", "class", "meeting", "doctor", "pickup", "pick up",
-            "schedule", "flight", "exam", "test", "interview", "call someone", "visit"
+            "remind me", "reminder", "i have extra class", "i have class", "i have meeting",
+            "i have doctor", "i have appointment", "i have an appointment", "i have a meeting",
+            "i have to meet", "i have to go", "i have to pickup", "i have to pick up",
+            "i need to go", "i need to pick up", "pick up someone", "pickup someone",
+            "schedule a", "set a reminder", "appointment on", "class on", "meeting on"
         )
 
-        val hasReminderIntent = reminderKeywords.any { lower.contains(it) } ||
-                lower.contains("at ") || lower.contains("on ") || lower.contains("tomorrow") || lower.contains("next ")
+        val hasReminderKeyword = reminderKeywords.any { lower.contains(it) }
+
+        // Use strict regex for "at <digit>" (e.g. "at 2pm", "at 14:00"), NOT substring "at " which matches "what "
+        val hasExactAtTime = Regex("\\bat\\s+\\d{1,2}(?::\\d{2})?\\s*(?:am|pm)?\\b", RegexOption.IGNORE_CASE).containsMatchIn(lower)
+        val hasRelativeDate = lower.contains("tomorrow") || lower.contains("next sunday") || lower.contains("next monday") ||
+                lower.contains("next tuesday") || lower.contains("next wednesday") || lower.contains("next thursday") ||
+                lower.contains("next friday") || lower.contains("next saturday") || Regex("\\bin \\d+\\s*(?:hour|hr|min|day)\\b").containsMatchIn(lower)
+
+        val hasReminderIntent = hasReminderKeyword || (hasExactAtTime && (lower.contains("have") || lower.contains("meet") || lower.contains("go"))) || hasRelativeDate
 
         if (!hasReminderIntent) return null
 
         val targetTimeMillis = parseNaturalLanguageDateTime(userMessage)
-        if (targetTimeMillis <= 0) return null
+        if (targetTimeMillis <= System.currentTimeMillis()) return null
 
         val category = inferCategory(userMessage)
         val title = extractTitle(userMessage, category)
@@ -247,9 +284,24 @@ object ReminderExtractor {
     }
 
     fun parseNaturalLanguageDateTime(text: String): Long {
+        val lower = text.lowercase(Locale.getDefault())
+
+        // Check if there is ANY explicit date or time expression in the text
+        val hasTimeExpression = Regex("\\b\\d{1,2}(?::\\d{2})?\\s*(?:am|pm)\\b", RegexOption.IGNORE_CASE).containsMatchIn(lower) ||
+                Regex("\\bat\\s+\\d{1,2}(?::\\d{2})?\\b", RegexOption.IGNORE_CASE).containsMatchIn(lower) ||
+                lower.contains("morning") || lower.contains("afternoon") || lower.contains("evening") || lower.contains("night")
+
+        val hasDateExpression = lower.contains("tomorrow") || lower.contains("today") || lower.contains("next ") ||
+                Regex("\\b(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\\b").containsMatchIn(lower) ||
+                Regex("\\bin \\d+\\s*(?:hour|hr|min|day)\\b").containsMatchIn(lower)
+
+        // If no explicit time AND no explicit date expression exists, DO NOT parse a time (return 0)
+        if (!hasTimeExpression && !hasDateExpression) {
+            return 0L
+        }
+
         val cal = Calendar.getInstance()
         val now = System.currentTimeMillis()
-        val lower = text.lowercase(Locale.getDefault())
 
         // 1. Time Extraction (e.g. 2pm, 2:30pm, 14:00, 10 am, 6:30 pm)
         var hour = -1
@@ -264,7 +316,6 @@ object ReminderExtractor {
             val ampm = m.groupValues[3].lowercase()
 
             val num = numStr.toIntOrNull() ?: continue
-            // Skip numbers that look like years or days of month (e.g. 2026 or 15th)
             if (num > 24) continue
 
             if (ampm.isNotBlank()) {
@@ -278,7 +329,7 @@ object ReminderExtractor {
             } else if (lower.contains("at $num") || lower.contains("by $num") || minStr.isNotBlank()) {
                 hour = num
                 if (minStr.isNotBlank()) minute = minStr.toIntOrNull() ?: 0
-                if (hour in 1..7 && !lower.contains("am")) hour += 12 // Default 2 -> 14 (2 PM)
+                if (hour in 1..7 && !lower.contains("am")) hour += 12
                 break
             }
         }
@@ -290,7 +341,7 @@ object ReminderExtractor {
                 lower.contains("afternoon") -> 14
                 lower.contains("evening") -> 18
                 lower.contains("night") -> 20
-                else -> 14 // Default to 2 PM
+                else -> 14 // Default to 2 PM ONLY if a date expression like 'tomorrow' exists
             }
         }
 

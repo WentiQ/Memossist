@@ -46,7 +46,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnHeaderModelPicker: LinearLayout
     private lateinit var tvHeaderModelIcon: TextView
     private lateinit var tvHeaderModelName: TextView
-    private lateinit var btnHeaderNewChat: ImageButton
+    private lateinit var btnHeaderNotifications: ImageButton
+    private lateinit var vHeaderUnreadBadge: View
     private lateinit var btnDeleteCurrentChat: ImageButton
     private lateinit var mainContentContainer: ConstraintLayout
 
@@ -86,6 +87,26 @@ class MainActivity : AppCompatActivity() {
     private var touchStartX = 0f
     private var touchStartY = 0f
 
+    // Attachment Preview & Selection Views
+    private lateinit var llAttachmentPreviewContainer: LinearLayout
+    private lateinit var rvAttachmentPreviews: RecyclerView
+    private lateinit var attachmentPreviewAdapter: AttachmentPreviewAdapter
+    private val pendingAttachments: MutableList<MediaAttachment> = mutableListOf()
+
+    private val openDocumentLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenMultipleDocuments()
+    ) { uris ->
+        if (!uris.isNullOrEmpty()) {
+            for (uri in uris) {
+                val attachment = AttachmentStorageHelper.saveUriToInternalStorage(this, uri)
+                if (attachment != null) {
+                    pendingAttachments.add(attachment)
+                }
+            }
+            updateAttachmentPreviewUI()
+        }
+    }
+
     // Audio Record Permission Launcher
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -112,7 +133,8 @@ class MainActivity : AppCompatActivity() {
         btnHeaderModelPicker = findViewById(R.id.btnHeaderModelPicker)
         tvHeaderModelIcon = findViewById(R.id.tvHeaderModelIcon)
         tvHeaderModelName = findViewById(R.id.tvHeaderModelName)
-        btnHeaderNewChat = findViewById(R.id.btnHeaderNewChat)
+        btnHeaderNotifications = findViewById(R.id.btnHeaderNotifications)
+        vHeaderUnreadBadge = findViewById(R.id.vHeaderUnreadBadge)
         btnDeleteCurrentChat = findViewById(R.id.btnDeleteCurrentChat)
         mainContentContainer = findViewById(R.id.mainContentContainer)
 
@@ -150,6 +172,16 @@ class MainActivity : AppCompatActivity() {
         )
         rvChatMessages.layoutManager = LinearLayoutManager(this)
         rvChatMessages.adapter = chatAdapter
+
+        // Initialize Attachment Preview Views
+        llAttachmentPreviewContainer = findViewById(R.id.llAttachmentPreviewContainer)
+        rvAttachmentPreviews = findViewById(R.id.rvAttachmentPreviews)
+        attachmentPreviewAdapter = AttachmentPreviewAdapter { itemToRemove ->
+            pendingAttachments.remove(itemToRemove)
+            updateAttachmentPreviewUI()
+        }
+        rvAttachmentPreviews.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        rvAttachmentPreviews.adapter = attachmentPreviewAdapter
 
         // Initialize Sidebar History RecyclerView (Only history scrolls!)
         sidebarHistoryAdapter = SidebarHistoryAdapter(
@@ -192,10 +224,14 @@ class MainActivity : AppCompatActivity() {
             showQuickModelPickerSheet()
         }
 
-        // Header New Chat Button -> Start New Chat Session
-        btnHeaderNewChat.setOnClickListener {
-            startNewConversationSession()
-            Toast.makeText(this, "Started new chat", Toast.LENGTH_SHORT).show()
+        // Header Notification Center Button -> Open Notifications Popup Sheet (Last 30 days)
+        btnHeaderNotifications.setOnClickListener {
+            val notifSheet = NotificationsBottomSheet(
+                onDismissCallback = {
+                    updateUnreadNotificationBadge()
+                }
+            )
+            notifSheet.show(supportFragmentManager, "NotificationsBottomSheet")
         }
 
         // Header Delete Active Chat Button
@@ -283,13 +319,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnPlus.setOnClickListener {
-            Toast.makeText(this, "Add attachments", Toast.LENGTH_SHORT).show()
+            try {
+                openDocumentLauncher.launch(arrayOf("*/*"))
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, "Cannot open file picker: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // Smart Microphone / Send Action Button Click
         btnMic.setOnClickListener {
             val text = etChatInput.text.toString().trim()
-            if (text.isNotEmpty() && !isListening) {
+            if ((text.isNotEmpty() || pendingAttachments.isNotEmpty()) && !isListening) {
                 sendMessage()
             } else {
                 toggleSilentSpeechToText()
@@ -302,6 +343,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateAttachmentPreviewUI() {
+        attachmentPreviewAdapter.setAttachments(pendingAttachments.toList())
+        if (pendingAttachments.isNotEmpty()) {
+            llAttachmentPreviewContainer.visibility = View.VISIBLE
+        } else {
+            llAttachmentPreviewContainer.visibility = View.GONE
+        }
+        updateMicOrSendButtonState()
+    }
+
     override fun onPause() {
         super.onPause()
         chatListScrollState = rvChatMessages.layoutManager?.onSaveInstanceState()
@@ -312,6 +363,7 @@ class MainActivity : AppCompatActivity() {
         updateGreetingText()
         refreshSidebarHistory()
         updateHeaderActiveModel()
+        updateUnreadNotificationBadge()
 
         val activeId = currentConversation?.id
         if (activeId != null) {
@@ -331,6 +383,11 @@ class MainActivity : AppCompatActivity() {
             rvChatMessages.visibility = View.GONE
             btnDeleteCurrentChat.visibility = View.GONE
         }
+    }
+
+    private fun updateUnreadNotificationBadge() {
+        val unreadCount = NotificationHistoryRepository.getUnreadCount(this)
+        vHeaderUnreadBadge.visibility = if (unreadCount > 0) View.VISIBLE else View.GONE
     }
 
     private fun toggleSilentSpeechToText() {
@@ -431,7 +488,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateMicOrSendButtonState() {
         val hasText = etChatInput.text.toString().trim().isNotEmpty()
-        if (hasText) {
+        val hasAttachments = pendingAttachments.isNotEmpty()
+        if (hasText || hasAttachments) {
             btnMic.setImageResource(R.drawable.ic_send)
             btnMic.contentDescription = "Send Message"
             btnMic.imageTintList = ColorStateList.valueOf(Color.parseColor("#121417"))
@@ -445,26 +503,36 @@ class MainActivity : AppCompatActivity() {
 
     private fun sendMessage() {
         val userText = etChatInput.text.toString().trim()
-        if (userText.isEmpty()) return
+        val currentAttachments = pendingAttachments.toList()
+        if (userText.isEmpty() && currentAttachments.isEmpty()) return
 
         etChatInput.setText("")
+        pendingAttachments.clear()
+        updateAttachmentPreviewUI()
         isNewChatState = false
 
         // Create or get active conversation
+        val conversationTitle = when {
+            userText.isNotEmpty() -> if (userText.length > 28) userText.take(28) + "..." else userText
+            currentAttachments.isNotEmpty() -> "Attachment: ${currentAttachments[0].fileName}"
+            else -> "New Chat"
+        }
+
         val activeConv = currentConversation ?: Conversation(
             id = UUID.randomUUID().toString(),
-            title = if (userText.length > 28) userText.take(28) + "..." else userText,
+            title = conversationTitle,
             lastUpdated = System.currentTimeMillis()
         ).also {
             currentConversation = it
             allConversations.add(0, it)
         }
 
-        // Add user message
+        // Add user message with attached media/files
         val userMsg = ChatMessage(
             conversationId = activeConv.id,
             text = userText,
-            isUser = true
+            isUser = true,
+            attachments = currentAttachments
         )
         activeConv.messages.add(userMsg)
         activeConv.lastUpdated = System.currentTimeMillis()
@@ -480,7 +548,7 @@ class MainActivity : AppCompatActivity() {
             text = "",
             isUser = false,
             isThinking = true,
-            thinkingStatus = "🔍 Step 1/4: Retrieving candidate experiences..."
+            thinkingStatus = "🔍 Step 1/6: Retrieving candidate experiences..."
         )
         activeConv.messages.add(aiMsg)
         val aiMsgPosition = activeConv.messages.size - 1
@@ -492,6 +560,7 @@ class MainActivity : AppCompatActivity() {
         ChatRepository.processChatMessageWithPipeline(
             context = this@MainActivity,
             userMessage = userText,
+            userAttachments = currentAttachments,
             callback = object : ChatRepository.ChatPipelineCallback {
                 override fun onStepUpdate(stepText: String) {
                     aiMsg.thinkingStatus = stepText
@@ -504,10 +573,11 @@ class MainActivity : AppCompatActivity() {
                     rvChatMessages.smoothScrollToPosition(aiMsgPosition)
                 }
 
-                override fun onCompleted(cleanHumanoidAnswer: String, debugLogText: String) {
+                override fun onCompleted(cleanHumanoidAnswer: String, debugLogText: String, usedAttachments: List<MediaAttachment>) {
                     aiMsg.isThinking = false
                     aiMsg.text = cleanHumanoidAnswer
                     aiMsg.debugLog = debugLogText
+                    aiMsg.attachments = usedAttachments
                     activeConv.lastUpdated = System.currentTimeMillis()
 
                     chatAdapter.updateMessage(aiMsgPosition, aiMsg)
