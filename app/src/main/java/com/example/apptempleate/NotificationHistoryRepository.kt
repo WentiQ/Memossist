@@ -109,6 +109,12 @@ object NotificationHistoryRepository {
         }
     }
 
+    fun deleteNotification(context: Context, notificationId: String) {
+        val list = loadLast30DaysNotifications(context)
+        val updated = list.filterNot { it.id == notificationId }
+        saveAllNotifications(context, updated)
+    }
+
     fun getUnreadCount(context: Context): Int {
         return loadLast30DaysNotifications(context).count { !it.isRead }
     }

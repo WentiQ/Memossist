@@ -3047,6 +3047,7 @@ id llSearchContainer
 id llStatsBanner
 id llThinkingContainer
 id llTriggersContainer
+id llWorkspaceRemindersSection
 id mainContentContainer
 id marquee
 id masked
@@ -3183,6 +3184,7 @@ id rvRemindersList
 id rvSidebarHistory
 id rvUserAttachments
 id rvWordsSynonyms
+id rvWorkspaceReminders
 id save_non_transition_alpha
 id save_overlay_view
 id sawtooth
@@ -3393,6 +3395,8 @@ id tvVoiceStatus
 id tvVoiceSubStatus
 id tvWordsDialogTitle
 id tvWordsSubHeader
+id tvWsReminderIcon
+id tvWsReminderStatement
 id typingDotsView
 id unchecked
 id uniform
@@ -3589,6 +3593,7 @@ layout item_notification_card
 layout item_reminder_card
 layout item_sidebar_history
 layout item_word_synonym
+layout item_workspace_reminder
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
 layout m3_alert_dialog_title

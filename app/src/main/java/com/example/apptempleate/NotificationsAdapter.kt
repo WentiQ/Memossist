@@ -10,11 +10,23 @@ class NotificationsAdapter(
     private val onItemClick: (NotificationItem) -> Unit
 ) : RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder>() {
 
-    private var notificationsList: List<NotificationItem> = emptyList()
+    private val notificationsList: MutableList<NotificationItem> = mutableListOf()
 
     fun setNotifications(newList: List<NotificationItem>) {
-        notificationsList = newList
+        notificationsList.clear()
+        notificationsList.addAll(newList)
         notifyDataSetChanged()
+    }
+
+    fun getItem(position: Int): NotificationItem? {
+        return if (position in 0 until notificationsList.size) notificationsList[position] else null
+    }
+
+    fun removeItem(position: Int) {
+        if (position in 0 until notificationsList.size) {
+            notificationsList.removeAt(position)
+            notifyItemRemoved(position)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder {
@@ -42,6 +54,17 @@ class NotificationsAdapter(
             tvNotifMessage.text = item.message
 
             vUnreadDot.visibility = if (item.isRead) View.GONE else View.VISIBLE
+
+            // Dim item if read
+            if (item.isRead) {
+                itemView.alpha = 0.55f
+                tvNotifTitle.setTextColor(android.graphics.Color.parseColor("#8E8E93"))
+                tvNotifMessage.setTextColor(android.graphics.Color.parseColor("#6C6C70"))
+            } else {
+                itemView.alpha = 1.0f
+                tvNotifTitle.setTextColor(android.graphics.Color.parseColor("#F2F2F7"))
+                tvNotifMessage.setTextColor(android.graphics.Color.parseColor("#AEAEB2"))
+            }
 
             itemView.setOnClickListener {
                 onItemClick(item)

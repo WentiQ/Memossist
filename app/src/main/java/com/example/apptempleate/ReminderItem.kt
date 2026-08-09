@@ -87,4 +87,37 @@ data class ReminderItem(
             else -> "⏰"
         }
     }
+
+    fun getHumanoidWorkspaceStatement(userName: String = "Dinesh"): String {
+        val triggerMsg = triggers.firstOrNull { it.humanoidMessage.isNotEmpty() }?.humanoidMessage
+        if (!triggerMsg.isNullOrEmpty()) {
+            return triggerMsg
+        }
+
+        val now = System.currentTimeMillis()
+        val calNow = Calendar.getInstance().apply { timeInMillis = now }
+        val calEvent = Calendar.getInstance().apply { timeInMillis = eventTimeMillis }
+
+        val isToday = calNow.get(Calendar.DAY_OF_YEAR) == calEvent.get(Calendar.DAY_OF_YEAR) &&
+                      calNow.get(Calendar.YEAR) == calEvent.get(Calendar.YEAR)
+
+        val timeOnly = getFormattedEventTimeOnly()
+
+        return if (isToday) {
+            "Hey $userName, do you remember today you have $title at $timeOnly?"
+        } else {
+            "Hey $userName, tomorrow you have $title at $timeOnly."
+        }
+    }
+
+    fun getDayLabel(): String {
+        val now = System.currentTimeMillis()
+        val calNow = Calendar.getInstance().apply { timeInMillis = now }
+        val calEvent = Calendar.getInstance().apply { timeInMillis = eventTimeMillis }
+
+        val isToday = calNow.get(Calendar.DAY_OF_YEAR) == calEvent.get(Calendar.DAY_OF_YEAR) &&
+                      calNow.get(Calendar.YEAR) == calEvent.get(Calendar.YEAR)
+
+        return if (isToday) "TODAY ${getFormattedEventTimeOnly()}" else "TOMORROW ${getFormattedEventTimeOnly()}"
+    }
 }

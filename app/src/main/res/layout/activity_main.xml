@@ -192,6 +192,23 @@
                 android:lineSpacingExtra="4dp"
                 android:letterSpacing="-0.02" />
 
+            <!-- Conversational Assistant Reminders Section -->
+            <LinearLayout
+                android:id="@+id/llWorkspaceRemindersSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvWorkspaceReminders"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
         <!-- Floating Bottom Fade Gradient Overlay (Transparent to Opaque White) -->

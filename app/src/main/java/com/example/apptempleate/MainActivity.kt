@@ -56,6 +56,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var llGreetingContainer: LinearLayout
     private lateinit var tvGreetingTitle: TextView
     private lateinit var tvGreetingPrompt: TextView
+    private lateinit var llWorkspaceRemindersSection: LinearLayout
+    private lateinit var rvWorkspaceReminders: RecyclerView
+    private lateinit var workspaceRemindersAdapter: WorkspaceRemindersAdapter
 
     private lateinit var rvChatMessages: RecyclerView
     private lateinit var chatAdapter: ChatAdapter
@@ -189,6 +192,24 @@ class MainActivity : AppCompatActivity() {
         rvChatMessages.layoutManager = LinearLayoutManager(this)
         rvChatMessages.adapter = chatAdapter
 
+        // Swipe Left or Right to remove chat message
+        val chatSwipeHandler = object : androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(0, androidx.recyclerview.widget.ItemTouchHelper.LEFT or androidx.recyclerview.widget.ItemTouchHelper.RIGHT) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean = false
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val conv = currentConversation ?: return
+                if (position in 0 until conv.messages.size) {
+                    conv.messages.removeAt(position)
+                    conv.lastUpdated = System.currentTimeMillis()
+                    ChatRepository.saveOrUpdateConversation(this@MainActivity, conv)
+                    chatAdapter.setMessages(conv.messages)
+                    Toast.makeText(this@MainActivity, "Message removed", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        androidx.recyclerview.widget.ItemTouchHelper(chatSwipeHandler).attachToRecyclerView(rvChatMessages)
+
         // Initialize Attachment Preview Views
         llAttachmentPreviewContainer = findViewById(R.id.llAttachmentPreviewContainer)
         rvAttachmentPreviews = findViewById(R.id.rvAttachmentPreviews)
@@ -223,6 +244,9 @@ class MainActivity : AppCompatActivity() {
 
         // Set Dynamic Premium Time-of-Day Greeting with User Name
         updateGreetingText()
+
+        // Initialize Workspace Upcoming Reminders (Next 24h)
+        setupWorkspaceReminders()
 
         // Load Saved Conversations & Populate Sidebar Recent History List
         refreshSidebarHistory()
@@ -423,6 +447,7 @@ class MainActivity : AppCompatActivity() {
         refreshSidebarHistory()
         updateHeaderActiveModel()
         updateUnreadNotificationBadge()
+        refreshWorkspaceReminders()
 
         val activeId = currentConversation?.id
         if (activeId != null) {
@@ -828,6 +853,35 @@ class MainActivity : AppCompatActivity() {
             }
         )
         pickerSheet.show(supportFragmentManager, "ModelPickerBottomSheet")
+    }
+
+    private fun setupWorkspaceReminders() {
+        llWorkspaceRemindersSection = findViewById(R.id.llWorkspaceRemindersSection)
+        rvWorkspaceReminders = findViewById(R.id.rvWorkspaceReminders)
+
+        workspaceRemindersAdapter = WorkspaceRemindersAdapter { reminder ->
+            val intent = Intent(this, RemindersActivity::class.java).apply {
+                putExtra("HIGHLIGHT_REMINDER_ID", reminder.id)
+            }
+            startActivity(intent)
+        }
+        rvWorkspaceReminders.layoutManager = LinearLayoutManager(this)
+        rvWorkspaceReminders.adapter = workspaceRemindersAdapter
+
+        refreshWorkspaceReminders()
+    }
+
+    private fun refreshWorkspaceReminders() {
+        val upcomingList = ReminderRepository.getRemindersInNext24Hours(this)
+        val prefs = getSharedPreferences("MemossistPrefs", MODE_PRIVATE)
+        val userName = prefs.getString("user_name", "Dinesh") ?: "Dinesh"
+
+        if (upcomingList.isNotEmpty()) {
+            llWorkspaceRemindersSection.visibility = View.VISIBLE
+            workspaceRemindersAdapter.setReminders(upcomingList, userName)
+        } else {
+            llWorkspaceRemindersSection.visibility = View.GONE
+        }
     }
 
     override fun onDestroy() {

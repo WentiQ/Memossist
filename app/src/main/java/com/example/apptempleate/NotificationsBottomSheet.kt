@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -63,6 +64,36 @@ class NotificationsBottomSheet(
         rvNotificationsList.layoutManager = LinearLayoutManager(requireContext())
         rvNotificationsList.adapter = adapter
 
+        // Swipe Left or Right ItemTouchHelper
+        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean = false
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val item = adapter.getItem(position) ?: return
+                val ctx = context ?: return
+
+                if (!item.isRead) {
+                    // Unread: Mark as READ -> Dim card, DO NOT REMOVE
+                    NotificationHistoryRepository.markAsRead(ctx, item.id)
+                    item.isRead = true
+                    adapter.notifyItemChanged(position)
+                    android.widget.Toast.makeText(ctx, "Marked as read (Swipe again to remove)", android.widget.Toast.LENGTH_SHORT).show()
+                } else {
+                    // Already read: Remove/delete notification card
+                    NotificationHistoryRepository.deleteNotification(ctx, item.id)
+                    adapter.removeItem(position)
+                    android.widget.Toast.makeText(ctx, "Notification removed", android.widget.Toast.LENGTH_SHORT).show()
+                    if (adapter.itemCount == 0) {
+                        llEmptyNotifications.visibility = View.VISIBLE
+                        rvNotificationsList.visibility = View.GONE
+                    }
+                }
+                updateUnreadSubHeader()
+            }
+        }
+        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rvNotificationsList)
+
         btnMarkAllRead.setOnClickListener {
             context?.let { ctx ->
                 NotificationHistoryRepository.markAllAsRead(ctx)
@@ -74,16 +105,22 @@ class NotificationsBottomSheet(
         loadNotifications()
     }
 
-    private fun loadNotifications() {
+    private fun updateUnreadSubHeader() {
         val ctx = context ?: return
         val list = NotificationHistoryRepository.loadLast30DaysNotifications(ctx)
-
         val unreadCount = list.count { !it.isRead }
         tvNotifSubHeader.text = if (unreadCount > 0) {
             "$unreadCount unread • Showing last 30 days"
         } else {
             "All notifications read • Showing last 30 days"
         }
+    }
+
+    private fun loadNotifications() {
+        val ctx = context ?: return
+        val list = NotificationHistoryRepository.loadLast30DaysNotifications(ctx)
+
+        updateUnreadSubHeader()
 
         adapter.setNotifications(list)
 

@@ -128,6 +128,18 @@ object ReminderRepository {
         }
     }
 
+    fun getRemindersInNext24Hours(context: Context): List<ReminderItem> {
+        val all = loadAllReminders(context)
+        val now = System.currentTimeMillis()
+        val next24Hours = now + 24L * 3600_000L
+
+        return all.filter { reminder ->
+            reminder.isActive && !reminder.isCompleted &&
+            (reminder.eventTimeMillis in now..next24Hours ||
+             reminder.triggers.any { t -> !t.isTriggered && t.triggerTimeMillis in now..next24Hours })
+        }.sortedBy { it.eventTimeMillis }
+    }
+
     fun addOrUpdateReminder(context: Context, reminder: ReminderItem) {
         val list = loadAllReminders(context)
         val existingIndex = list.indexOfFirst { it.id == reminder.id }
