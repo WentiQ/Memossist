@@ -1,10 +1,12 @@
 package com.example.apptempleate
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -107,6 +109,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Notification Permission Launcher for Android 13+ (API 33+)
+    private val requestNotificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (!isGranted) {
+            Toast.makeText(this, "Notification permission needed for system status bar alerts", Toast.LENGTH_LONG).show()
+        }
+    }
+
     // Audio Record Permission Launcher
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -121,11 +132,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
+        AppLifecycleTracker.init(application)
+
         // Remove window title & hide action bar completely
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         supportActionBar?.hide()
         
         setContentView(R.layout.activity_main)
+
+        // Prompt for system notifications permission on Android 13+
+        checkAndRequestNotificationPermission()
 
         // Initialize Navigation & Main Layout Views
         drawerLayout = findViewById(R.id.drawerLayout)
@@ -353,13 +369,54 @@ class MainActivity : AppCompatActivity() {
         updateMicOrSendButtonState()
     }
 
+    private var chatBroadcastReceiver: android.content.BroadcastReceiver? = null
+
+    private fun registerChatBroadcastReceiver() {
+        if (chatBroadcastReceiver == null) {
+            chatBroadcastReceiver = object : android.content.BroadcastReceiver() {
+                override fun onReceive(context: Context?, intent: Intent?) {
+                    val convId = intent?.getStringExtra(ChatAiForegroundService.EXTRA_CONVERSATION_ID) ?: return
+
+                    if (currentConversation?.id == convId) {
+                        val updated = ChatRepository.loadAllConversations(this@MainActivity).find { it.id == convId }
+                        if (updated != null) {
+                            loadConversationIntoView(updated, restoreScroll = true)
+                        }
+                    }
+                    refreshSidebarHistory()
+                }
+            }
+            val filter = android.content.IntentFilter().apply {
+                addAction(ChatAiForegroundService.ACTION_CHAT_STEP_UPDATE)
+                addAction(ChatAiForegroundService.ACTION_CHAT_TOKEN_STREAM)
+                addAction(ChatAiForegroundService.ACTION_CHAT_COMPLETED)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(chatBroadcastReceiver, filter, RECEIVER_NOT_EXPORTED)
+            } else {
+                registerReceiver(chatBroadcastReceiver, filter)
+            }
+        }
+    }
+
+    private fun unregisterChatBroadcastReceiver() {
+        try {
+            chatBroadcastReceiver?.let { unregisterReceiver(it) }
+            chatBroadcastReceiver = null
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     override fun onPause() {
         super.onPause()
         chatListScrollState = rvChatMessages.layoutManager?.onSaveInstanceState()
+        unregisterChatBroadcastReceiver()
     }
 
     override fun onResume() {
         super.onResume()
+        registerChatBroadcastReceiver()
         updateGreetingText()
         refreshSidebarHistory()
         updateHeaderActiveModel()
@@ -388,6 +445,14 @@ class MainActivity : AppCompatActivity() {
     private fun updateUnreadNotificationBadge() {
         val unreadCount = NotificationHistoryRepository.getUnreadCount(this)
         vHeaderUnreadBadge.visibility = if (unreadCount > 0) View.VISIBLE else View.GONE
+    }
+
+    private fun checkAndRequestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
     }
 
     private fun toggleSilentSpeechToText() {
@@ -556,37 +621,16 @@ class MainActivity : AppCompatActivity() {
         chatAdapter.setMessages(activeConv.messages)
         rvChatMessages.smoothScrollToPosition(aiMsgPosition)
 
-        // Execute 6-Step Chat Pipeline with realtime step updates & live LLM token streaming
-        ChatRepository.processChatMessageWithPipeline(
+        // Save conversation state immediately to disk
+        ChatRepository.saveOrUpdateConversation(this@MainActivity, activeConv)
+        refreshSidebarHistory()
+
+        // Launch Foreground Service with WakeLock to guarantee 100% background LLM execution
+        ChatAiForegroundService.startService(
             context = this@MainActivity,
+            conversationId = activeConv.id,
             userMessage = userText,
-            userAttachments = currentAttachments,
-            callback = object : ChatRepository.ChatPipelineCallback {
-                override fun onStepUpdate(stepText: String) {
-                    aiMsg.thinkingStatus = stepText
-                    chatAdapter.updateMessage(aiMsgPosition, aiMsg)
-                }
-
-                override fun onTokenStream(partialText: String) {
-                    aiMsg.text = partialText
-                    chatAdapter.updateMessage(aiMsgPosition, aiMsg)
-                    rvChatMessages.smoothScrollToPosition(aiMsgPosition)
-                }
-
-                override fun onCompleted(cleanHumanoidAnswer: String, debugLogText: String, usedAttachments: List<MediaAttachment>) {
-                    aiMsg.isThinking = false
-                    aiMsg.text = cleanHumanoidAnswer
-                    aiMsg.debugLog = debugLogText
-                    aiMsg.attachments = usedAttachments
-                    activeConv.lastUpdated = System.currentTimeMillis()
-
-                    chatAdapter.updateMessage(aiMsgPosition, aiMsg)
-                    rvChatMessages.smoothScrollToPosition(aiMsgPosition)
-
-                    ChatRepository.saveOrUpdateConversation(this@MainActivity, activeConv)
-                    refreshSidebarHistory()
-                }
-            }
+            userAttachments = currentAttachments
         )
     }
 

@@ -2851,6 +2851,7 @@ id btnSelectModelCard
 id btnSidebarNewChat
 id btnSpeakerToggle
 id btnTestAlarm
+id btnTestPhoneNotification
 id btnWordsDone
 id btnZoomIn
 id btnZoomOut

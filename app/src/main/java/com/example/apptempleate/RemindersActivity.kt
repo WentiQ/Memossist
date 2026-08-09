@@ -90,6 +90,20 @@ class RemindersActivity : AppCompatActivity() {
             finishWithSmoothAnimation()
         }
 
+        val btnTestPhoneNotification: ImageButton? = findViewById(R.id.btnTestPhoneNotification)
+        btnTestPhoneNotification?.setOnClickListener {
+            val testReminder = ReminderItem(
+                id = "TEST-${System.currentTimeMillis()}",
+                title = "Memossist Reminder",
+                description = "Hey Dinesh, do you remember today you have an extra class at 2pm?",
+                eventTimeMillis = System.currentTimeMillis() + 5000L,
+                importance = "HIGH",
+                category = "CLASS"
+            )
+            ReminderRepository.triggerTestAlarmImmediately(this, testReminder)
+            Toast.makeText(this, "Testing status bar notification in 3 seconds...", Toast.LENGTH_LONG).show()
+        }
+
         fabAddReminder.setOnClickListener {
             showAddOrEditReminderDialog(null)
         }

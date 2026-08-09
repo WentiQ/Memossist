@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -86,6 +87,12 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
             )
             ChatRepository.saveOrUpdateConversation(this, activeConversation!!)
         }
+
+        // Start Foreground Service to keep Microphone & CPU active when screen turns off or app is backgrounded
+        VoiceForegroundService.startService(this)
+
+        // Register Broadcast Receiver for End Call action from Notification Bar
+        registerCallStoppedReceiver()
 
         // Initialize TextToSpeech engine
         textToSpeech = TextToSpeech(this, this)
@@ -331,8 +338,39 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         }
     }
 
+    private var voiceCallStoppedReceiver: android.content.BroadcastReceiver? = null
+
+    private fun registerCallStoppedReceiver() {
+        if (voiceCallStoppedReceiver == null) {
+            voiceCallStoppedReceiver = object : android.content.BroadcastReceiver() {
+                override fun onReceive(context: Context?, intent: Intent?) {
+                    if (intent?.action == VoiceForegroundService.ACTION_VOICE_CALL_STOPPED_EVENT) {
+                        Toast.makeText(this@VoiceConversationActivity, "Voice call ended from notification", Toast.LENGTH_SHORT).show()
+                        finishWithSmoothAnimation()
+                    }
+                }
+            }
+            val filter = android.content.IntentFilter(VoiceForegroundService.ACTION_VOICE_CALL_STOPPED_EVENT)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(voiceCallStoppedReceiver, filter, RECEIVER_NOT_EXPORTED)
+            } else {
+                registerReceiver(voiceCallStoppedReceiver, filter)
+            }
+        }
+    }
+
+    private fun unregisterCallStoppedReceiver() {
+        try {
+            voiceCallStoppedReceiver?.let { unregisterReceiver(it) }
+            voiceCallStoppedReceiver = null
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     private fun stopAllVoiceEngines() {
         try {
+            VoiceForegroundService.stopService(this)
             textToSpeech?.stop()
             textToSpeech?.shutdown()
             speechRecognizer?.stopListening()
@@ -344,6 +382,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
 
     override fun onDestroy() {
         super.onDestroy()
+        unregisterCallStoppedReceiver()
         stopAllVoiceEngines()
     }
 

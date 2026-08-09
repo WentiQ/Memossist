@@ -81,8 +81,10 @@ class ReminderReceiver : BroadcastReceiver() {
             .setContentTitle(title)
             .setContentText(message)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setSound(alarmSound)
             .setVibrate(longArrayOf(0, 500, 200, 500))
             .setAutoCancel(true)
@@ -114,6 +116,9 @@ class ReminderReceiver : BroadcastReceiver() {
                     description = "Smart AI reminder alerts, briefings, and full screen alarm notifications"
                     enableVibration(true)
                     vibrationPattern = longArrayOf(0, 500, 200, 500)
+                    enableLights(true)
+                    lightColor = android.graphics.Color.RED
+                    lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
                 }
                 notificationManager.createNotificationChannel(channel)
             }

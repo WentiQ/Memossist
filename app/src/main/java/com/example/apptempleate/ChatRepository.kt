@@ -1,8 +1,15 @@
 package com.example.apptempleate
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.media.RingtoneManager
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import androidx.core.app.NotificationCompat
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -189,7 +196,83 @@ object ChatRepository {
             // Show answer and send any used experience attachments
             mainHandler.post {
                 callback.onCompleted(finalAnswer, finalDebugLog, usedExperienceAttachments)
+                
+                // If the app is in background or screen turned off, send a status bar notification
+                if (!AppLifecycleTracker.isAppInForeground) {
+                    sendChatAnswerNotification(context, userMessage, finalAnswer)
+                }
             }
+        }
+    }
+
+    fun sendChatAnswerNotification(context: Context, userQuery: String, cleanAnswerText: String) {
+        try {
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            val channelId = "memossist_chat_answers_channel"
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val existing = notificationManager.getNotificationChannel(channelId)
+                if (existing == null) {
+                    val channel = NotificationChannel(
+                        channelId,
+                        "Chat AI Answers",
+                        NotificationManager.IMPORTANCE_HIGH
+                    ).apply {
+                        description = "Notifications when Memossist AI completes generating your chat response"
+                        enableVibration(true)
+                        vibrationPattern = longArrayOf(0, 400, 200, 400)
+                        enableLights(true)
+                        lightColor = android.graphics.Color.BLUE
+                        lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
+                    }
+                    notificationManager.createNotificationChannel(channel)
+                }
+            }
+
+            // Save to 30-day Notification Center History
+            NotificationHistoryRepository.addNotification(
+                context = context,
+                notification = NotificationItem(
+                    id = UUID.randomUUID().toString(),
+                    reminderId = null,
+                    title = "Memossist Answer Ready 💬",
+                    message = if (cleanAnswerText.length > 120) cleanAnswerText.take(120) + "..." else cleanAnswerText,
+                    timestamp = System.currentTimeMillis(),
+                    type = "CHAT_ANSWER",
+                    isRead = false
+                )
+            )
+
+            // Intent to open MainActivity
+            val intent = Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            }
+            val pendingIntent = PendingIntent.getActivity(
+                context,
+                userQuery.hashCode(),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+            val builder = NotificationCompat.Builder(context, channelId)
+                .setSmallIcon(R.drawable.ic_sparkles)
+                .setContentTitle("Memossist Answer Ready 💬")
+                .setContentText(cleanAnswerText)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(cleanAnswerText))
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setSound(soundUri)
+                .setVibrate(longArrayOf(0, 400, 200, 400))
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+
+            notificationManager.notify((userQuery.hashCode()), builder.build())
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -222,11 +305,13 @@ object ChatRepository {
                     val text = msgObj.getString("text")
                     val isUser = msgObj.getBoolean("isUser")
                     val timestamp = msgObj.optLong("timestamp", System.currentTimeMillis())
-                    val debugLog = msgObj.optString("debugLog", null)
+                    val isThinking = msgObj.optBoolean("isThinking", false)
+                    val thinkingStatus = msgObj.optString("thinkingStatus", null).takeIf { !it.isNullOrEmpty() && it != "null" }
+                    val debugLog = msgObj.optString("debugLog", null).takeIf { !it.isNullOrEmpty() && it != "null" }
                     val rawAttJson = msgObj.optString("attachmentsJson", null)
                     val msgAtts = MemoryVaultRepository.parseAttachments(rawAttJson)
 
-                    messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, false, null as String?, debugLog, msgAtts))
+                    messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, isThinking, thinkingStatus, debugLog, msgAtts))
                 }
 
                 conversations.add(Conversation(id, title, lastUpdated, isPinned, messagesList))
@@ -259,6 +344,8 @@ object ChatRepository {
                             put("text", msg.text)
                             put("isUser", msg.isUser)
                             put("timestamp", msg.timestamp)
+                            put("isThinking", msg.isThinking)
+                            put("thinkingStatus", msg.thinkingStatus)
                             put("debugLog", msg.debugLog)
                             put("attachmentsJson", MemoryVaultRepository.serializeAttachments(msg.attachments))
                         }
