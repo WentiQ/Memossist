@@ -63,6 +63,9 @@ object BackgroundModelDownloadManager {
         // Always delete any existing partial, temp, or broken model file before starting download again
         deleteDownloadedModel(context, model)
 
+        // Launch Foreground Service so download process runs uninterrupted when app is in Recent Tasks / background
+        ModelDownloadForegroundService.startService(context, model.id)
+
         val initialProgress = ModelDownloadProgress(
             modelId = model.id,
             isDownloading = true,

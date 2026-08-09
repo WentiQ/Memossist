@@ -70,8 +70,8 @@ object RealModelDownloader {
                 while (redirects < maxRedirects) {
                     val url = URL(currentUrl)
                     urlConnection = url.openConnection() as HttpURLConnection
-                    urlConnection.connectTimeout = 15000
-                    urlConnection.readTimeout = 30000
+                    urlConnection.connectTimeout = 30000
+                    urlConnection.readTimeout = 120000
                     urlConnection.requestMethod = "GET"
                     urlConnection.setRequestProperty("User-Agent", "MemossistAndroidApp/1.0")
                     urlConnection.instanceFollowRedirects = false
