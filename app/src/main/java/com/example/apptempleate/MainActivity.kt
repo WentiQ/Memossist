@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity() {
     // Sidebar Views
     private lateinit var btnSidebarNewChat: View
     private lateinit var btnNavHome: View
+    private lateinit var btnNavReminders: View
     private lateinit var btnNavVault: View
     private lateinit var btnNavInsights: View
     private lateinit var btnNavConnections: View
@@ -118,6 +119,7 @@ class MainActivity : AppCompatActivity() {
         // Initialize Sidebar Views
         btnSidebarNewChat = findViewById(R.id.btnSidebarNewChat)
         btnNavHome = findViewById(R.id.btnNavHome)
+        btnNavReminders = findViewById(R.id.btnNavReminders)
         btnNavVault = findViewById(R.id.btnNavVault)
         btnNavInsights = findViewById(R.id.btnNavInsights)
         btnNavConnections = findViewById(R.id.btnNavConnections)
@@ -213,6 +215,13 @@ class MainActivity : AppCompatActivity() {
         // Sidebar Fixed Workspace Navigation Clicks
         btnNavHome.setOnClickListener {
             startNewConversationSession()
+            drawerLayout.closeDrawer(GravityCompat.START)
+        }
+
+        btnNavReminders.setOnClickListener {
+            val intent = Intent(this, RemindersActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             drawerLayout.closeDrawer(GravityCompat.START)
         }
 

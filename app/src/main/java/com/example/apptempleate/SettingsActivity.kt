@@ -36,6 +36,9 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var tvUserName: TextView
     private lateinit var btnEditName: ImageButton
+    private lateinit var btnMorningTime: LinearLayout
+    private lateinit var tvMorningTimeValue: TextView
+    private lateinit var btnManageReminders: LinearLayout
 
     private lateinit var prefs: SharedPreferences
 
@@ -88,12 +91,26 @@ class SettingsActivity : AppCompatActivity() {
 
         tvUserName = findViewById(R.id.tvUserName)
         btnEditName = findViewById(R.id.btnEditName)
+        btnMorningTime = findViewById(R.id.btnMorningTime)
+        tvMorningTimeValue = findViewById(R.id.tvMorningTimeValue)
+        btnManageReminders = findViewById(R.id.btnManageReminders)
 
         // Load saved user profile data
         loadUserProfileData()
+        updateMorningTimeDisplay()
 
         btnBack.setOnClickListener {
             finishWithSmoothAnimation()
+        }
+
+        btnMorningTime.setOnClickListener {
+            showMorningTimePickerDialog()
+        }
+
+        btnManageReminders.setOnClickListener {
+            val intent = Intent(this, RemindersActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         btnOpenModelMarketplace.setOnClickListener {
@@ -254,6 +271,38 @@ class SettingsActivity : AppCompatActivity() {
         ExperienceDagRepository.clearAllEdges(this)
 
         Toast.makeText(this, "All user chats, memory experiences & DAG graph data deleted.", Toast.LENGTH_LONG).show()
+    }
+
+    private fun updateMorningTimeDisplay() {
+        val hour = prefs.getInt("morning_briefing_hour", 7)
+        val ampm = if (hour >= 12) "PM" else "AM"
+        val displayHour = when {
+            hour == 0 -> 12
+            hour > 12 -> hour - 12
+            else -> hour
+        }
+        tvMorningTimeValue.text = "$displayHour:00 $ampm (${if (hour == 7) "Default" else "Custom"})"
+    }
+
+    private fun showMorningTimePickerDialog() {
+        val options = arrayOf("6:00 AM", "7:00 AM (Default)", "8:00 AM", "9:00 AM", "10:00 AM")
+        val hours = intArrayOf(6, 7, 8, 9, 10)
+        val currentHour = prefs.getInt("morning_briefing_hour", 7)
+        val selectedIndex = hours.indexOf(currentHour).coerceAtLeast(1)
+
+        AlertDialog.Builder(this)
+            .setTitle("Select Morning Start-of-Day Briefing Time")
+            .setSingleChoiceItems(options, selectedIndex) { dialog, which ->
+                val chosenHour = hours[which]
+                prefs.edit().putInt("morning_briefing_hour", chosenHour).apply()
+                updateMorningTimeDisplay()
+                Toast.makeText(this, "Morning briefing set to ${options[which]}", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     override fun onBackPressed() {

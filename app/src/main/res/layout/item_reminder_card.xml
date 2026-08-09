@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_gemini_chat_box"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Top Header Row: Category Badge, Title, Toggle Switch & Menu -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvCategoryIcon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_circle_icon_button"
+            android:backgroundTint="#F3F4F6"
+            android:gravity="center"
+            android:text="⏰"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvReminderTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Extra Class"
+                android:textColor="#121417"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvReminderTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Sun, Aug 16 at 2:00 PM"
+                android:textColor="#4B5563"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- Status Tag (e.g. In 2 days / Completed) -->
+        <TextView
+            android:id="@+id/tvTimeStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_tag_rounded"
+            android:backgroundTint="#EFF6FF"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="In 2 days"
+            android:textColor="#2563EB"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <!-- Toggle Active Switch -->
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchActive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:thumbTint="#121417"
+            app:trackTint="#D1D5DB" />
+
+    </LinearLayout>
+
+    <!-- Description Text (if present) -->
+    <TextView
+        android:id="@+id/tvReminderDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Extra class on Sunday at 2pm"
+        android:textColor="#6B7280"
+        android:textSize="14sp"
+        android:visibility="visible" />
+
+    <!-- Divider Line -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="12dp"
+        android:background="#F3F4F6" />
+
+    <!-- Triggers Heading & Multi-Timestamp Pills -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Scheduled Alerts:"
+            android:textColor="#9CA3AF"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <HorizontalScrollView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/llTriggersContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- Dynamic Trigger Pills will be added here programmatically -->
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+    </LinearLayout>
+
+    <!-- Bottom Action Row: Test Alert, Edit, Delete -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- Test Alarm Button -->
+        <LinearLayout
+            android:id="@+id/btnTestAlarm"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_button_cancel_pill"
+            android:backgroundTint="#F3F4F6"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:paddingHorizontal="12dp">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_alarm"
+                app:tint="#121417"
+                android:contentDescription="Test Alarm" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="Test Alert Now"
+                android:textColor="#121417"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- Complete Check Button -->
+        <ImageButton
+            android:id="@+id/btnCompleteReminder"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_circle_icon_button"
+            android:contentDescription="Mark Completed"
+            android:padding="6dp"
+            android:src="@drawable/ic_check_circle"
+            app:tint="#10B981" />
+
+        <!-- Edit Button -->
+        <ImageButton
+            android:id="@+id/btnEditReminder"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_circle_icon_button"
+            android:contentDescription="Edit Reminder"
+            android:padding="6dp"
+            android:src="@drawable/ic_edit"
+            app:tint="#4B5563" />
+
+        <!-- Delete Button -->
+        <ImageButton
+            android:id="@+id/btnDeleteReminder"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_circle_icon_button"
+            android:contentDescription="Delete Reminder"
+            android:padding="6dp"
+            android:src="@drawable/ic_trash"
+            app:tint="#EF4444" />
+
+    </LinearLayout>
+
+</LinearLayout>

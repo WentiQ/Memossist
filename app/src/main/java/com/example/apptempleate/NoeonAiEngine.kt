@@ -9,6 +9,7 @@ data class LlmPipelineResult(
     val cleanHumanoidAnswer: String,
     val relevantExperienceIds: List<String>,
     val extractedInformativeFacts: List<String>,
+    val extractedReminderTag: String?,
     val intent: String,
     val modelName: String
 )
@@ -49,16 +50,20 @@ object NoeonAiEngine {
 
     fun buildSystemPrompt(candidateExperiences: List<MemoryItem>): String = buildString {
         append("You are Memossist, an intelligent humanoid assistant with access to a Memory Vault.\n")
-        append("Your output MUST begin with the four tag sections in exact sequence:\n")
+        append("Your output MUST begin with the tag sections in exact sequence:\n")
         append("1. [INTENT: ASKING | TELLING | MIXED]\n")
         append("2. [EXTRACTED_FACTS: [\"fact 1\", \"fact 2\"] or []]\n")
-        append("3. [USED_EXPERIENCES: EXP-ID1, EXP-ID2 or NONE]\n")
-        append("4. [HUMANOID_ANSWER]\n")
+        append("3. [EXTRACTED_REMINDERS: {\"title\": \"Extra Class\", \"time\": \"Sunday 2pm\", \"description\": \"Extra class on Sunday at 2pm\"} or NONE]\n")
+        append("4. [USED_EXPERIENCES: EXP-ID1, EXP-ID2 or NONE]\n")
+        append("5. [HUMANOID_ANSWER]\n")
         append("<your natural response answer>\n\n")
         append("Rules for INTENT:\n")
         append("- ASKING: The user is only asking a question or requesting information.\n")
         append("- TELLING: The user is stating personal facts, background details, roles, location, or preferences.\n")
         append("- MIXED: The user message contains BOTH personal facts AND a question.\n\n")
+        append("Rules for EXTRACTED_REMINDERS:\n")
+        append("- Identify if the user message contains any future task, meeting, class, appointment, pickup, doctor visit, or reminder event.\n")
+        append("- If present, return JSON with title, date/time, and description. Otherwise return NONE.\n\n")
         append("Rules for EXTRACTED_FACTS:\n")
         append("- EXTRACTED_FACTS are ALL informative statements, declarations, facts, or knowledge expressed in the user's message (it can be ANY statement - not just personal details).\n")
         append("- Exclude ONLY questions or inquiry requests asked in the message.\n")
@@ -99,6 +104,7 @@ object NoeonAiEngine {
                 cleanHumanoidAnswer = notDownloadedMsg,
                 relevantExperienceIds = emptyList(),
                 extractedInformativeFacts = emptyList(),
+                extractedReminderTag = null,
                 intent = "UNKNOWN",
                 modelName = model.name
             )
@@ -127,12 +133,14 @@ object NoeonAiEngine {
 
         val cleanAnswer = parseAnswer(raw)
         val extractedFacts = parseFacts(parseTagValue(raw, "EXTRACTED_FACTS"), userMessage, candidateExperiences)
+        val extractedReminderTag = parseTagValue(raw, "EXTRACTED_REMINDERS")
         val intent = (parseTagValue(raw, "INTENT") ?: inferIntent(userMessage)).uppercase()
 
         return LlmPipelineResult(
             cleanHumanoidAnswer = if (cleanAnswer.isNotBlank()) cleanAnswer else raw,
             relevantExperienceIds = usedIds,
             extractedInformativeFacts = extractedFacts,
+            extractedReminderTag = extractedReminderTag,
             intent = intent,
             modelName = model.name
         )

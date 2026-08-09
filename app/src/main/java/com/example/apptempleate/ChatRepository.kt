@@ -85,7 +85,7 @@ object ChatRepository {
             )
 
             // STEP 3: Save Facts Extracted Strictly by LLM into Memory Vault
-            mainHandler.post { callback.onStepUpdate("Step 3/6: Reading LLM extracted facts…") }
+            mainHandler.post { callback.onStepUpdate("Step 3/6: Reading LLM extracted facts & reminders…") }
             if (llmResult.extractedInformativeFacts.isNotEmpty()) {
                 for (fact in llmResult.extractedInformativeFacts) {
                     val expId = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}"
@@ -101,6 +101,14 @@ object ChatRepository {
                     )
                     MemoryVaultRepository.saveMemory(context, memoryItem)
                 }
+            }
+
+            // Extract and set Smart Reminders if present in user message
+            val extractedReminder = ReminderExtractor.extractAndCreateReminder(context, userMessage, llmResult.extractedReminderTag)
+            var reminderConfirmationBanner = ""
+            if (extractedReminder != null) {
+                ReminderRepository.addOrUpdateReminder(context, extractedReminder)
+                reminderConfirmationBanner = "\n\n⏰ **Reminder Set!** ${extractedReminder.getCategoryIconText()} `${extractedReminder.title}` on ${extractedReminder.getFormattedEventDateTime()} (${extractedReminder.triggers.size} scheduled alerts)."
             }
 
             mainHandler.post { callback.onStepUpdate("Step 4/6: Updating memory vault records…") }
@@ -131,6 +139,9 @@ object ChatRepository {
             debugLogBuilder.append(llmResult.cleanHumanoidAnswer)
             debugLogBuilder.append("\n\n[USED_EXPERIENCES: ${llmResult.relevantExperienceIds.joinToString(", ")}]\n")
             debugLogBuilder.append("[EXTRACTED_FACTS: ${llmResult.extractedInformativeFacts}]\n")
+            if (extractedReminder != null) {
+                debugLogBuilder.append("[EXTRACTED_REMINDER: Title=${extractedReminder.title}, Time=${extractedReminder.getFormattedEventDateTime()}, Triggers=${extractedReminder.triggers.size}]\n")
+            }
             debugLogBuilder.append("\n")
 
             debugLogBuilder.append("=== 🧠 INTENT UNDERSTANDING & VAULT ACTION ===\n")
@@ -158,10 +169,12 @@ object ChatRepository {
 
             val finalDebugLog = debugLogBuilder.toString()
 
+            val finalAnswer = llmResult.cleanHumanoidAnswer + reminderConfirmationBanner
+
             mainHandler.post { callback.onStepUpdate("Step 6/6: Preparing the answer…") }
             // Show only the answer in chat; the temporary progress bubble is replaced.
             mainHandler.post {
-                callback.onCompleted(llmResult.cleanHumanoidAnswer, finalDebugLog)
+                callback.onCompleted(finalAnswer, finalDebugLog)
             }
         }
     }

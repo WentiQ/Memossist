@@ -11,6 +11,11 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
     <application
         android:allowBackup="true"
@@ -39,6 +44,16 @@
             android:exported="false"
             android:theme="@style/Theme.AppTempeLate" />
         <activity
+            android:name="com.example.apptempleate.RemindersActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+        <activity
+            android:name="com.example.apptempleate.AlarmAlertActivity"
+            android:exported="false"
+            android:showWhenLocked="true"
+            android:theme="@style/Theme.AppTempeLate"
+            android:turnScreenOn="true" />
+        <activity
             android:name="com.example.apptempleate.MemoryVaultActivity"
             android:exported="false"
             android:theme="@style/Theme.AppTempeLate" />
@@ -58,6 +73,10 @@
             android:name="com.example.apptempleate.ModelMarketplaceActivity"
             android:exported="false"
             android:theme="@style/Theme.AppTempeLate" />
+
+        <receiver
+            android:name="com.example.apptempleate.ReminderReceiver"
+            android:exported="false" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"
