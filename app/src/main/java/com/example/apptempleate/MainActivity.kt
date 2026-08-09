@@ -192,6 +192,15 @@ class MainActivity : AppCompatActivity() {
         rvChatMessages.layoutManager = LinearLayoutManager(this)
         rvChatMessages.adapter = chatAdapter
 
+        // Smooth Keyboard & Resize Scroll Adjuster
+        rvChatMessages.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
+            if (bottom < oldBottom && chatAdapter.itemCount > 0) {
+                rvChatMessages.post {
+                    rvChatMessages.scrollToPosition(chatAdapter.itemCount - 1)
+                }
+            }
+        }
+
         // Swipe Left or Right to remove chat message
         val chatSwipeHandler = object : androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(0, androidx.recyclerview.widget.ItemTouchHelper.LEFT or androidx.recyclerview.widget.ItemTouchHelper.RIGHT) {
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean = false
@@ -643,10 +652,13 @@ class MainActivity : AppCompatActivity() {
             thinkingStatus = "🔍 Step 1/6: Retrieving candidate experiences..."
         )
         activeConv.messages.add(aiMsg)
-        val aiMsgPosition = activeConv.messages.size - 1
 
         chatAdapter.setMessages(activeConv.messages)
-        rvChatMessages.smoothScrollToPosition(aiMsgPosition)
+        rvChatMessages.post {
+            if (chatAdapter.itemCount > 0) {
+                rvChatMessages.smoothScrollToPosition(chatAdapter.itemCount - 1)
+            }
+        }
 
         // Save conversation state immediately to disk
         ChatRepository.saveOrUpdateConversation(this@MainActivity, activeConv)
@@ -672,7 +684,11 @@ class MainActivity : AppCompatActivity() {
         if (restoreScroll && chatListScrollState != null) {
             rvChatMessages.layoutManager?.onRestoreInstanceState(chatListScrollState)
         } else if (conversation.messages.isNotEmpty()) {
-            rvChatMessages.scrollToPosition(conversation.messages.size - 1)
+            rvChatMessages.post {
+                if (chatAdapter.itemCount > 0) {
+                    rvChatMessages.scrollToPosition(chatAdapter.itemCount - 1)
+                }
+            }
         }
     }
 

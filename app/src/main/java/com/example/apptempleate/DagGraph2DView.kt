@@ -1,17 +1,18 @@
 package com.example.apptempleate
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.PointF
-import android.graphics.RectF
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
+import android.view.animation.DecelerateInterpolator
+import android.widget.OverScroller
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
@@ -39,15 +40,19 @@ class DagGraph2DView @JvmOverloads constructor(
     private var scaleFactor = 1.0f
 
     private var selectedNode: GraphNode? = null
+    private var draggedNode: GraphNode? = null
     var onNodeSelectedListener: ((MemoryItem, List<DagEdge>) -> Unit)? = null
 
-    // Paints
-    private val gridPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#E5E7EB")
-        strokeWidth = 1.5f
-        style = Paint.Style.STROKE
-    }
+    // Scroller for Fling Inertia
+    private val scroller = OverScroller(context)
+    private var activePointerId = MotionEvent.INVALID_POINTER_ID
+    private var lastTouchX = 0f
+    private var lastTouchY = 0f
 
+    // Animators for Smooth Zooming and Centering
+    private var zoomAnimator: ValueAnimator? = null
+
+    // Paints
     private val gridDotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#D1D5DB")
         style = Paint.Style.FILL
@@ -92,11 +97,6 @@ class DagGraph2DView @JvmOverloads constructor(
         textSize = 22f
     }
 
-    // Touch & Gesture Detectors
-    private var lastTouchX = 0f
-    private var lastTouchY = 0f
-    private var isDragging = false
-
     private val scaleDetector = ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
         override fun onScale(detector: ScaleGestureDetector): Boolean {
             val focusX = detector.focusX
@@ -104,7 +104,7 @@ class DagGraph2DView @JvmOverloads constructor(
 
             val oldScale = scaleFactor
             scaleFactor *= detector.scaleFactor
-            scaleFactor = max(0.3f, min(scaleFactor, 4.0f))
+            scaleFactor = max(0.25f, min(scaleFactor, 5.0f))
 
             val scaleRatio = scaleFactor / oldScale
             translateX = focusX - (focusX - translateX) * scaleRatio
@@ -116,8 +116,55 @@ class DagGraph2DView @JvmOverloads constructor(
     })
 
     private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-        override fun onSingleTapUp(e: MotionEvent): Boolean {
+        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
             handleSingleTap(e.x, e.y)
+            return true
+        }
+
+        override fun onDoubleTap(e: MotionEvent): Boolean {
+            val worldX = (e.x - translateX) / scaleFactor
+            val worldY = (e.y - translateY) / scaleFactor
+
+            var tappedNode: GraphNode? = null
+            for (node in nodes) {
+                val dist = Math.hypot((worldX - node.x).toDouble(), (worldY - node.y).toDouble()).toFloat()
+                if (dist <= node.radius * 2.5f) {
+                    tappedNode = node
+                    break
+                }
+            }
+
+            if (tappedNode != null) {
+                smoothAnimateTransform(
+                    targetTx = width / 2f - tappedNode.x * 2.0f,
+                    targetTy = height / 2f - tappedNode.y * 2.0f,
+                    targetScale = 2.0f
+                )
+            } else {
+                smoothAnimateTransform(
+                    targetTx = width / 2f,
+                    targetTy = height / 2f,
+                    targetScale = 1.0f
+                )
+            }
+            return true
+        }
+
+        override fun onFling(
+            e1: MotionEvent,
+            e2: MotionEvent,
+            velocityX: Float,
+            velocityY: Float
+        ): Boolean {
+            if (draggedNode != null || scaleDetector.isInProgress) return false
+
+            scroller.forceFinished(true)
+            scroller.fling(
+                translateX.toInt(), translateY.toInt(),
+                (velocityX * 0.75f).toInt(), (velocityY * 0.75f).toInt(),
+                -10000, 10000, -10000, 10000
+            )
+            postInvalidateOnAnimation()
             return true
         }
     })
@@ -130,7 +177,6 @@ class DagGraph2DView @JvmOverloads constructor(
         nodes.clear()
         edges.clear()
 
-        // ONLY keep edges with strength > 0.0
         edges.addAll(dagEdges.filter { it.strength > 0.0 })
 
         if (memories.isEmpty()) {
@@ -138,7 +184,6 @@ class DagGraph2DView @JvmOverloads constructor(
             return
         }
 
-        // Random organic distribution starting from center (0,0) spreading outwards as experiences add
         val centerX = 0f
         val centerY = 0f
 
@@ -146,15 +191,11 @@ class DagGraph2DView @JvmOverloads constructor(
             if (index == 0) {
                 nodes.add(GraphNode(memory, centerX, centerY))
             } else {
-                // Use a seeded Random based on memory.id to ensure consistent node positions across redraws
                 val seedRandom = java.util.Random(memory.id.hashCode().toLong())
-                
-                // Golden angle (~137.5 degrees in radians) + organic random angle jitter
                 val goldenAngle = 2.399963
                 val angleJitter = (seedRandom.nextDouble() - 0.5) * 0.8
                 val angle = index * goldenAngle + angleJitter
 
-                // Distance expands outwards gradually from center with random distance jitter
                 val baseDistance = 180f * Math.sqrt(index.toDouble()).toFloat()
                 val distanceJitter = (seedRandom.nextFloat() - 0.5f) * 120f
                 val radius = baseDistance + distanceJitter
@@ -165,25 +206,68 @@ class DagGraph2DView @JvmOverloads constructor(
             }
         }
 
-        resetView()
+        resetViewAnimated()
     }
 
     fun resetView() {
-        translateX = width / 2f
-        translateY = height / 2f
-        scaleFactor = 1.0f
-        selectedNode = null
-        invalidate()
+        resetViewAnimated()
+    }
+
+    fun resetViewAnimated() {
+        val targetTx = if (width > 0) width / 2f else 500f
+        val targetTy = if (height > 0) height / 2f else 800f
+        smoothAnimateTransform(targetTx, targetTy, 1.0f)
     }
 
     fun zoomIn() {
-        scaleFactor = min(scaleFactor * 1.25f, 4.0f)
-        invalidate()
+        val targetScale = min(scaleFactor * 1.35f, 5.0f)
+        val scaleRatio = targetScale / scaleFactor
+        val focusX = width / 2f
+        val focusY = height / 2f
+        val targetTx = focusX - (focusX - translateX) * scaleRatio
+        val targetTy = focusY - (focusY - translateY) * scaleRatio
+        smoothAnimateTransform(targetTx, targetTy, targetScale)
     }
 
     fun zoomOut() {
-        scaleFactor = max(scaleFactor / 1.25f, 0.3f)
-        invalidate()
+        val targetScale = max(scaleFactor / 1.35f, 0.25f)
+        val scaleRatio = targetScale / scaleFactor
+        val focusX = width / 2f
+        val focusY = height / 2f
+        val targetTx = focusX - (focusX - translateX) * scaleRatio
+        val targetTy = focusY - (focusY - translateY) * scaleRatio
+        smoothAnimateTransform(targetTx, targetTy, targetScale)
+    }
+
+    private fun smoothAnimateTransform(targetTx: Float, targetTy: Float, targetScale: Float) {
+        zoomAnimator?.cancel()
+        scroller.forceFinished(true)
+
+        val startTx = translateX
+        val startTy = translateY
+        val startScale = scaleFactor
+
+        zoomAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 280L
+            interpolator = DecelerateInterpolator(1.8f)
+            addUpdateListener { anim ->
+                val fraction = anim.animatedValue as Float
+                translateX = startTx + (targetTx - startTx) * fraction
+                translateY = startTy + (targetTy - startTy) * fraction
+                scaleFactor = startScale + (targetScale - startScale) * fraction
+                invalidate()
+            }
+            start()
+        }
+    }
+
+    override fun computeScroll() {
+        super.computeScroll()
+        if (scroller.computeScrollOffset()) {
+            translateX = scroller.currX.toFloat()
+            translateY = scroller.currY.toFloat()
+            postInvalidateOnAnimation()
+        }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -195,28 +279,80 @@ class DagGraph2DView @JvmOverloads constructor(
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        var handled = scaleDetector.onTouchEvent(event)
-        handled = gestureDetector.onTouchEvent(event) || handled
+        scaleDetector.onTouchEvent(event)
+        gestureDetector.onTouchEvent(event)
 
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                scroller.forceFinished(true)
+                zoomAnimator?.cancel()
+
+                activePointerId = event.getPointerId(0)
                 lastTouchX = event.x
                 lastTouchY = event.y
-                isDragging = true
-            }
-            MotionEvent.ACTION_MOVE -> {
-                if (isDragging && !scaleDetector.isInProgress) {
-                    val dx = event.x - lastTouchX
-                    val dy = event.y - lastTouchY
-                    translateX += dx
-                    translateY += dy
-                    lastTouchX = event.x
-                    lastTouchY = event.y
-                    invalidate()
+
+                val worldX = (event.x - translateX) / scaleFactor
+                val worldY = (event.y - translateY) / scaleFactor
+
+                draggedNode = null
+                for (node in nodes) {
+                    val dist = Math.hypot((worldX - node.x).toDouble(), (worldY - node.y).toDouble()).toFloat()
+                    if (dist <= node.radius * 2.5f) {
+                        draggedNode = node
+                        selectedNode = node
+                        invalidate()
+                        break
+                    }
                 }
             }
+
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                val index = event.actionIndex
+                activePointerId = event.getPointerId(index)
+                lastTouchX = event.getX(index)
+                lastTouchY = event.getY(index)
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                val pointerIndex = event.findPointerIndex(activePointerId)
+                if (pointerIndex != -1) {
+                    val x = event.getX(pointerIndex)
+                    val y = event.getY(pointerIndex)
+
+                    val dx = x - lastTouchX
+                    val dy = y - lastTouchY
+
+                    if (!scaleDetector.isInProgress) {
+                        if (draggedNode != null) {
+                            draggedNode!!.x += dx / scaleFactor
+                            draggedNode!!.y += dy / scaleFactor
+                            invalidate()
+                        } else {
+                            translateX += dx
+                            translateY += dy
+                            invalidate()
+                        }
+                    }
+
+                    lastTouchX = x
+                    lastTouchY = y
+                }
+            }
+
+            MotionEvent.ACTION_POINTER_UP -> {
+                val pointerIndex = event.actionIndex
+                val pointerId = event.getPointerId(pointerIndex)
+                if (pointerId == activePointerId) {
+                    val newPointerIndex = if (pointerIndex == 0) 1 else 0
+                    activePointerId = event.getPointerId(newPointerIndex)
+                    lastTouchX = event.getX(newPointerIndex)
+                    lastTouchY = event.getY(newPointerIndex)
+                }
+            }
+
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                isDragging = false
+                activePointerId = MotionEvent.INVALID_POINTER_ID
+                draggedNode = null
             }
         }
 
@@ -224,14 +360,13 @@ class DagGraph2DView @JvmOverloads constructor(
     }
 
     private fun handleSingleTap(screenX: Float, screenY: Float) {
-        // Convert screen coordinates to canvas 2D world coordinates
         val worldX = (screenX - translateX) / scaleFactor
         val worldY = (screenY - translateY) / scaleFactor
 
         var tappedNode: GraphNode? = null
         for (node in nodes) {
             val dist = Math.hypot((worldX - node.x).toDouble(), (worldY - node.y).toDouble()).toFloat()
-            if (dist <= node.radius * 2.2f) {
+            if (dist <= node.radius * 2.5f) {
                 tappedNode = node
                 break
             }
@@ -256,13 +391,8 @@ class DagGraph2DView @JvmOverloads constructor(
         canvas.translate(translateX, translateY)
         canvas.scale(scaleFactor, scaleFactor)
 
-        // 1. Draw Infinite Background Plane Grid Dots
         drawBackgroundGrid(canvas)
-
-        // 2. Draw Non-Zero Connecting Edges (Lines)
         drawEdges(canvas)
-
-        // 3. Draw Tiny Dot Nodes (Experiences)
         drawNodes(canvas)
 
         canvas.restore()
@@ -302,7 +432,6 @@ class DagGraph2DView @JvmOverloads constructor(
                         (selectedNode!!.memory.id.equals(n1.memory.id, ignoreCase = true) ||
                          selectedNode!!.memory.id.equals(n2.memory.id, ignoreCase = true))
 
-                // Line thickness & opacity scale with connection strength S_ij
                 val alpha = if (isConnectedToSelected) 255 else (120 + (edge.strength * 135).coerceAtMost(135.0)).toInt()
                 val thickness = if (isConnectedToSelected) 7f else (3f + (edge.strength * 6.0).toFloat())
 
@@ -312,7 +441,6 @@ class DagGraph2DView @JvmOverloads constructor(
 
                 canvas.drawLine(n1.x, n1.y, n2.x, n2.y, edgePaint)
 
-                // Draw edge strength badge label in center of connection line
                 val midX = (n1.x + n2.x) / 2f
                 val midY = (n1.y + n2.y) / 2f
                 val strengthText = String.format("S_ij=%.3f", edge.strength)
@@ -326,14 +454,12 @@ class DagGraph2DView @JvmOverloads constructor(
         for (node in nodes) {
             val isSelected = selectedNode != null && selectedNode!!.memory.id.equals(node.memory.id, ignoreCase = true)
 
-            // Draw Node Circle Dot
             val radius = if (isSelected) node.radius * 1.3f else node.radius
             val paint = if (isSelected) nodeSelectedPaint else nodeBodyPaint
 
             canvas.drawCircle(node.x, node.y, radius, paint)
             canvas.drawCircle(node.x, node.y, radius + 4f, nodeRingPaint)
 
-            // Draw Node Text Labels
             val titleSnippet = if (node.memory.title.length > 20) node.memory.title.take(20) + "..." else node.memory.title
 
             canvas.drawText(node.memory.id, node.x + radius + 10f, node.y - 6f, nodeTextPaint)
