@@ -62,6 +62,35 @@ class AlarmAlertActivity : AppCompatActivity() {
         btnAlarmSnooze = findViewById(R.id.btnAlarmSnooze)
         btnAlarmDismiss = findViewById(R.id.btnAlarmDismiss)
 
+        val tvLiveTimeBadge: TextView = findViewById(R.id.tvLiveTimeBadge)
+        val tvAlarmBadge: TextView = findViewById(R.id.tvAlarmBadge)
+        val vLogoPulseRing: View = findViewById(R.id.vLogoPulseRing)
+
+        // Live Header Time
+        val sdfTime = SimpleDateFormat("h:mm a", Locale.getDefault())
+        tvLiveTimeBadge.text = sdfTime.format(Date())
+
+        // Pulsing Logo Ring Animation
+        val animX = android.animation.ObjectAnimator.ofFloat(vLogoPulseRing, "scaleX", 1.0f, 1.45f).apply {
+            repeatCount = android.animation.ObjectAnimator.INFINITE
+            repeatMode = android.animation.ObjectAnimator.REVERSE
+            duration = 900L
+        }
+        val animY = android.animation.ObjectAnimator.ofFloat(vLogoPulseRing, "scaleY", 1.0f, 1.45f).apply {
+            repeatCount = android.animation.ObjectAnimator.INFINITE
+            repeatMode = android.animation.ObjectAnimator.REVERSE
+            duration = 900L
+        }
+        val animAlpha = android.animation.ObjectAnimator.ofFloat(vLogoPulseRing, "alpha", 0.6f, 0.1f).apply {
+            repeatCount = android.animation.ObjectAnimator.INFINITE
+            repeatMode = android.animation.ObjectAnimator.REVERSE
+            duration = 900L
+        }
+        android.animation.AnimatorSet().apply {
+            playTogether(animX, animY, animAlpha)
+            start()
+        }
+
         reminderId = intent.getStringExtra("EXTRA_REMINDER_ID")
         val title = intent.getStringExtra("EXTRA_TITLE") ?: "Smart Reminder"
         val message = intent.getStringExtra("EXTRA_MESSAGE") ?: "Hey! You have an upcoming event."
@@ -70,8 +99,16 @@ class AlarmAlertActivity : AppCompatActivity() {
         tvAlarmTitle.text = title
         tvAlarmMessage.text = message
 
-        val sdf = SimpleDateFormat("EEE, MMM d 'at' h:mm a", Locale.getDefault())
-        tvAlarmEventTime.text = "Scheduled for ${sdf.format(Date(eventTime))}"
+        val sdfEvent = SimpleDateFormat("EEE, MMM d 'at' h:mm a", Locale.getDefault())
+        tvAlarmEventTime.text = "Scheduled for ${sdfEvent.format(Date(eventTime))}"
+
+        val lowerTitle = title.lowercase()
+        tvAlarmBadge.text = when {
+            lowerTitle.contains("class") || lowerTitle.contains("lecture") || lowerTitle.contains("exam") -> "⚡ CLASS REMINDER"
+            lowerTitle.contains("doctor") || lowerTitle.contains("hospital") || lowerTitle.contains("medicine") -> "🏥 HEALTH & DOCTOR"
+            lowerTitle.contains("meet") || lowerTitle.contains("interview") || lowerTitle.contains("call") -> "💼 MEETING REMINDER"
+            else -> "🚨 SMART REMINDER"
+        }
 
         startAlarmSoundAndVibration()
 

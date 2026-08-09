@@ -2964,6 +2964,7 @@ id fitToContents
 id fitXY
 id fixed
 id flHeaderNotifications
+id flLogoContainer
 id flip
 id floating
 id forever
@@ -3006,7 +3007,7 @@ id invisible
 id inward
 id italic
 id item_touch_helper_previous_elevation
-id ivAlarmIcon
+id ivAlarmLogo
 id ivAttachmentImage
 id ivHistoryIcon
 id ivOptPinIcon
@@ -3026,7 +3027,6 @@ id linear
 id listMode
 id list_item
 id llActionsContainer
-id llAlarmOrbContainer
 id llAttachmentPreviewContainer
 id llBestForContainer
 id llBottomControls
@@ -3038,6 +3038,7 @@ id llFilterCategoryContainer
 id llFilterChips
 id llFixedSidebarHeader
 id llGreetingContainer
+id llHeaderBrand
 id llHistoryItemRow
 id llMessageCard
 id llNotIdealForContainer
@@ -3357,6 +3358,7 @@ id tvItemSynonymCount
 id tvItemSynonymsList
 id tvItemWord
 id tvLiveBadge
+id tvLiveTimeBadge
 id tvLogContent
 id tvLongContextScore
 id tvMarketplaceTitle
@@ -3425,6 +3427,7 @@ id up
 id useLogo
 id vBottomGradientOverlay
 id vHeaderUnreadBadge
+id vLogoPulseRing
 id vTopGradientOverlay
 id vUnreadDot
 id vertical_only

@@ -4,112 +4,202 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121417"
+    android:background="#FFFFFF"
     android:padding="24dp"
     tools:context=".AlarmAlertActivity">
 
-    <!-- Top Pulsing Alarm Orb Icon Container -->
+    <!-- Top Brand & Live Time Header -->
     <LinearLayout
-        android:id="@+id/llAlarmOrbContainer"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="48dp"
-        android:background="@drawable/bg_circle_icon_button"
-        android:backgroundTint="#26DC2626"
-        android:gravity="center"
+        android:id="@+id/llHeaderBrand"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/ivAlarmIcon"
+        <!-- Pulsing Logo Ring Container -->
+        <FrameLayout
+            android:id="@+id/flLogoContainer"
             android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_alarm"
-            app:tint="#DC2626"
-            android:contentDescription="Alarm Icon" />
+            android:layout_height="48dp">
+
+            <View
+                android:id="@+id/vLogoPulseRing"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_circle_icon_button"
+                android:backgroundTint="#1A121417" />
+
+            <ImageView
+                android:id="@+id/ivAlarmLogo"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_gravity="center"
+                android:src="@drawable/app_logo"
+                android:contentDescription="Memossist Logo" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Memossist"
+                android:textColor="#121417"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.02" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="Cognitive Workspace • Smart Alert"
+                android:textColor="#64748B"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvLiveTimeBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_tag_rounded"
+            android:backgroundTint="#F1F5F9"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:text="2:00 PM"
+            android:textColor="#121417"
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
-    <!-- Subtitle Badge -->
-    <TextView
-        android:id="@+id/tvAlarmBadge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/bg_tag_rounded"
-        android:backgroundTint="#26DC2626"
-        android:paddingHorizontal="14dp"
-        android:paddingVertical="6dp"
-        android:text="🚨 SMART ALARM REMINDER"
-        android:textColor="#EF4444"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.05"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/llAlarmOrbContainer" />
-
-    <!-- Reminder Title -->
-    <TextView
-        android:id="@+id/tvAlarmTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:gravity="center"
-        android:text="Extra Class"
-        android:textColor="#FFFFFF"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvAlarmBadge" />
-
-    <!-- Humanoid Message Card Container -->
+    <!-- Main Content Container -->
     <LinearLayout
-        android:id="@+id/llMessageCard"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="24dp"
-        android:background="@drawable/bg_gemini_chat_box"
-        android:backgroundTint="#1F2937"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
         android:orientation="vertical"
-        android:padding="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/llActionsContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvAlarmTitle">
+        app:layout_constraintTop_toBottomOf="@+id/llHeaderBrand">
 
+        <!-- Category Tag Badge -->
         <TextView
-            android:id="@+id/tvAlarmMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:lineSpacingExtra="4dp"
-            android:text="Hey Dinesh, do you remember today you have extra class at 2pm right?"
-            android:textColor="#E5E7EB"
-            android:textSize="16sp" />
-
-        <LinearLayout
+            android:id="@+id/tvAlarmBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:background="@drawable/bg_tag_rounded"
+            android:backgroundTint="#F1F5F9"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="6dp"
+            android:text="🚨 SMART REMINDER"
+            android:textColor="#121417"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.04" />
 
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/ic_clock"
-                app:tint="#9CA3AF"
-                android:contentDescription="Clock" />
+        <!-- Reminder Title Header -->
+        <TextView
+            android:id="@+id/tvAlarmTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="Extra Class"
+            android:textColor="#121417"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:letterSpacing="-0.02" />
 
-            <TextView
-                android:id="@+id/tvAlarmEventTime"
+        <!-- Organic Humanoid AI Speech Bubble Card -->
+        <LinearLayout
+            android:id="@+id/llMessageCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_floating_chat_box"
+            android:elevation="6dp"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Assistant Pill Header -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Scheduled for Today at 2:00 PM"
-                android:textColor="#9CA3AF"
-                android:textSize="13sp" />
+                android:background="@drawable/bg_tag_rounded"
+                android:backgroundTint="#F1F5F9"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🤖"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="Memossist AI"
+                    android:textColor="#121417"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Humanoid Speech Message -->
+            <TextView
+                android:id="@+id/tvAlarmMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:lineSpacingExtra="4dp"
+                android:text="Hey Dinesh, do you remember today you have extra class at 2pm right?"
+                android:textColor="#334155"
+                android:textSize="16sp" />
+
+            <!-- Scheduled Event Time Row -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_clock"
+                    app:tint="#64748B"
+                    android:contentDescription="Clock" />
+
+                <TextView
+                    android:id="@+id/tvAlarmEventTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Scheduled for Today at 2:00 PM"
+                    android:textColor="#64748B"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -120,19 +210,19 @@
         android:id="@+id/llActionsContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="24dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <!-- Primary Action: Got It / Done -->
+        <!-- Primary Action: Got It / Mark Done -->
         <LinearLayout
             android:id="@+id/btnAlarmGotIt"
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:background="@drawable/bg_button_save_pill"
-            android:backgroundTint="#10B981"
+            android:backgroundTint="#121417"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
@@ -149,7 +239,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="Got It / Done"
+                android:text="Got It / Mark Done"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -163,7 +253,6 @@
             android:layout_height="50dp"
             android:layout_marginTop="12dp"
             android:background="@drawable/bg_button_cancel_pill"
-            android:backgroundTint="#374151"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
@@ -173,7 +262,7 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:src="@drawable/ic_clock"
-                app:tint="#F3F4F6"
+                app:tint="#121417"
                 android:contentDescription="Snooze" />
 
             <TextView
@@ -181,7 +270,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text="Snooze 10 Minutes"
-                android:textColor="#F3F4F6"
+                android:textColor="#121417"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -196,8 +285,9 @@
             android:layout_marginTop="16dp"
             android:padding="8dp"
             android:text="Dismiss Alert"
-            android:textColor="#9CA3AF"
-            android:textSize="14sp" />
+            android:textColor="#64748B"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
