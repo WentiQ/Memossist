@@ -39,6 +39,8 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var btnMorningTime: LinearLayout
     private lateinit var tvMorningTimeValue: TextView
     private lateinit var btnManageReminders: LinearLayout
+    private lateinit var btnExportAllData: LinearLayout
+    private lateinit var btnImportAllData: LinearLayout
 
     private lateinit var prefs: SharedPreferences
 
@@ -62,6 +64,59 @@ class SettingsActivity : AppCompatActivity() {
             saveAvatarUri(it.toString())
             displayAvatar(it)
             Toast.makeText(this, "Profile picture updated", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private val createExportFileLauncher = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri: Uri? ->
+        uri?.let {
+            try {
+                val jsonStr = DataBackupRepository.exportAllData(this)
+                contentResolver.openOutputStream(it)?.use { stream ->
+                    stream.write(jsonStr.toByteArray(Charsets.UTF_8))
+                }
+                AlertDialog.Builder(this)
+                    .setTitle("Data Export Complete 📦")
+                    .setMessage("All your conversations, memories, DAG graphs, and reminders have been exported successfully to your JSON backup file.")
+                    .setPositiveButton("OK", null)
+                    .show()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, "Export failed: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private val openImportFileLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        uri?.let {
+            try {
+                val jsonStr = contentResolver.openInputStream(it)?.bufferedReader()?.use { reader -> reader.readText() }
+                if (!jsonStr.isNullOrBlank()) {
+                    val result = DataBackupRepository.importAllData(this, jsonStr)
+                    loadUserProfileData()
+
+                    AlertDialog.Builder(this)
+                        .setTitle("Data Imported & Merged Successfully 🎉")
+                        .setMessage("Imported items added to your app:\n\n" +
+                                "• ${result.conversationCount} Conversations\n" +
+                                "• ${result.memoryCount} Memory Experiences (prefixed with 'I_')\n" +
+                                "• ${result.edgeCount} DAG Connections\n" +
+                                "• ${result.reminderCount} Reminders\n" +
+                                "• ${result.notificationCount} Notifications")
+                        .setPositiveButton("Awesome") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+                } else {
+                    Toast.makeText(this, "Selected backup file was empty.", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, "Import failed: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -95,6 +150,9 @@ class SettingsActivity : AppCompatActivity() {
         tvMorningTimeValue = findViewById(R.id.tvMorningTimeValue)
         btnManageReminders = findViewById(R.id.btnManageReminders)
 
+        btnExportAllData = findViewById(R.id.btnExportAllData)
+        btnImportAllData = findViewById(R.id.btnImportAllData)
+
         // Load saved user profile data
         loadUserProfileData()
         updateMorningTimeDisplay()
@@ -117,6 +175,15 @@ class SettingsActivity : AppCompatActivity() {
             val intent = Intent(this, ModelMarketplaceActivity::class.java)
             startActivity(intent)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+        }
+
+        btnExportAllData.setOnClickListener {
+            val dateStr = java.text.SimpleDateFormat("yyyyMMdd_HHmm", java.util.Locale.getDefault()).format(java.util.Date())
+            createExportFileLauncher.launch("memossist_backup_$dateStr.json")
+        }
+
+        btnImportAllData.setOnClickListener {
+            openImportFileLauncher.launch(arrayOf("application/json", "*/*"))
         }
 
         btnClearCache.setOnClickListener {

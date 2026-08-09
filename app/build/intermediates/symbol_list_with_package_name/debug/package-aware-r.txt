@@ -2601,6 +2601,8 @@ drawable ic_clock_black_24dp
 drawable ic_close
 drawable ic_connections
 drawable ic_edit
+drawable ic_export
+drawable ic_import
 drawable ic_insights
 drawable ic_keyboard_black_24dp
 drawable ic_launcher_foreground
@@ -2823,9 +2825,11 @@ id btnEditExpSave
 id btnEditName
 id btnEditReminder
 id btnEndCall
+id btnExportAllData
 id btnHamburger
 id btnHeaderModelPicker
 id btnHeaderNotifications
+id btnImportAllData
 id btnLiveVoice
 id btnManageReminders
 id btnMarkAllRead
