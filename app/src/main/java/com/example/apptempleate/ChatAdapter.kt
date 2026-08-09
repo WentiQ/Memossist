@@ -18,9 +18,16 @@ class ChatAdapter(
     }
 
     fun setMessages(newMessages: List<ChatMessage>) {
-        messages.clear()
-        messages.addAll(newMessages)
-        notifyDataSetChanged()
+        if (messages.size == newMessages.size && messages.isNotEmpty()) {
+            val lastIdx = messages.lastIndex
+            messages.clear()
+            messages.addAll(newMessages)
+            notifyItemChanged(lastIdx, "PAYLOAD_STEP_UPDATE")
+        } else {
+            messages.clear()
+            messages.addAll(newMessages)
+            notifyDataSetChanged()
+        }
     }
 
     fun addMessage(message: ChatMessage) {
@@ -48,6 +55,21 @@ class ChatAdapter(
             val view = inflater.inflate(R.layout.item_chat_ai, parent, false)
             AiViewHolder(view)
         }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isNotEmpty() && holder is AiViewHolder) {
+            val message = messages[position]
+            if (message.isThinking) {
+                holder.tvThinkingStep.text = message.thinkingStatus ?: "Thinking..."
+                if (message.text.isNotEmpty()) {
+                    holder.tvAiMsg.visibility = View.VISIBLE
+                    holder.tvAiMsg.text = message.text
+                }
+                return
+            }
+        }
+        super.onBindViewHolder(holder, position, payloads)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

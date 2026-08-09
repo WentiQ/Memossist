@@ -192,9 +192,9 @@ class MainActivity : AppCompatActivity() {
         rvChatMessages.layoutManager = LinearLayoutManager(this)
         rvChatMessages.adapter = chatAdapter
 
-        // Smooth Keyboard & Resize Scroll Adjuster
+        // Smooth Keyboard & Resize Scroll Adjuster (Only trigger on actual soft keyboard pop-up)
         rvChatMessages.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
-            if (bottom < oldBottom && chatAdapter.itemCount > 0) {
+            if (oldBottom - bottom > 200 && chatAdapter.itemCount > 0) {
                 rvChatMessages.post {
                     rvChatMessages.scrollToPosition(chatAdapter.itemCount - 1)
                 }
@@ -414,7 +414,8 @@ class MainActivity : AppCompatActivity() {
                         if (currentConversation?.id == convId) {
                             val updated = ChatRepository.loadAllConversations(this@MainActivity).find { it.id == convId }
                             if (updated != null) {
-                                loadConversationIntoView(updated, restoreScroll = true)
+                                currentConversation = updated
+                                chatAdapter.setMessages(updated.messages)
                             }
                         }
                         refreshSidebarHistory()
