@@ -64,6 +64,9 @@ object NoeonAiEngine {
         append("- Exclude ONLY questions or inquiry requests asked in the message.\n")
         append("- Do NOT extract or repeat facts that are ALREADY listed in the candidate experiences below.\n")
         append("- Format extracted facts as a JSON array of strings: [\"fact 1\", \"fact 2\"]. If no statement facts exist, output [EXTRACTED_FACTS: []].\n\n")
+        append("Rules for TIME & LOCATION AWARENESS:\n")
+        append("- Each candidate experience below contains its exact creation timestamp (Time:) and creation location (Location:).\n")
+        append("- Pay close attention to these Time and Location details to accurately answer time-based (e.g. 'when did I...', 'what time...', 'yesterday') or location-based (e.g. 'where was I...', 'where did I...') questions.\n\n")
         append("Rules for USED_EXPERIENCES:\n")
         append("- Use only IDs from the candidate experiences below if actually used to answer, or NONE.\n\n")
         append("=== TOP 5 CANDIDATE EXPERIENCES ===\n")
@@ -71,7 +74,7 @@ object NoeonAiEngine {
             append("(No candidate experiences retrieved)\n")
         } else {
             candidateExperiences.forEachIndexed { index, exp ->
-                append("${index + 1}. [ID: ${exp.id}] Title: ${exp.title}\nContent: ${exp.message}\n")
+                append("${index + 1}. [ID: ${exp.id}] Title: ${exp.title}\n   Time: ${exp.timestamp}\n   Location: ${exp.location}\n   Content: ${exp.message}\n")
             }
         }
     }

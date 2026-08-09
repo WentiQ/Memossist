@@ -35,6 +35,8 @@ object ChatRepository {
         } else {
             for ((index, exp) in candidateExperiences.withIndex()) {
                 sb.append("${index + 1}. [ID: ${exp.id}] Title: ${exp.title}\n")
+                sb.append("   Time: ${exp.timestamp}\n")
+                sb.append("   Location: ${exp.location}\n")
                 sb.append("   Content: ${exp.message}\n\n")
             }
         }
