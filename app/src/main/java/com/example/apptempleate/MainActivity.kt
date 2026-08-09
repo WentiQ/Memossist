@@ -377,13 +377,15 @@ class MainActivity : AppCompatActivity() {
                 override fun onReceive(context: Context?, intent: Intent?) {
                     val convId = intent?.getStringExtra(ChatAiForegroundService.EXTRA_CONVERSATION_ID) ?: return
 
-                    if (currentConversation?.id == convId) {
-                        val updated = ChatRepository.loadAllConversations(this@MainActivity).find { it.id == convId }
-                        if (updated != null) {
-                            loadConversationIntoView(updated, restoreScroll = true)
+                    runOnUiThread {
+                        if (currentConversation?.id == convId) {
+                            val updated = ChatRepository.loadAllConversations(this@MainActivity).find { it.id == convId }
+                            if (updated != null) {
+                                loadConversationIntoView(updated, restoreScroll = true)
+                            }
                         }
+                        refreshSidebarHistory()
                     }
-                    refreshSidebarHistory()
                 }
             }
             val filter = android.content.IntentFilter().apply {

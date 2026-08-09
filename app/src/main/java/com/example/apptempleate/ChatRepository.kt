@@ -18,6 +18,7 @@ import java.util.UUID
 object ChatRepository {
 
     private const val FILE_NAME = "memossist_conversations.json"
+    private const val BACKUP_FILE_NAME = "memossist_conversations_backup.json"
     private val mainHandler = Handler(Looper.getMainLooper())
 
     interface ChatPipelineCallback {
@@ -72,13 +73,27 @@ object ChatRepository {
         val executor = java.util.concurrent.Executors.newSingleThreadExecutor()
 
         executor.execute {
+            val startTimeMs = System.currentTimeMillis()
+            var currentBaseStepText = "Step 1/6: Retrieving candidate memories…"
+            var isPipelineRunning = true
+
+            val tickerExecutor = java.util.concurrent.Executors.newSingleThreadScheduledExecutor()
+            val tickerFuture = tickerExecutor.scheduleAtFixedRate({
+                if (isPipelineRunning) {
+                    val elapsedSec = (System.currentTimeMillis() - startTimeMs) / 1000L
+                    val (avgSec, totalCount) = ResponseStatsRepository.getStats(context)
+                    val timerStr = ResponseStatsRepository.formatTimerString(elapsedSec, avgSec, totalCount)
+                    callback.onStepUpdate("$currentBaseStepText ($timerStr)")
+                }
+            }, 0L, 1000L, java.util.concurrent.TimeUnit.MILLISECONDS)
+
             // STEP 1: Retrieve Candidate Memories from Memory Vault
-            mainHandler.post { callback.onStepUpdate("Step 1/6: Retrieving candidate memories…") }
+            currentBaseStepText = "Step 1/6: Retrieving candidate memories…"
             val topCandidates = ExperienceDagRepository.retrieveTopMatchingExperiences(context, userMessage, topK = 5)
             val systemPromptStr = NoeonAiEngine.buildSystemPrompt(topCandidates)
 
             // STEP 2: LLM Intent Understanding, Fact Filtering & Humanoid Answer Synthesis
-            mainHandler.post { callback.onStepUpdate("Step 2/6: LLM generating response…") }
+            currentBaseStepText = "Step 2/6: LLM generating response…"
 
             val tokenBuffer = StringBuilder()
             val llmResult = NoeonAiEngine.processMessagePipeline(
@@ -88,12 +103,12 @@ object ChatRepository {
                 onTokenGenerated = { token ->
                     tokenBuffer.append(token)
                     val currentStreamText = tokenBuffer.toString()
-                    mainHandler.post { callback.onTokenStream(currentStreamText) }
+                    callback.onTokenStream(currentStreamText)
                 }
             )
 
             // STEP 3: Save Facts Extracted Strictly by LLM into Memory Vault (with user attachments)
-            mainHandler.post { callback.onStepUpdate("Step 3/6: Reading LLM extracted facts & reminders…") }
+            currentBaseStepText = "Step 3/6: Reading LLM extracted facts & reminders…"
             if (llmResult.extractedInformativeFacts.isNotEmpty()) {
                 for (fact in llmResult.extractedInformativeFacts) {
                     val expId = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}"
@@ -120,10 +135,10 @@ object ChatRepository {
                 reminderConfirmationBanner = "\n\n⏰ **Reminder Set!** ${extractedReminder.getCategoryIconText()} `${extractedReminder.title}` on ${extractedReminder.getFormattedEventDateTime()} (${extractedReminder.triggers.size} scheduled alerts)."
             }
 
-            mainHandler.post { callback.onStepUpdate("Step 4/6: Updating memory vault records…") }
+            currentBaseStepText = "Step 4/6: Updating memory vault records…"
 
             // Step 4 & 5: Calculate DAG connection strengths using ONLY the relevant IDs returned from LLM
-            mainHandler.post { callback.onStepUpdate("Step 5/6: Updating used-memory connections…") }
+            currentBaseStepText = "Step 5/6: Updating used-memory connections…"
 
             val returnedUsedIdsSet = llmResult.relevantExperienceIds.toSet()
 
@@ -192,15 +207,23 @@ object ChatRepository {
 
             val finalAnswer = llmResult.cleanHumanoidAnswer + reminderConfirmationBanner
 
-            mainHandler.post { callback.onStepUpdate("Step 6/6: Preparing the answer…") }
-            // Show answer and send any used experience attachments
-            mainHandler.post {
-                callback.onCompleted(finalAnswer, finalDebugLog, usedExperienceAttachments)
-                
-                // If the app is in background or screen turned off, send a status bar notification
-                if (!AppLifecycleTracker.isAppInForeground) {
-                    sendChatAnswerNotification(context, userMessage, finalAnswer)
-                }
+            currentBaseStepText = "Step 6/6: Preparing the answer…"
+
+            // Stop 1-second ticker loop
+            isPipelineRunning = false
+            try { tickerFuture.cancel(true) } catch (e: Exception) {}
+            try { tickerExecutor.shutdown() } catch (e: Exception) {}
+
+            // Record exact duration for online running average calculation
+            val durationSec = (System.currentTimeMillis() - startTimeMs) / 1000.0f
+            ResponseStatsRepository.recordNewResponseTime(context, durationSec)
+
+            // Invoke completion callback directly on execution thread
+            callback.onCompleted(finalAnswer, finalDebugLog, usedExperienceAttachments)
+
+            // If the app is in background or screen turned off, send a status bar notification
+            if (!AppLifecycleTracker.isAppInForeground) {
+                sendChatAnswerNotification(context, userMessage, finalAnswer)
             }
         }
     }
@@ -278,52 +301,98 @@ object ChatRepository {
 
     fun loadAllConversations(context: Context): MutableList<Conversation> {
         val file = File(context.filesDir, FILE_NAME)
-        if (!file.exists()) {
-            val defaultList = mutableListOf<Conversation>()
-            saveAllConversations(context, defaultList)
-            return defaultList
+        val backupFile = File(context.filesDir, BACKUP_FILE_NAME)
+
+        if (!file.exists() && backupFile.exists()) {
+            try { backupFile.copyTo(file, overwrite = true) } catch (e: Exception) {}
         }
 
-        return try {
+        if (!file.exists()) {
+            return mutableListOf()
+        }
+
+        val conversations = mutableListOf<Conversation>()
+        try {
             val jsonStr = file.readText()
             val conversationsArray = JSONArray(jsonStr)
-            val conversations = mutableListOf<Conversation>()
 
             for (i in 0 until conversationsArray.length()) {
-                val convObj = conversationsArray.getJSONObject(i)
-                val id = convObj.getString("id")
-                val title = convObj.getString("title")
-                val lastUpdated = convObj.optLong("lastUpdated", System.currentTimeMillis())
-                val isPinned = convObj.optBoolean("isPinned", false)
+                try {
+                    val convObj = conversationsArray.getJSONObject(i)
+                    val id = convObj.getString("id")
+                    val title = convObj.getString("title")
+                    val lastUpdated = convObj.optLong("lastUpdated", System.currentTimeMillis())
+                    val isPinned = convObj.optBoolean("isPinned", false)
 
-                val messagesList = mutableListOf<ChatMessage>()
-                val msgArray = convObj.getJSONArray("messages")
-                for (j in 0 until msgArray.length()) {
-                    val msgObj = msgArray.getJSONObject(j)
-                    val msgId = msgObj.optString("id", UUID.randomUUID().toString())
-                    val msgConvId = msgObj.optString("conversationId", id)
-                    val text = msgObj.getString("text")
-                    val isUser = msgObj.getBoolean("isUser")
-                    val timestamp = msgObj.optLong("timestamp", System.currentTimeMillis())
-                    val isThinking = msgObj.optBoolean("isThinking", false)
-                    val thinkingStatus = msgObj.optString("thinkingStatus", null).takeIf { !it.isNullOrEmpty() && it != "null" }
-                    val debugLog = msgObj.optString("debugLog", null).takeIf { !it.isNullOrEmpty() && it != "null" }
-                    val rawAttJson = msgObj.optString("attachmentsJson", null)
-                    val msgAtts = MemoryVaultRepository.parseAttachments(rawAttJson)
+                    val messagesList = mutableListOf<ChatMessage>()
+                    val msgArray = convObj.optJSONArray("messages") ?: JSONArray()
+                    for (j in 0 until msgArray.length()) {
+                        try {
+                            val msgObj = msgArray.getJSONObject(j)
+                            val msgId = msgObj.optString("id", UUID.randomUUID().toString())
+                            val msgConvId = msgObj.optString("conversationId", id)
+                            val text = msgObj.optString("text", "")
+                            val isUser = msgObj.optBoolean("isUser", false)
+                            val timestamp = msgObj.optLong("timestamp", System.currentTimeMillis())
+                            val isThinking = msgObj.optBoolean("isThinking", false)
+                            val thinkingStatus = msgObj.optString("thinkingStatus", null).takeIf { !it.isNullOrEmpty() && it != "null" }
+                            val debugLog = msgObj.optString("debugLog", null).takeIf { !it.isNullOrEmpty() && it != "null" }
+                            val rawAttJson = msgObj.optString("attachmentsJson", null)
+                            val msgAtts = MemoryVaultRepository.parseAttachments(rawAttJson)
 
-                    messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, isThinking, thinkingStatus, debugLog, msgAtts))
+                            messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, isThinking, thinkingStatus, debugLog, msgAtts))
+                        } catch (me: Exception) {
+                            me.printStackTrace()
+                        }
+                    }
+
+                    conversations.add(Conversation(id, title, lastUpdated, isPinned, messagesList))
+                } catch (ce: Exception) {
+                    ce.printStackTrace()
                 }
-
-                conversations.add(Conversation(id, title, lastUpdated, isPinned, messagesList))
             }
-            
-            conversations.sortWith(compareByDescending<Conversation> { it.isPinned }.thenByDescending { it.lastUpdated })
-            conversations
         } catch (e: Exception) {
-            val defaultList = mutableListOf<Conversation>()
-            saveAllConversations(context, defaultList)
-            defaultList
+            e.printStackTrace()
+            // If primary file fails, attempt reading from backup safely without overwriting primary file
+            if (backupFile.exists()) {
+                try {
+                    val backupStr = backupFile.readText()
+                    val backupArray = JSONArray(backupStr)
+                    for (i in 0 until backupArray.length()) {
+                        val convObj = backupArray.getJSONObject(i)
+                        val id = convObj.getString("id")
+                        val title = convObj.getString("title")
+                        val lastUpdated = convObj.optLong("lastUpdated", System.currentTimeMillis())
+                        val isPinned = convObj.optBoolean("isPinned", false)
+
+                        val messagesList = mutableListOf<ChatMessage>()
+                        val msgArray = convObj.optJSONArray("messages") ?: JSONArray()
+                        for (j in 0 until msgArray.length()) {
+                            val msgObj = msgArray.getJSONObject(j)
+                            val msgId = msgObj.optString("id", UUID.randomUUID().toString())
+                            val msgConvId = msgObj.optString("conversationId", id)
+                            val text = msgObj.optString("text", "")
+                            val isUser = msgObj.optBoolean("isUser", false)
+                            val timestamp = msgObj.optLong("timestamp", System.currentTimeMillis())
+                            val isThinking = msgObj.optBoolean("isThinking", false)
+                            val thinkingStatus = msgObj.optString("thinkingStatus", null).takeIf { !it.isNullOrEmpty() && it != "null" }
+                            val debugLog = msgObj.optString("debugLog", null).takeIf { !it.isNullOrEmpty() && it != "null" }
+                            val rawAttJson = msgObj.optString("attachmentsJson", null)
+                            val msgAtts = MemoryVaultRepository.parseAttachments(rawAttJson)
+
+                            messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, isThinking, thinkingStatus, debugLog, msgAtts))
+                        }
+
+                        conversations.add(Conversation(id, title, lastUpdated, isPinned, messagesList))
+                    }
+                } catch (be: Exception) {
+                    be.printStackTrace()
+                }
+            }
         }
+
+        conversations.sortWith(compareByDescending<Conversation> { it.isPinned }.thenByDescending { it.lastUpdated })
+        return conversations
     }
 
     fun saveAllConversations(context: Context, conversations: List<Conversation>) {
@@ -356,8 +425,17 @@ object ChatRepository {
                 conversationsArray.put(convObj)
             }
 
+            val jsonStr = conversationsArray.toString()
             val file = File(context.filesDir, FILE_NAME)
-            file.writeText(conversationsArray.toString())
+            file.writeText(jsonStr)
+
+            // Write backup copy safely
+            try {
+                val backupFile = File(context.filesDir, BACKUP_FILE_NAME)
+                backupFile.writeText(jsonStr)
+            } catch (be: Exception) {
+                be.printStackTrace()
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }

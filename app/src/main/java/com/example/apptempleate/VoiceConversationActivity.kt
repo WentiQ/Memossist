@@ -1,8 +1,10 @@
 package com.example.apptempleate
 
 import android.Manifest
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.os.Build
@@ -93,6 +95,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
 
         // Register Broadcast Receiver for End Call action from Notification Bar
         registerCallStoppedReceiver()
+        registerChatAiBroadcastReceiver()
 
         // Initialize TextToSpeech engine
         textToSpeech = TextToSpeech(this, this)
@@ -274,51 +277,28 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
             conv.title = if (userText.length > 28) userText.take(28) + "..." else userText
         }
 
-        // 2. Add User Message to Chat Conversation in real-time
+        // 2. Add User Message and Thinking Message to Chat Conversation in real-time
         val userMsg = ChatMessage(
             conversationId = conv.id,
             text = userText,
             isUser = true
         )
         conv.messages.add(userMsg)
+
+        val aiMsg = ChatMessage(
+            conversationId = conv.id,
+            text = "",
+            isUser = false,
+            isThinking = true,
+            thinkingStatus = "🔍 Step 1/6: Retrieving candidate memories…"
+        )
+        conv.messages.add(aiMsg)
+
         conv.lastUpdated = System.currentTimeMillis()
         ChatRepository.saveOrUpdateConversation(this, conv)
 
-        // 3. Execute full 6-step LLM Pipeline (Candidate retrieval, Intent classification, Fact extraction, Memory Vault, DAG connections)
-        ChatRepository.processChatMessageWithPipeline(
-            context = this,
-            userMessage = userText,
-            callback = object : ChatRepository.ChatPipelineCallback {
-                override fun onStepUpdate(stepText: String) {
-                    runOnUiThread {
-                        tvVoiceStatus.text = "Thinking..."
-                        tvVoiceSubStatus.text = stepText
-                    }
-                }
-
-                override fun onTokenStream(partialText: String) {
-                    // Streaming progress during voice generation
-                }
-
-                override fun onCompleted(cleanHumanoidAnswer: String, debugLogText: String, usedAttachments: List<MediaAttachment>) {
-                    runOnUiThread {
-                        // 4. Add the LLM answer to the conversation in real-time with diagnostic logs
-                        val aiMsg = ChatMessage(
-                            conversationId = conv.id,
-                            text = cleanHumanoidAnswer,
-                            isUser = false,
-                            debugLog = debugLogText
-                        )
-                        conv.messages.add(aiMsg)
-                        conv.lastUpdated = System.currentTimeMillis()
-                        ChatRepository.saveOrUpdateConversation(this@VoiceConversationActivity, conv)
-
-                        // 5. Speak clean humanoid answer via Text-To-Speech
-                        speakAiResponse(cleanHumanoidAnswer)
-                    }
-                }
-            }
-        )
+        // 3. Launch ChatAiForegroundService so generation continues strictly in background even if user exits call
+        ChatAiForegroundService.startService(this, conv.id, userText, emptyList())
     }
 
     private fun speakAiResponse(text: String) {
@@ -380,9 +360,59 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         }
     }
 
+    private var chatAiBroadcastReceiver: BroadcastReceiver? = null
+
+    private fun registerChatAiBroadcastReceiver() {
+        if (chatAiBroadcastReceiver == null) {
+            chatAiBroadcastReceiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context?, intent: Intent?) {
+                    val action = intent?.action ?: return
+                    val convId = intent.getStringExtra(ChatAiForegroundService.EXTRA_CONVERSATION_ID) ?: return
+
+                    if (activeConversation?.id == convId) {
+                        if (action == ChatAiForegroundService.ACTION_CHAT_STEP_UPDATE) {
+                            val stepText = intent.getStringExtra(ChatAiForegroundService.EXTRA_STEP_TEXT) ?: ""
+                            runOnUiThread {
+                                tvVoiceStatus.text = "Thinking..."
+                                tvVoiceSubStatus.text = stepText
+                            }
+                        } else if (action == ChatAiForegroundService.ACTION_CHAT_COMPLETED) {
+                            val cleanAnswer = intent.getStringExtra(ChatAiForegroundService.EXTRA_ANSWER_TEXT) ?: ""
+                            runOnUiThread {
+                                speakAiResponse(cleanAnswer)
+                            }
+                        }
+                    }
+                }
+            }
+            val filter = IntentFilter().apply {
+                addAction(ChatAiForegroundService.ACTION_CHAT_STEP_UPDATE)
+                addAction(ChatAiForegroundService.ACTION_CHAT_COMPLETED)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(chatAiBroadcastReceiver, filter, RECEIVER_NOT_EXPORTED)
+            } else {
+                registerReceiver(chatAiBroadcastReceiver, filter)
+            }
+        }
+    }
+
+    private fun unregisterChatAiBroadcastReceiver() {
+        try {
+            val receiver = chatAiBroadcastReceiver
+            if (receiver != null) {
+                unregisterReceiver(receiver)
+            }
+            chatAiBroadcastReceiver = null
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         unregisterCallStoppedReceiver()
+        unregisterChatAiBroadcastReceiver()
         stopAllVoiceEngines()
     }
 

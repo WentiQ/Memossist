@@ -23,24 +23,29 @@ class VoiceForegroundService : Service() {
     override fun onCreate() {
         super.onCreate()
         createVoiceCallNotificationChannel()
+        acquireWakeLock()
+        val notification = buildCallNotification()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(
+                NOTIFICATION_ID,
+                notification,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
+            )
+        } else {
+            startForeground(NOTIFICATION_ID, notification)
+        }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val action = intent?.action
-        if (action == ACTION_STOP_VOICE_SERVICE) {
-            stopSelf()
-            sendBroadcast(Intent(ACTION_VOICE_CALL_STOPPED_EVENT))
-            return START_NOT_STICKY
-        }
-
-        // Acquire Partial WakeLock to keep CPU awake during phone sleep mode
+    private fun acquireWakeLock() {
         try {
             val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
             if (wakeLock == null) {
                 wakeLock = powerManager.newWakeLock(
                     PowerManager.PARTIAL_WAKE_LOCK,
                     "Memossist:VoiceCallWakeLock"
-                )
+                ).apply {
+                    setReferenceCounted(false)
+                }
             }
             if (wakeLock?.isHeld == false) {
                 wakeLock?.acquire(3 * 60 * 60 * 1000L) // Max 3 hours safety timeout
@@ -48,8 +53,9 @@ class VoiceForegroundService : Service() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
 
-        // Build Intent to return to VoiceConversationActivity
+    private fun buildCallNotification(): Notification {
         val returnIntent = Intent(this, VoiceConversationActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
@@ -60,7 +66,6 @@ class VoiceForegroundService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Build Intent to End Call from status bar notification
         val stopIntent = Intent(this, VoiceForegroundService::class.java).apply {
             setAction(ACTION_STOP_VOICE_SERVICE)
         }
@@ -71,23 +76,30 @@ class VoiceForegroundService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
+        return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_live_voice)
             .setContentTitle("Memossist Live Voice Call")
             .setContentText("Microphone active. Voice call running in background.")
             .setOngoing(true)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setCategory(NotificationCompat.CATEGORY_CALL)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(returnPendingIntent)
             .addAction(R.drawable.ic_call_end, "End Call", stopPendingIntent)
             .build()
+    }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            startForeground(
-                NOTIFICATION_ID,
-                notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
-            )
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val action = intent?.action
+        if (action == ACTION_STOP_VOICE_SERVICE) {
+            stopSelf()
+            sendBroadcast(Intent(ACTION_VOICE_CALL_STOPPED_EVENT))
+            return START_NOT_STICKY
+        }
+
+        acquireWakeLock()
+
+        val notification = buildCallNotification()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             startForeground(
                 NOTIFICATION_ID,
                 notification,
@@ -97,7 +109,7 @@ class VoiceForegroundService : Service() {
             startForeground(NOTIFICATION_ID, notification)
         }
 
-        return START_STICKY
+        return START_REDELIVER_INTENT
     }
 
     override fun onDestroy() {

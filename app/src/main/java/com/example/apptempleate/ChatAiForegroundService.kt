@@ -24,6 +24,36 @@ class ChatAiForegroundService : Service() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+        acquireWakeLock()
+        val initialNotification = buildForegroundNotification("🔍 Step 1/6: Retrieving candidate memories…")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(
+                NOTIFICATION_ID,
+                initialNotification,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            )
+        } else {
+            startForeground(NOTIFICATION_ID, initialNotification)
+        }
+    }
+
+    private fun acquireWakeLock() {
+        try {
+            val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+            if (wakeLock == null) {
+                wakeLock = powerManager.newWakeLock(
+                    PowerManager.PARTIAL_WAKE_LOCK,
+                    "Memossist:ChatAiLlmWakeLock"
+                ).apply {
+                    setReferenceCounted(false)
+                }
+            }
+            if (wakeLock?.isHeld == false) {
+                wakeLock?.acquire(30 * 60 * 1000L) // 30 min max timeout
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -37,33 +67,7 @@ class ChatAiForegroundService : Service() {
             return START_NOT_STICKY
         }
 
-        // Acquire Partial WakeLock to keep CPU awake during native LLM processing when screen is off
-        try {
-            val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-            if (wakeLock == null) {
-                wakeLock = powerManager.newWakeLock(
-                    PowerManager.PARTIAL_WAKE_LOCK,
-                    "Memossist:ChatAiLlmWakeLock"
-                )
-            }
-            if (wakeLock?.isHeld == false) {
-                wakeLock?.acquire(15 * 60 * 1000L) // 15 min max timeout
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        // Build notification
-        val notification = buildForegroundNotification("🔍 Step 1/6: Retrieving candidate memories…")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            startForeground(
-                NOTIFICATION_ID,
-                notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
-            )
-        } else {
-            startForeground(NOTIFICATION_ID, notification)
-        }
+        acquireWakeLock()
 
         // Execute LLM Pipeline strictly inside Foreground Service process
         executor.execute {
@@ -177,7 +181,7 @@ class ChatAiForegroundService : Service() {
             )
         }
 
-        return START_STICKY
+        return START_REDELIVER_INTENT
     }
 
     private fun updateNotification(stepText: String) {
@@ -205,7 +209,8 @@ class ChatAiForegroundService : Service() {
             .setContentTitle("Memossist AI Processing 🧠")
             .setContentText(stepText)
             .setOngoing(true)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .build()
     }
@@ -218,9 +223,9 @@ class ChatAiForegroundService : Service() {
                 val channel = NotificationChannel(
                     CHANNEL_ID,
                     "Background AI Processing",
-                    NotificationManager.IMPORTANCE_LOW
+                    NotificationManager.IMPORTANCE_DEFAULT
                 ).apply {
-                    description = "Ongoing silent status notification while Memossist LLM processes chat responses in the background"
+                    description = "Ongoing status notification while Memossist LLM processes chat responses in the background"
                 }
                 manager.createNotificationChannel(channel)
             }
