@@ -203,53 +203,6 @@ object MemoryVaultRepository {
     }
 
     private fun createInitialMemories(): MutableList<MemoryItem> {
-        val now = formatCurrentTime()
-        val loc = getCurrentLocation()
-
-        fun createWithAnalysis(id: String, title: String, snippet: String, message: String, tag: String, timeAgo: String, isPinned: Boolean): MemoryItem {
-            val extracted = LinguisticAnalyzer.extractWordsAndSynonyms(message)
-            return MemoryItem(
-                id = id,
-                title = title,
-                snippet = snippet,
-                message = message,
-                timestamp = now,
-                location = loc,
-                tag = tag,
-                timeAgo = timeAgo,
-                isPinned = isPinned,
-                wordSynonymsJson = LinguisticAnalyzer.toJsonString(extracted)
-            )
-        }
-
-        return mutableListOf(
-            createWithAnalysis(
-                id = "EXP-9081",
-                title = "Quarterly Strategy & Cognitive Notes",
-                snippet = "Key takeaways from the strategy session covering neural architecture designs...",
-                message = "Key takeaways from the strategy session covering neural architecture designs, memory retrieval benchmarks, and UI state flows.",
-                tag = "Audio",
-                timeAgo = "4 mins ago",
-                isPinned = true
-            ),
-            createWithAnalysis(
-                id = "EXP-7742",
-                title = "AI Agentic Workflow Ideas",
-                snippet = "Explored multi-agent delegation patterns for autonomous contextual search...",
-                message = "Explored multi-agent delegation patterns for autonomous contextual search and live tactile background rendering.",
-                tag = "Idea",
-                timeAgo = "2 hours ago",
-                isPinned = true
-            ),
-            createWithAnalysis(
-                id = "EXP-6105",
-                title = "Product Roadmap & UI Polish Transcript",
-                snippet = "Transcript of live voice conversation discussing smooth swipe gestures...",
-                message = "Transcript of live voice conversation discussing smooth swipe gestures, sidebar navigation, and clean white interface styling.",
-                tag = "Document",
-                timeAgo = "Yesterday",
-                isPinned = false
-            )
-        )
+        return mutableListOf()
     }
 }

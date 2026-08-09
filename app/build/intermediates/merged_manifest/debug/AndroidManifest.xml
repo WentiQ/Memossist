@@ -50,6 +50,10 @@
             android:exported="false"
             android:theme="@style/Theme.AppTempeLate" />
         <activity
+            android:name="com.example.apptempleate.OnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+        <activity
             android:name="com.example.apptempleate.RemindersActivity"
             android:exported="false"
             android:theme="@style/Theme.AppTempeLate" />

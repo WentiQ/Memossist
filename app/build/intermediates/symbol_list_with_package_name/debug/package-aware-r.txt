@@ -2826,10 +2826,12 @@ id btnEditName
 id btnEditReminder
 id btnEndCall
 id btnExportAllData
+id btnFinishOnboarding
 id btnHamburger
 id btnHeaderModelPicker
 id btnHeaderNotifications
 id btnImportAllData
+id btnImportDataNow
 id btnLiveVoice
 id btnManageReminders
 id btnMarkAllRead
@@ -2854,6 +2856,8 @@ id btnResetView
 id btnSelectModelCard
 id btnSidebarNewChat
 id btnSpeakerToggle
+id btnStep1Next
+id btnStep2Next
 id btnTestAlarm
 id btnTestPhoneNotification
 id btnWordsDone
@@ -2951,6 +2955,7 @@ id etDialogUserName
 id etEditExpMessage
 id etSearchReminders
 id etSearchVault
+id etUserName
 id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
@@ -3042,6 +3047,7 @@ id llFilterCategoryContainer
 id llFilterChips
 id llFixedSidebarHeader
 id llGreetingContainer
+id llHeader
 id llHeaderBrand
 id llHistoryItemRow
 id llMessageCard
@@ -3166,6 +3172,9 @@ id pbRemindersCompletion
 id pbSpeed
 id peekHeight
 id percent
+id pillStep1
+id pillStep2
+id pillStep3
 id pin
 id position
 id postLayout
@@ -3252,14 +3261,19 @@ id startToEnd
 id startVertical
 id staticLayout
 id staticPostLayout
+id step1Container
+id step2Container
+id step3Container
 id stop
 id stretch
 id submenuarrow
 id submit_area
 id supportScrollUp
 id switchActive
+id switchAppLock
 id switchAutoSave
 id switchCloudSync
+id switchEnableAppLock
 id switchHaptics
 id tabMode
 id tag_accessibility_actions
@@ -3380,6 +3394,7 @@ id tvModelName
 id tvModelParams
 id tvModelTagline
 id tvMorningTimeValue
+id tvNameError
 id tvNextEvent
 id tvNotifIcon
 id tvNotifMessage
@@ -3411,6 +3426,11 @@ id tvStatAvgSpeed
 id tvStatDagEdges
 id tvStatTotalMemories
 id tvStatTotalReminders
+id tvStep1Num
+id tvStep2Num
+id tvStep2Text
+id tvStep3Num
+id tvStep3Text
 id tvThinkingStep
 id tvTimeStatus
 id tvUserEmail
@@ -3580,6 +3600,7 @@ layout activity_connections
 layout activity_main
 layout activity_memory_vault
 layout activity_model_marketplace
+layout activity_onboarding
 layout activity_reminders
 layout activity_settings
 layout activity_voice_conversation

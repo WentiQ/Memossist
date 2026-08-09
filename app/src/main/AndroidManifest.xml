@@ -43,6 +43,11 @@
             android:theme="@style/Theme.AppTempeLate" />
 
         <activity
+            android:name=".OnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+
+        <activity
             android:name=".RemindersActivity"
             android:exported="false"
             android:theme="@style/Theme.AppTempeLate" />

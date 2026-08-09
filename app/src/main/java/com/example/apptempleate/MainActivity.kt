@@ -132,10 +132,29 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val appLockAuthLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            AppLockManager.isSessionAuthenticated = true
+        } else {
+            Toast.makeText(this, "App Lock authentication required", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val prefs = getSharedPreferences("MemossistPrefs", MODE_PRIVATE)
+        if (prefs.getBoolean("is_first_launch", true)) {
+            startActivity(Intent(this, OnboardingActivity::class.java))
+            finish()
+            return
+        }
         
         AppLifecycleTracker.init(application)
+        checkAndPromptAppLockIfRequired()
 
         // Remove window title & hide action bar completely
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -845,7 +864,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateGreetingText() {
         val prefs = getSharedPreferences("MemossistPrefs", MODE_PRIVATE)
-        val userName = prefs.getString("user_name", "Dinesh") ?: "Dinesh"
+        val userName = prefs.getString("user_name", "User") ?: "User"
 
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
         val timeGreeting = when (hour) {
@@ -855,6 +874,16 @@ class MainActivity : AppCompatActivity() {
             else -> "Good night, $userName"
         }
         tvGreetingTitle.text = timeGreeting
+
+        val allMemories = MemoryVaultRepository.loadAllMemories(this)
+        val allConversations = ChatRepository.loadAllConversations(this)
+        val hasAnyData = allMemories.isNotEmpty() || allConversations.isNotEmpty()
+
+        if (!hasAnyData) {
+            tvGreetingPrompt.text = "Welcome to Memossist! Your personal AI memory vault is ready. Start typing or tap the mic to record your first memory, ask a question, or set smart reminders."
+        } else {
+            tvGreetingPrompt.text = "What do you want to recall?"
+        }
     }
 
     private fun updateHeaderActiveModel() {
@@ -898,6 +927,29 @@ class MainActivity : AppCompatActivity() {
             workspaceRemindersAdapter.setReminders(upcomingList, userName)
         } else {
             llWorkspaceRemindersSection.visibility = View.GONE
+        }
+    }
+
+    private fun checkAndPromptAppLockIfRequired() {
+        if (AppLockManager.isAppLockEnabled(this) && !AppLockManager.isSessionAuthenticated) {
+            val intent = AppLockManager.createDeviceCredentialIntent(
+                this,
+                "Unlock Memossist",
+                "Authenticate with your phone lock to access Memossist"
+            )
+            if (intent != null) {
+                appLockAuthLauncher.launch(intent)
+            } else {
+                AppLockManager.isSessionAuthenticated = true
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent?.action == Intent.ACTION_MAIN && intent.hasCategory(Intent.CATEGORY_LAUNCHER)) {
+            checkAndPromptAppLockIfRequired()
         }
     }
 

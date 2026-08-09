@@ -41,6 +41,8 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var btnManageReminders: LinearLayout
     private lateinit var btnExportAllData: LinearLayout
     private lateinit var btnImportAllData: LinearLayout
+    private lateinit var switchAppLock: androidx.appcompat.widget.SwitchCompat
+    private var pendingAppLockEnableState: Boolean = false
 
     private lateinit var prefs: SharedPreferences
 
@@ -51,6 +53,22 @@ class SettingsActivity : AppCompatActivity() {
             executeDeleteAllUserData()
         } else {
             Toast.makeText(this, "Authentication failed. Data preserved.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private val appLockToggleAuthLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            AppLockManager.setAppLockEnabled(this, pendingAppLockEnableState)
+            AppLockManager.isSessionAuthenticated = true
+            AppLockManager.applySecureFlag(this)
+            switchAppLock.isChecked = pendingAppLockEnableState
+            val statusMsg = if (pendingAppLockEnableState) "App Lock enabled" else "App Lock disabled"
+            Toast.makeText(this, statusMsg, Toast.LENGTH_SHORT).show()
+        } else {
+            switchAppLock.isChecked = AppLockManager.isAppLockEnabled(this)
+            Toast.makeText(this, "Authentication cancelled", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -152,6 +170,36 @@ class SettingsActivity : AppCompatActivity() {
 
         btnExportAllData = findViewById(R.id.btnExportAllData)
         btnImportAllData = findViewById(R.id.btnImportAllData)
+        switchAppLock = findViewById(R.id.switchAppLock)
+
+        switchAppLock.isChecked = AppLockManager.isAppLockEnabled(this)
+        switchAppLock.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked == AppLockManager.isAppLockEnabled(this)) return@setOnCheckedChangeListener
+
+            if (isChecked && !AppLockManager.isDeviceSecure(this)) {
+                switchAppLock.isChecked = false
+                AlertDialog.Builder(this)
+                    .setTitle("Phone Screen Lock Required 🔒")
+                    .setMessage("To enable App Lock, please set up a PIN, pattern, or fingerprint lock in your phone's system settings first.")
+                    .setPositiveButton("OK", null)
+                    .show()
+                return@setOnCheckedChangeListener
+            }
+
+            pendingAppLockEnableState = isChecked
+            val intent = AppLockManager.createDeviceCredentialIntent(
+                this,
+                if (isChecked) "Confirm App Lock Activation" else "Confirm App Lock Deactivation",
+                if (isChecked) "Authenticate with your phone lock to enable App Lock." else "Authenticate with your phone lock to disable App Lock."
+            )
+            if (intent != null) {
+                appLockToggleAuthLauncher.launch(intent)
+            } else {
+                AppLockManager.setAppLockEnabled(this, isChecked)
+                AppLockManager.applySecureFlag(this)
+                Toast.makeText(this, if (isChecked) "App Lock enabled" else "App Lock disabled", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         // Load saved user profile data
         loadUserProfileData()

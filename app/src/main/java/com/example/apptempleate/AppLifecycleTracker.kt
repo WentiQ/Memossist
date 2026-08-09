@@ -14,7 +14,9 @@ object AppLifecycleTracker : Application.ActivityLifecycleCallbacks {
         application.registerActivityLifecycleCallbacks(this)
     }
 
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+        AppLockManager.applySecureFlag(activity)
+    }
 
     override fun onActivityStarted(activity: Activity) {
         activeActivityCount++
@@ -23,6 +25,7 @@ object AppLifecycleTracker : Application.ActivityLifecycleCallbacks {
 
     override fun onActivityResumed(activity: Activity) {
         isAppInForeground = true
+        AppLockManager.applySecureFlag(activity)
     }
 
     override fun onActivityPaused(activity: Activity) {}
