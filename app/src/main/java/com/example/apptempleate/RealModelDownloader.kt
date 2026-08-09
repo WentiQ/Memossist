@@ -49,6 +49,13 @@ object RealModelDownloader {
         val targetFile = getModelFile(context, model)
         val tempFile = File(targetFile.parentFile, "${targetFile.name}.tmp")
 
+        try {
+            if (targetFile.exists()) targetFile.delete()
+            if (tempFile.exists()) tempFile.delete()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
         executor.execute {
             var urlConnection: HttpURLConnection? = null
             var inputStream: InputStream?

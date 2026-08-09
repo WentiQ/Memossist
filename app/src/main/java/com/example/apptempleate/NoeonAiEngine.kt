@@ -43,6 +43,12 @@ object NoeonAiEngine {
         getPrefs(context).edit().putStringSet(KEY_DOWNLOADED_MODELS, downloaded).apply()
     }
 
+    fun clearModelDownloaded(context: Context, modelId: String) {
+        val downloaded = getPrefs(context).getStringSet(KEY_DOWNLOADED_MODELS, emptySet())?.toMutableSet() ?: mutableSetOf()
+        downloaded.remove(modelId)
+        getPrefs(context).edit().putStringSet(KEY_DOWNLOADED_MODELS, downloaded).apply()
+    }
+
     fun getActiveModelFilePath(context: Context): String {
         val file = RealModelDownloader.getModelFile(context, getSelectedModel(context))
         return if (file.exists() && file.length() > 0) file.absolutePath else "No model file available"

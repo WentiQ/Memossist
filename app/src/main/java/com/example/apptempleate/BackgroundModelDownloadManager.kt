@@ -60,6 +60,9 @@ object BackgroundModelDownloadManager {
     fun startDownload(context: Context, model: AiModel) {
         if (isModelDownloading(model.id)) return
 
+        // Always delete any existing partial, temp, or broken model file before starting download again
+        deleteDownloadedModel(context, model)
+
         val initialProgress = ModelDownloadProgress(
             modelId = model.id,
             isDownloading = true,
@@ -122,11 +125,18 @@ object BackgroundModelDownloadManager {
     }
 
     fun deleteDownloadedModel(context: Context, model: AiModel): Boolean {
-        val file = RealModelDownloader.getModelFile(context, model)
+        val targetFile = RealModelDownloader.getModelFile(context, model)
+        val tempFile = File(targetFile.parentFile, "${targetFile.name}.tmp")
         var deleted = false
-        if (file.exists()) {
-            deleted = file.delete()
+
+        if (targetFile.exists()) {
+            deleted = targetFile.delete() || deleted
         }
+        if (tempFile.exists()) {
+            deleted = tempFile.delete() || deleted
+        }
+
+        NoeonAiEngine.clearModelDownloaded(context, model.id)
         progressMap.remove(model.id)
 
         // If the deleted model was active, revert to default recommended model
