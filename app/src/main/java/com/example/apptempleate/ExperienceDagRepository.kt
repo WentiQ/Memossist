@@ -63,29 +63,70 @@ object ExperienceDagRepository {
     }
 
     /**
-     * Retrieves top 5 matching experiences based on word and synonym overlap with Question Q.
+     * Retrieves top matching experiences with Dynamic Graph Expansion:
+     * 1. First retrieves top 5 candidate experiences based on semantic overlap.
+     * 2. For rank i (1 to 5), retrieves top (5 - i) connected experiences with non-zero connection strength (S_ij > 0.0), sorted descending by strength.
+     * 3. Performs union set deduplication across all items while preserving rank order.
+     * 4. Returns the final expanded union list of candidate experiences.
      */
     fun retrieveTopMatchingExperiences(context: Context, userQuestion: String, topK: Int = 5): List<MemoryItem> {
         val allMemories = MemoryVaultRepository.loadAllMemories(context)
         if (allMemories.isEmpty()) return emptyList()
 
         val qSet = getSemanticTermSet(userQuestion)
-        if (qSet.isEmpty()) return allMemories.take(topK)
-
-        // Calculate overlap score |Q ∩ N_i| for each experience
-        val scoredMemories = allMemories.map { memory ->
-            val nSet = getSemanticTermSet("${memory.title} ${memory.snippet} ${memory.message}")
-            val overlapScore = qSet.intersect(nSet).size
-            Pair(memory, overlapScore)
+        val sortedMemories = if (qSet.isEmpty()) {
+            allMemories
+        } else {
+            val scored = allMemories.map { memory ->
+                val nSet = getSemanticTermSet("${memory.title} ${memory.snippet} ${memory.message}")
+                val overlapScore = qSet.intersect(nSet).size
+                Pair(memory, overlapScore)
+            }
+            scored.sortedWith(
+                compareByDescending<Pair<MemoryItem, Int>> { it.second }
+                    .thenBy { it.first.id }
+            ).map { it.first }
         }
 
-        // Sort descending by overlap score, tie-breaker timestamp/ID
-        val sorted = scoredMemories.sortedWith(
-            compareByDescending<Pair<MemoryItem, Int>> { it.second }
-                .thenBy { it.first.id }
-        )
+        // 1. Initial Top 5 Candidate Experiences
+        val top5 = sortedMemories.take(topK)
+        if (top5.isEmpty()) return emptyList()
 
-        return sorted.take(topK).map { it.first }
+        val memoryMap = allMemories.associateBy { it.id }
+        val allEdges = loadAllEdges(context)
+
+        // Result list maintaining insertion order (top5 first)
+        val expandedCandidates = mutableListOf<MemoryItem>()
+        expandedCandidates.addAll(top5)
+
+        // 2. For each rank i in top5 (1-indexed: i = 1..5), find top (5 - i) connected experiences by strength
+        for ((index, exp) in top5.withIndex()) {
+            val rankI = index + 1
+            val maxConnectedToFetch = 5 - rankI // For rank 1 -> 4, rank 2 -> 3, rank 3 -> 2, rank 4 -> 1, rank 5 -> 0
+            if (maxConnectedToFetch <= 0) continue
+
+            // Find all edges connected to exp.id with non-zero strength (> 0.0), sorted descending by strength
+            val connectedEdges = allEdges.filter { edge ->
+                (edge.experienceId1.equals(exp.id, ignoreCase = true) ||
+                 edge.experienceId2.equals(exp.id, ignoreCase = true)) &&
+                edge.strength > 0.0
+            }.sortedByDescending { it.strength }
+
+            // Take top (5 - i) connected experience IDs
+            val topConnectedIds = connectedEdges.take(maxConnectedToFetch).map { edge ->
+                if (edge.experienceId1.equals(exp.id, ignoreCase = true)) edge.experienceId2 else edge.experienceId1
+            }
+
+            for (connId in topConnectedIds) {
+                val connMemory = memoryMap[connId] ?: allMemories.find { it.id.equals(connId, ignoreCase = true) }
+                if (connMemory != null) {
+                    expandedCandidates.add(connMemory)
+                }
+            }
+        }
+
+        // 3. Union set: eliminate duplicates by ID while preserving rank order
+        return expandedCandidates.distinctBy { it.id }
     }
 
     /**

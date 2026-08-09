@@ -69,7 +69,7 @@ object NoeonAiEngine {
         append("- Pay close attention to these Time and Location details to accurately answer time-based (e.g. 'when did I...', 'what time...', 'yesterday') or location-based (e.g. 'where was I...', 'where did I...') questions.\n\n")
         append("Rules for USED_EXPERIENCES:\n")
         append("- Use only IDs from the candidate experiences below if actually used to answer, or NONE.\n\n")
-        append("=== TOP 5 CANDIDATE EXPERIENCES ===\n")
+        append("=== CANDIDATE EXPERIENCES ===\n")
         if (candidateExperiences.isEmpty()) {
             append("(No candidate experiences retrieved)\n")
         } else {

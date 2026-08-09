@@ -28,7 +28,7 @@ object ChatRepository {
         sb.append("1. Provide a natural, humanoid, insightful answer synthesized in your own conversational words.\n")
         sb.append("2. DO NOT just copy-paste exact statements or dump raw memory text verbatim.\n")
         sb.append("3. Declare ONLY the IDs of experiences actually used to answer in format: [USED_EXPERIENCES: EXP-ID1, EXP-ID2]\n\n")
-        sb.append("=== RETRIEVED CANDIDATE EXPERIENCES (TOP 5) ===\n")
+        sb.append("=== CANDIDATE EXPERIENCES ===\n")
 
         if (candidateExperiences.isEmpty()) {
             sb.append("(No relevant stored experiences found in Memory Vault)\n")
