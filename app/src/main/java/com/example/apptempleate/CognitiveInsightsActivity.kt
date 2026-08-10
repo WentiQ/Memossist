@@ -11,35 +11,34 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import java.io.File
+import java.util.ArrayDeque
+import java.util.Locale
 
 class CognitiveInsightsActivity : AppCompatActivity() {
 
     private lateinit var btnBack: ImageButton
     private lateinit var tvHumanoidAiInsightStatement: TextView
 
-    private lateinit var tvCognitiveScorePercent: TextView
-    private lateinit var tvCognitiveScoreBadge: TextView
-    private lateinit var pbCognitiveScore: ProgressBar
-
+    // 6 Key Stats Grid
     private lateinit var tvStatTotalMemories: TextView
     private lateinit var tvStatDagEdges: TextView
-    private lateinit var tvStatAvgSpeed: TextView
-    private lateinit var tvStatTotalReminders: TextView
+    private lateinit var tvStatClusters: TextView
+    private lateinit var tvStatOrphans: TextView
+    private lateinit var tvStatAvgResponseTime: TextView
+    private lateinit var tvStatTotalDataSize: TextView
 
-    private lateinit var tvDagDensityStatus: TextView
-    private lateinit var tvDagNodesCount: TextView
-    private lateinit var tvDagEdgesCount: TextView
-    private lateinit var llTopHubNodesContainer: LinearLayout
+    // DAG Topology Card
+    private lateinit var tvTopologyStatus: TextView
+    private lateinit var tvConnectedRatio: TextView
+    private lateinit var pbConnectedRatio: ProgressBar
+    private lateinit var tvClusterSummary: TextView
 
-    private lateinit var pbFactsCategory: ProgressBar
-    private lateinit var tvFactsCategoryLabel: TextView
-    private lateinit var pbRemindersCategory: ProgressBar
-    private lateinit var tvRemindersCategoryLabel: TextView
-    private lateinit var pbMediaCategory: ProgressBar
-    private lateinit var tvMediaCategoryLabel: TextView
-
-    private lateinit var tvRemindersCompletedCount: TextView
-    private lateinit var pbRemindersCompletion: ProgressBar
+    private data class ClusterResult(
+        val clustersCount: Int,
+        val orphansCount: Int,
+        val clusterDetails: List<List<MemoryItem>>
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,148 +62,192 @@ class CognitiveInsightsActivity : AppCompatActivity() {
         btnBack = findViewById(R.id.btnBack)
         tvHumanoidAiInsightStatement = findViewById(R.id.tvHumanoidAiInsightStatement)
 
-        tvCognitiveScorePercent = findViewById(R.id.tvCognitiveScorePercent)
-        tvCognitiveScoreBadge = findViewById(R.id.tvCognitiveScoreBadge)
-        pbCognitiveScore = findViewById(R.id.pbCognitiveScore)
-
         tvStatTotalMemories = findViewById(R.id.tvStatTotalMemories)
         tvStatDagEdges = findViewById(R.id.tvStatDagEdges)
-        tvStatAvgSpeed = findViewById(R.id.tvStatAvgSpeed)
-        tvStatTotalReminders = findViewById(R.id.tvStatTotalReminders)
+        tvStatClusters = findViewById(R.id.tvStatClusters)
+        tvStatOrphans = findViewById(R.id.tvStatOrphans)
+        tvStatAvgResponseTime = findViewById(R.id.tvStatAvgResponseTime)
+        tvStatTotalDataSize = findViewById(R.id.tvStatTotalDataSize)
 
-        tvDagDensityStatus = findViewById(R.id.tvDagDensityStatus)
-        tvDagNodesCount = findViewById(R.id.tvDagNodesCount)
-        tvDagEdgesCount = findViewById(R.id.tvDagEdgesCount)
-        llTopHubNodesContainer = findViewById(R.id.llTopHubNodesContainer)
-
-        pbFactsCategory = findViewById(R.id.pbFactsCategory)
-        tvFactsCategoryLabel = findViewById(R.id.tvFactsCategoryLabel)
-        pbRemindersCategory = findViewById(R.id.pbRemindersCategory)
-        tvRemindersCategoryLabel = findViewById(R.id.tvRemindersCategoryLabel)
-        pbMediaCategory = findViewById(R.id.pbMediaCategory)
-        tvMediaCategoryLabel = findViewById(R.id.tvMediaCategoryLabel)
-
-        tvRemindersCompletedCount = findViewById(R.id.tvRemindersCompletedCount)
-        pbRemindersCompletion = findViewById(R.id.pbRemindersCompletion)
+        tvTopologyStatus = findViewById(R.id.tvTopologyStatus)
+        tvConnectedRatio = findViewById(R.id.tvConnectedRatio)
+        pbConnectedRatio = findViewById(R.id.pbConnectedRatio)
+        tvClusterSummary = findViewById(R.id.tvClusterSummary)
     }
 
     private fun loadAndCalculateRealTimeInsights() {
         val allMemories = MemoryVaultRepository.loadAllMemories(this)
         val dagEdges = ExperienceDagRepository.loadAllEdges(this)
-        val (avgSpeedSec, totalQueries) = ResponseStatsRepository.getStats(this)
-        val allReminders = ReminderRepository.loadAllReminders(this)
+        val (avgSpeedSec, _) = ResponseStatsRepository.getStats(this)
         val prefs = getSharedPreferences("MemossistPrefs", MODE_PRIVATE)
         val userName = prefs.getString("user_name", "Dinesh") ?: "Dinesh"
 
         val memoriesCount = allMemories.size
         val dagEdgesCount = dagEdges.size
-        val remindersCount = allReminders.size
 
-        // 1. Calculate Real-Time Cognitive Health Score %
-        val healthScore = if (memoriesCount == 0) {
-            100
+        // 1. DAG Graph Clustering & Orphans Calculation
+        val clusterResult = calculateDagClustersAndOrphans(allMemories, dagEdges)
+        val clustersCount = clusterResult.clustersCount
+        val orphansCount = clusterResult.orphansCount
+
+        // 2. Average Response Time in Chat
+        val avgResponseStr = if (avgSpeedSec > 0f) {
+            if (avgSpeedSec < 1.0f) String.format(Locale.US, "%.2fs", avgSpeedSec) else String.format(Locale.US, "%.1fs", avgSpeedSec)
         } else {
-            (60 + (memoriesCount * 2) + (dagEdgesCount * 1) + (totalQueries * 0.5)).toInt().coerceIn(65, 99)
+            val lastDur = ResponseStatsRepository.getLastDuration(this)
+            if (lastDur > 0f) String.format(Locale.US, "%.1fs", lastDur) else "--"
         }
 
-        tvCognitiveScorePercent.text = "$healthScore%"
-        pbCognitiveScore.progress = healthScore
+        // 3. Memory Vault Total Data Added Calculation (Text + Attachments)
+        val totalVaultBytes = calculateTotalMemoryVaultDataSize(allMemories)
+        val formattedDataSize = formatBytes(totalVaultBytes)
 
-        tvCognitiveScoreBadge.text = when {
-            healthScore >= 90 -> "Optimal Neural Density 🌟"
-            healthScore >= 80 -> "High Synaptic Retention ⚡"
-            else -> "Growing Knowledge Base 🧠"
-        }
-
-        // 2. Set Top 4 Quick Stats
+        // 4. Update Grid Cards
         tvStatTotalMemories.text = "$memoriesCount"
         tvStatDagEdges.text = "$dagEdgesCount"
-        tvStatAvgSpeed.text = if (avgSpeedSec > 0f) String.format("%.1fs", avgSpeedSec) else "--"
-        tvStatTotalReminders.text = "$remindersCount"
+        tvStatClusters.text = "$clustersCount"
+        tvStatOrphans.text = "$orphansCount"
+        tvStatAvgResponseTime.text = avgResponseStr
+        tvStatTotalDataSize.text = formattedDataSize
 
-        // 3. DAG Graph Network Analysis
-        tvDagNodesCount.text = "• $memoriesCount Vault Nodes"
-        tvDagEdgesCount.text = "• $dagEdgesCount Synaptic Connections"
+        // 5. Update DAG Topology Analysis Card
+        val connectedMemoriesCount = (memoriesCount - orphansCount).coerceAtLeast(0)
+        val connectedPct = if (memoriesCount > 0) (connectedMemoriesCount * 100) / memoriesCount else 0
 
-        val edgeToNodeRatio = if (memoriesCount > 1) (dagEdgesCount.toFloat() / memoriesCount.toFloat()) else 0f
-        tvDagDensityStatus.text = when {
-            edgeToNodeRatio >= 1.5f -> "High Synaptic Density"
-            edgeToNodeRatio >= 0.8f -> "Moderate Synaptic Coupling"
-            else -> "Initial Synaptic Mapping"
+        tvConnectedRatio.text = "$connectedPct% Connected ($connectedMemoriesCount of $memoriesCount)"
+        pbConnectedRatio.progress = connectedPct
+
+        tvTopologyStatus.text = when {
+            clustersCount >= 3 -> "High Network Density"
+            clustersCount > 0 -> "Active Synaptic Clusters"
+            memoriesCount > 0 -> "Initial Graph Mapping"
+            else -> "Vault Empty"
         }
 
-        // Compute Top Connected Memory Hubs
-        populateTopHubNodes(allMemories, dagEdges)
-
-        // 4. Vault Knowledge Distribution
-        val chatFactsCount = allMemories.count { it.tag.contains("Fact", ignoreCase = true) || it.tag.contains("Chat", ignoreCase = true) }
-        val remindersMemCount = allMemories.count { it.tag.contains("Reminder", ignoreCase = true) }
-        val totalMediaAttachments = allMemories.sumOf { it.attachments.size }
-
-        val factsPct = if (memoriesCount > 0) (chatFactsCount * 100) / memoriesCount else 0
-        val remindersPct = if (memoriesCount > 0) (remindersMemCount * 100) / memoriesCount else 0
-        val mediaPct = if (memoriesCount > 0) ((totalMediaAttachments.coerceAtMost(memoriesCount)) * 100) / memoriesCount else 0
-
-        pbFactsCategory.progress = factsPct.coerceAtLeast(5)
-        tvFactsCategoryLabel.text = "$chatFactsCount items ($factsPct%)"
-
-        pbRemindersCategory.progress = remindersPct.coerceAtLeast(5)
-        tvRemindersCategoryLabel.text = "$remindersMemCount items ($remindersPct%)"
-
-        pbMediaCategory.progress = mediaPct.coerceAtLeast(5)
-        tvMediaCategoryLabel.text = "$totalMediaAttachments files ($mediaPct%)"
-
-        // 5. Reminder Completion Rate
-        val completedCount = allReminders.count { it.isCompleted }
-        val completionRatePct = if (remindersCount > 0) (completedCount * 100) / remindersCount else 100
-
-        tvRemindersCompletedCount.text = "$completedCount of $remindersCount Completed ($completionRatePct%)"
-        pbRemindersCompletion.progress = completionRatePct
+        tvClusterSummary.text = "Identified $clustersCount connected cluster(s) and $orphansCount orphan memory item(s) in your DAG graph."
 
         // 6. Humanoid AI Insight Statement Synthesis
-        val speedStr = if (avgSpeedSec > 0f) String.format("%.1fs", avgSpeedSec) else "real-time"
-        tvHumanoidAiInsightStatement.text = "Hello $userName! Your Memory Vault stores $memoriesCount memories linked across $dagEdgesCount DAG synaptic edges. Your AI response speed averages $speedStr across $totalQueries processed queries with $completedCount of $remindersCount reminders completed."
+        tvHumanoidAiInsightStatement.text = "Hello $userName! Your Memory Vault contains $memoriesCount memories storing $formattedDataSize of user data. Graph topology reveals $dagEdgesCount DAG synaptic edges across $clustersCount cluster(s) with $orphansCount orphan item(s). Average chat response latency is $avgResponseStr."
     }
 
-    private fun populateTopHubNodes(allMemories: List<MemoryItem>, dagEdges: List<DagEdge>) {
-        llTopHubNodesContainer.removeAllViews()
-
+    private fun calculateDagClustersAndOrphans(
+        allMemories: List<MemoryItem>,
+        dagEdges: List<DagEdge>
+    ): ClusterResult {
         if (allMemories.isEmpty()) {
-            val emptyTv = TextView(this).apply {
-                text = "No core memory hubs registered yet. Start chatting to build connections!"
-                setTextColor(Color.parseColor("#6B7280"))
-                textSize = 12f
-                setPadding(0, 8, 0, 0)
-            }
-            llTopHubNodesContainer.addView(emptyTv)
-            return
+            return ClusterResult(0, 0, emptyList())
         }
 
-        // Count degree connections per experience ID
-        val degreeMap = mutableMapOf<String, Int>()
+        val memoryMap = allMemories.associateBy { it.id }
+        val validMemoryIds = memoryMap.keys
+
+        // 1. Build adjacency list of connected node IDs (only valid memory IDs in current vault)
+        val adjacencyMap = mutableMapOf<String, MutableSet<String>>()
+        for (mem in allMemories) {
+            adjacencyMap[mem.id] = mutableSetOf()
+        }
+
         for (edge in dagEdges) {
-            degreeMap[edge.experienceId1] = (degreeMap[edge.experienceId1] ?: 0) + 1
-            degreeMap[edge.experienceId2] = (degreeMap[edge.experienceId2] ?: 0) + 1
+            val id1 = edge.experienceId1
+            val id2 = edge.experienceId2
+            if (edge.strength > 0.0 && validMemoryIds.contains(id1) && validMemoryIds.contains(id2) && id1 != id2) {
+                adjacencyMap[id1]?.add(id2)
+                adjacencyMap[id2]?.add(id1)
+            }
         }
 
-        val topMemories = allMemories.sortedByDescending { degreeMap[it.id] ?: 0 }.take(3)
+        // 2. Compute degrees and count orphans (nodes with degree == 0)
+        var orphansCount = 0
+        val nonOrphanIds = mutableListOf<String>()
 
-        for (mem in topMemories) {
-            val connectionsCount = degreeMap[mem.id] ?: 0
-            val rowView = LayoutInflater.from(this).inflate(R.layout.item_workspace_reminder, llTopHubNodesContainer, false)
+        for (mem in allMemories) {
+            val degree = adjacencyMap[mem.id]?.size ?: 0
+            if (degree == 0) {
+                orphansCount++
+            } else {
+                nonOrphanIds.add(mem.id)
+            }
+        }
 
-            val tvIcon: TextView = rowView.findViewById(R.id.tvWsReminderIcon)
-            val tvStatement: TextView = rowView.findViewById(R.id.tvWsReminderStatement)
+        // 3. Graph traversal (BFS) to identify connected components with >= 2 nodes
+        val visited = mutableSetOf<String>()
+        val clustersList = mutableListOf<List<MemoryItem>>()
 
-            tvIcon.text = "🧠"
-            tvStatement.text = "${mem.title} — ($connectionsCount synaptic connections)\n${mem.snippet}"
+        for (id in nonOrphanIds) {
+            if (visited.contains(id)) continue
 
-            rowView.setOnClickListener {
-                val intent = Intent(this, MemoryVaultActivity::class.java)
-                startActivity(intent)
+            val componentMemoryItems = mutableListOf<MemoryItem>()
+            val queue = ArrayDeque<String>()
+            queue.add(id)
+            visited.add(id)
+
+            while (queue.isNotEmpty()) {
+                val currId = queue.removeFirst()
+                val mem = memoryMap[currId]
+                if (mem != null) {
+                    componentMemoryItems.add(mem)
+                }
+                val neighbors = adjacencyMap[currId] ?: emptySet()
+                for (neighbor in neighbors) {
+                    if (!visited.contains(neighbor)) {
+                        visited.add(neighbor)
+                        queue.add(neighbor)
+                    }
+                }
             }
 
-            llTopHubNodesContainer.addView(rowView)
+            if (componentMemoryItems.size >= 2) {
+                clustersList.add(componentMemoryItems)
+            }
+        }
+
+        return ClusterResult(
+            clustersCount = clustersList.size,
+            orphansCount = orphansCount,
+            clusterDetails = clustersList.sortedByDescending { it.size }
+        )
+    }
+
+    private fun calculateTotalMemoryVaultDataSize(allMemories: List<MemoryItem>): Long {
+        var totalBytes = 0L
+
+        // 1. Serialized JSON storage file size for memory vault
+        val vaultFile = File(filesDir, "memossist_vault_memories.json")
+        if (vaultFile.exists()) {
+            totalBytes += vaultFile.length()
+        } else {
+            for (mem in allMemories) {
+                val textContent = "${mem.id}${mem.title}${mem.snippet}${mem.message}${mem.tag}${mem.location}${mem.timestamp}${mem.wordSynonymsJson.orEmpty()}"
+                totalBytes += textContent.toByteArray(Charsets.UTF_8).size
+            }
+        }
+
+        // 2. Media attachment files specifically attached to memory vault items
+        val processedFilePaths = mutableSetOf<String>()
+        for (mem in allMemories) {
+            for (att in mem.attachments) {
+                val path = att.filePath
+                if (path.isNotBlank() && !processedFilePaths.contains(path)) {
+                    processedFilePaths.add(path)
+                    val f = File(path)
+                    if (f.exists()) {
+                        totalBytes += f.length()
+                    } else if (att.fileSize > 0) {
+                        totalBytes += att.fileSize
+                    }
+                }
+            }
+        }
+
+        return totalBytes
+    }
+
+    private fun formatBytes(bytes: Long): String {
+        return when {
+            bytes < 1024 -> "$bytes B"
+            bytes < 1024 * 1024 -> String.format(Locale.US, "%.1f KB", bytes.toDouble() / 1024)
+            bytes < 1024 * 1024 * 1024 -> String.format(Locale.US, "%.1f MB", bytes.toDouble() / (1024 * 1024))
+            else -> String.format(Locale.US, "%.2f GB", bytes.toDouble() / (1024 * 1024 * 1024))
         }
     }
 

@@ -87,6 +87,9 @@ object NotificationHistoryRepository {
     }
 
     fun addNotification(context: Context, notification: NotificationItem) {
+        if (AppLifecycleTracker.isAppInForeground) {
+            return
+        }
         val list = loadLast30DaysNotifications(context)
         list.add(0, notification)
         saveAllNotifications(context, list)

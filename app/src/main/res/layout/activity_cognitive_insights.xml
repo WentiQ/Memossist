@@ -77,7 +77,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="12dp"
-                    android:text="Analyzing your Memory Vault neural stats..."
+                    android:text="Analyzing your Memory Vault neural metrics..."
                     android:textColor="#1F2937"
                     android:textSize="13sp"
                     android:lineSpacingExtra="3dp"
@@ -85,214 +85,313 @@
 
             </LinearLayout>
 
-            <!-- Cognitive Health Index Main Card -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_metallic_card"
-                android:orientation="vertical"
-                android:padding="20dp">
+            <!-- 6 Key Metrics Grid (3 Rows of 2 Columns) -->
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="MEMORY HEALTH INDEX"
-                            android:textColor="#6B7280"
-                            android:textSize="11sp"
-                            android:textStyle="bold"
-                            android:letterSpacing="0.05" />
-
-                        <TextView
-                            android:id="@+id/tvCognitiveScorePercent"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="94%"
-                            android:textColor="#111827"
-                            android:textSize="34sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvCognitiveScoreBadge"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:background="@drawable/bg_pill_tag"
-                            android:paddingHorizontal="8dp"
-                            android:paddingVertical="2dp"
-                            android:text="Optimal Neural Density"
-                            android:textColor="#2563EB"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:background="@drawable/bg_circle_icon_button"
-                        android:gravity="center"
-                        android:text="🧠"
-                        android:textSize="28sp" />
-                </LinearLayout>
-
-                <ProgressBar
-                    android:id="@+id/pbCognitiveScore"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="8dp"
-                    android:layout_marginTop="16dp"
-                    android:max="100"
-                    android:progress="94"
-                    android:progressTint="#121417" />
-
-            </LinearLayout>
-
-            <!-- 4 Quick Stats Grid -->
+            <!-- Row 1: Memories & Connections -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:orientation="horizontal">
 
-                <!-- Stat 1: Total Memories -->
+                <!-- Metric 1: Total Memories -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginEnd="4dp"
+                    android:layout_marginEnd="6dp"
                     android:background="@drawable/bg_metallic_card"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="14dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="MEMORIES"
-                        android:textColor="#6B7280"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🧠 MEMORIES"
+                            android:textColor="#6B7280"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/tvStatTotalMemories"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginTop="6dp"
                         android:text="0"
                         android:textColor="#111827"
-                        android:textSize="20sp"
+                        android:textSize="24sp"
                         android:textStyle="bold" />
-                </LinearLayout>
-
-                <!-- Stat 2: DAG Synapses -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginHorizontal="2dp"
-                    android:background="@drawable/bg_metallic_card"
-                    android:orientation="vertical"
-                    android:padding="12dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="DAG EDGES"
-                        android:textColor="#6B7280"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
+                        android:layout_marginTop="2dp"
+                        android:text="Vault items stored"
+                        android:textColor="#9CA3AF"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <!-- Metric 2: DAG Connections -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/bg_metallic_card"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="⚡ DAG EDGES"
+                            android:textColor="#6B7280"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/tvStatDagEdges"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginTop="6dp"
                         android:text="0"
                         android:textColor="#111827"
-                        android:textSize="20sp"
+                        android:textSize="24sp"
                         android:textStyle="bold" />
-                </LinearLayout>
-
-                <!-- Stat 3: Avg Speed -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginHorizontal="2dp"
-                    android:background="@drawable/bg_metallic_card"
-                    android:orientation="vertical"
-                    android:padding="12dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="AVG SPEED"
-                        android:textColor="#6B7280"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvStatAvgSpeed"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="0s"
-                        android:textColor="#111827"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <!-- Stat 4: Reminders -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="4dp"
-                    android:background="@drawable/bg_metallic_card"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="REMINDERS"
-                        android:textColor="#6B7280"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvStatTotalReminders"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="0"
-                        android:textColor="#111827"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
+                        android:layout_marginTop="2dp"
+                        android:text="Synaptic connections"
+                        android:textColor="#9CA3AF"
+                        android:textSize="11sp" />
                 </LinearLayout>
 
             </LinearLayout>
 
-            <!-- DAG Network Architecture Card -->
+            <!-- Row 2: DAG Clusters & Orphans -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <!-- Metric 3: DAG Clusters -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/bg_metallic_card"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🌐 DAG CLUSTERS"
+                            android:textColor="#6B7280"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvStatClusters"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="0"
+                        android:textColor="#2563EB"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Connected subgraphs"
+                        android:textColor="#9CA3AF"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <!-- Metric 4: Orphans -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/bg_metallic_card"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🔍 ORPHANS"
+                            android:textColor="#6B7280"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvStatOrphans"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="0"
+                        android:textColor="#D97706"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="No connections at all"
+                        android:textColor="#9CA3AF"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Row 3: Avg Chat Response Time & Vault Data Size -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <!-- Metric 5: Avg Response Time -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/bg_metallic_card"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="⏱️ AVG RESPONSE"
+                            android:textColor="#6B7280"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvStatAvgResponseTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="0s"
+                        android:textColor="#059669"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Chat response latency"
+                        android:textColor="#9CA3AF"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <!-- Metric 6: Total Vault Data Added -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/bg_metallic_card"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="💾 VAULT DATA"
+                            android:textColor="#6B7280"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvStatTotalDataSize"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="0 B"
+                        android:textColor="#4F46E5"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Memories &amp; media size"
+                        android:textColor="#9CA3AF"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- DAG Network & Knowledge Topology Detailed Card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_metallic_card"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="18dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -303,7 +402,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🌐 DAG SYNAPTIC GRAPH NETWORK"
+                        android:text="🕸️ DAG TOPOLOGY ANALYSIS"
                         android:textColor="#374151"
                         android:textSize="12sp"
                         android:textStyle="bold"
@@ -315,250 +414,61 @@
                         android:layout_weight="1" />
 
                     <TextView
-                        android:id="@+id/tvDagDensityStatus"
+                        android:id="@+id/tvTopologyStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="High Connectivity"
-                        android:textColor="#059669"
+                        android:text="Network Mapped"
+                        android:textColor="#2563EB"
                         android:textSize="11sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
+                <!-- Connectivity Progress Bar & Ratio -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="14dp"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/tvDagNodesCount"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="• 0 Vault Nodes"
-                        android:textColor="#4B5563"
-                        android:textSize="13sp" />
+                        android:text="Connected Knowledge Ratio"
+                        android:textColor="#1F2937"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/tvDagEdgesCount"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="• 0 Synaptic Connections"
-                        android:textColor="#4B5563"
-                        android:textSize="13sp" />
-                </LinearLayout>
-
-                <!-- Top Hub Memories Container -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Core Connected Memory Hubs:"
-                    android:textColor="#6B7280"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:id="@+id/llTopHubNodesContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:orientation="vertical" />
-
-            </LinearLayout>
-
-            <!-- Memory Vault Category Breakdown Card -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_metallic_card"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="📊 VAULT KNOWLEDGE DISTRIBUTION"
-                    android:textColor="#374151"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.05" />
-
-                <!-- Category 1: Chat Facts -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="💬 Chat Learned Facts"
-                            android:textColor="#1F2937"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvFactsCategoryLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0 items (0%)"
-                            android:textColor="#6B7280"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <ProgressBar
-                        android:id="@+id/pbFactsCategory"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="6dp"
-                        android:layout_marginTop="4dp"
-                        android:max="100"
-                        android:progress="50"
-                        android:progressTint="#2563EB" />
-                </LinearLayout>
-
-                <!-- Category 2: Smart Reminders -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="⏰ Smart Reminders"
-                            android:textColor="#1F2937"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvRemindersCategoryLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0 items (0%)"
-                            android:textColor="#6B7280"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <ProgressBar
-                        android:id="@+id/pbRemindersCategory"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="6dp"
-                        android:layout_marginTop="4dp"
-                        android:max="100"
-                        android:progress="30"
-                        android:progressTint="#D97706" />
-                </LinearLayout>
-
-                <!-- Category 3: Attachments -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="📎 Media Attachments"
-                            android:textColor="#1F2937"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvMediaCategoryLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0 files"
-                            android:textColor="#6B7280"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <ProgressBar
-                        android:id="@+id/pbMediaCategory"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="6dp"
-                        android:layout_marginTop="4dp"
-                        android:max="100"
-                        android:progress="20"
-                        android:progressTint="#059669" />
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- Productivity & Reminder Completion Card -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_metallic_card"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <TextView
+                        android:id="@+id/tvConnectedRatio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🎯 REMINDER COMPLETION RATE"
-                        android:textColor="#374151"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.05" />
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1" />
-
-                    <TextView
-                        android:id="@+id/tvRemindersCompletedCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0 of 0 Completed"
-                        android:textColor="#4B5563"
+                        android:text="0% Connected (0 of 0)"
+                        android:textColor="#6B7280"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
                 <ProgressBar
-                    android:id="@+id/pbRemindersCompletion"
+                    android:id="@+id/pbConnectedRatio"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
                     android:layout_height="8dp"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="6dp"
                     android:max="100"
-                    android:progress="100"
-                    android:progressTint="#059669" />
+                    android:progress="0"
+                    android:progressTint="#2563EB" />
+
+                <!-- Cluster Summary Info -->
+                <TextView
+                    android:id="@+id/tvClusterSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="0 clusters formed, 0 orphan memories."
+                    android:textColor="#4B5563"
+                    android:textSize="12sp"
+                    android:lineSpacingExtra="2dp" />
 
             </LinearLayout>
 

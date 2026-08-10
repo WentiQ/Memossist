@@ -82,7 +82,7 @@ object ChatRepository {
                 if (isPipelineRunning) {
                     val elapsedSec = (System.currentTimeMillis() - startTimeMs) / 1000L
                     val (avgSec, totalCount) = ResponseStatsRepository.getStats(context)
-                    val timerStr = ResponseStatsRepository.formatTimerString(elapsedSec, avgSec, totalCount)
+                    val timerStr = ResponseStatsRepository.formatTimerString(context, elapsedSec, avgSec, totalCount)
                     callback.onStepUpdate("$currentBaseStepText ($timerStr)")
                 }
             }, 0L, 1L, java.util.concurrent.TimeUnit.SECONDS)

@@ -55,15 +55,15 @@ class NotificationsAdapter(
 
             vUnreadDot.visibility = if (item.isRead) View.GONE else View.VISIBLE
 
-            // Dim item if read
+            // Dim item ONLY if read
             if (item.isRead) {
-                itemView.alpha = 0.55f
-                tvNotifTitle.setTextColor(android.graphics.Color.parseColor("#8E8E93"))
-                tvNotifMessage.setTextColor(android.graphics.Color.parseColor("#6C6C70"))
+                itemView.alpha = 0.5f
+                tvNotifTitle.setTextColor(android.graphics.Color.parseColor("#6B7280"))
+                tvNotifMessage.setTextColor(android.graphics.Color.parseColor("#9CA3AF"))
             } else {
                 itemView.alpha = 1.0f
-                tvNotifTitle.setTextColor(android.graphics.Color.parseColor("#F2F2F7"))
-                tvNotifMessage.setTextColor(android.graphics.Color.parseColor("#AEAEB2"))
+                tvNotifTitle.setTextColor(android.graphics.Color.parseColor("#111827"))
+                tvNotifMessage.setTextColor(android.graphics.Color.parseColor("#374151"))
             }
 
             itemView.setOnClickListener {

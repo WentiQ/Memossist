@@ -80,7 +80,6 @@
         android:layout_gravity="top|end"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
-        android:background="@drawable/bg_circle_icon_button"
-        android:backgroundTint="#EF4444" />
+        android:background="@drawable/bg_red_dot" />
 
 </LinearLayout>

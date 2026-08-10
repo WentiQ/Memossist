@@ -143,15 +143,6 @@
 
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/tvUserEmail"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="dinesh@example.com"
-                        android:textColor="#4B5563"
-                        android:textSize="13sp" />
-
                 </LinearLayout>
 
             </LinearLayout>
