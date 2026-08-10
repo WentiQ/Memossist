@@ -78,6 +78,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var rvSidebarHistory: RecyclerView
     private lateinit var sidebarHistoryAdapter: SidebarHistoryAdapter
     private lateinit var llPinnedSettings: LinearLayout
+    private lateinit var btnSidebarHelp: ImageButton
 
     private var currentConversation: Conversation? = null
     private var allConversations: MutableList<Conversation> = mutableListOf()
@@ -185,6 +186,7 @@ class MainActivity : AppCompatActivity() {
         btnNavConnections = findViewById(R.id.btnNavConnections)
         rvSidebarHistory = findViewById(R.id.rvSidebarHistory)
         llPinnedSettings = findViewById(R.id.llPinnedSettings)
+        btnSidebarHelp = findViewById(R.id.btnSidebarHelp)
 
         // Initialize Greeting Views
         llGreetingContainer = findViewById(R.id.llGreetingContainer)
@@ -353,6 +355,14 @@ class MainActivity : AppCompatActivity() {
         // Pinned Bottom Settings Click -> Open Settings Activity
         llPinnedSettings.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            drawerLayout.closeDrawer(GravityCompat.START)
+        }
+
+        // Pinned Bottom Sidebar Help Icon Click -> Open Device Help Activity
+        btnSidebarHelp.setOnClickListener {
+            val intent = Intent(this, DeviceHelpActivity::class.java)
             startActivity(intent)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             drawerLayout.closeDrawer(GravityCompat.START)
@@ -646,6 +656,12 @@ class MainActivity : AppCompatActivity() {
         ).also {
             currentConversation = it
             allConversations.add(0, it)
+        }
+
+        // Reset any prior messages so only the latest AI answer receives thinking status
+        activeConv.messages.forEach { msg ->
+            msg.isThinking = false
+            msg.thinkingStatus = null
         }
 
         // Add user message with attached media/files

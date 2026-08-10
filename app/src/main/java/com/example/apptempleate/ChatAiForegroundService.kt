@@ -14,12 +14,15 @@ import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class ChatAiForegroundService : Service() {
 
     private var wakeLock: PowerManager.WakeLock? = null
     private val executor = Executors.newSingleThreadExecutor()
+    private val wakeLockWatchdog = Executors.newSingleThreadScheduledExecutor()
     private val pendingWork = AtomicInteger(0)
+    @Volatile private var lastNotificationUpdateMs = 0L
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -27,6 +30,15 @@ class ChatAiForegroundService : Service() {
         super.onCreate()
         createNotificationChannel()
         acquireWakeLock()
+        // The service, not the Activity or pipeline callbacks, owns CPU liveness.
+        // Some OEMs proxy/release app wake locks during screen-off; this lightweight
+        // watchdog restores the lock without depending on UI or token callbacks.
+        wakeLockWatchdog.scheduleAtFixedRate(
+            { acquireWakeLock() },
+            2L,
+            2L,
+            TimeUnit.SECONDS
+        )
         val initialNotification = buildForegroundNotification("🔍 Step 1/6: Retrieving candidate memories…")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             startForeground(
@@ -39,6 +51,7 @@ class ChatAiForegroundService : Service() {
         }
     }
 
+    @Synchronized
     private fun acquireWakeLock() {
         try {
             val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
@@ -92,7 +105,7 @@ class ChatAiForegroundService : Service() {
                             val conversations = ChatRepository.loadAllConversations(this@ChatAiForegroundService)
                             val conv = conversations.find { it.id == conversationId }
                             if (conv != null) {
-                                val aiMsg = conv.messages.find { it.isThinking }
+                                val aiMsg = conv.messages.findLast { it.isThinking } ?: conv.messages.findLast { !it.isUser }
                                 if (aiMsg != null) {
                                     aiMsg.thinkingStatus = stepText
                                     ChatRepository.saveOrUpdateConversation(this@ChatAiForegroundService, conv)
@@ -115,7 +128,7 @@ class ChatAiForegroundService : Service() {
                             val conversations = ChatRepository.loadAllConversations(this@ChatAiForegroundService)
                             val conv = conversations.find { it.id == conversationId }
                             if (conv != null) {
-                                val aiMsg = conv.messages.find { it.isThinking }
+                                val aiMsg = conv.messages.findLast { it.isThinking } ?: conv.messages.findLast { !it.isUser }
                                 if (aiMsg != null) {
                                     aiMsg.text = partialText
                                     ChatRepository.saveOrUpdateConversation(this@ChatAiForegroundService, conv)
@@ -137,7 +150,10 @@ class ChatAiForegroundService : Service() {
                             val conversations = ChatRepository.loadAllConversations(this@ChatAiForegroundService)
                             val conv = conversations.find { it.id == conversationId }
                             if (conv != null) {
-                                var aiMsg = conv.messages.find { it.isThinking }
+                                var aiMsg = conv.messages.findLast { it.isThinking }
+                                if (aiMsg == null) {
+                                    aiMsg = conv.messages.findLast { !it.isUser }
+                                }
                                 if (aiMsg == null) {
                                     aiMsg = ChatMessage(
                                         conversationId = conversationId,
@@ -151,6 +167,15 @@ class ChatAiForegroundService : Service() {
                                 aiMsg.text = cleanHumanoidAnswer
                                 aiMsg.debugLog = debugLogText
                                 aiMsg.attachments = usedAttachments
+
+                                // Reset any other stray thinking messages in list to false
+                                conv.messages.forEach { msg ->
+                                    if (msg != aiMsg) {
+                                        msg.isThinking = false
+                                        msg.thinkingStatus = null
+                                    }
+                                }
+
                                 conv.lastUpdated = System.currentTimeMillis()
                                 ChatRepository.saveOrUpdateConversation(this@ChatAiForegroundService, conv)
                             }
@@ -193,7 +218,7 @@ class ChatAiForegroundService : Service() {
     override fun onTaskRemoved(rootIntent: Intent?) {
         android.util.Log.i(TAG, "UI task removed; keeping background inference alive")
         acquireWakeLock()
-        updateNotification("Generating your answer in the background…")
+        updateNotification("Generating your answer in the background…", force = true)
         super.onTaskRemoved(rootIntent)
     }
 
@@ -213,12 +238,18 @@ class ChatAiForegroundService : Service() {
         try {
             val conversations = ChatRepository.loadAllConversations(this)
             val conversation = conversations.find { it.id == conversationId }
-            val aiMessage = conversation?.messages?.find { it.isThinking }
+            val aiMessage = conversation?.messages?.findLast { it.isThinking } ?: conversation?.messages?.findLast { !it.isUser }
             if (conversation != null && aiMessage != null) {
                 aiMessage.isThinking = false
                 aiMessage.thinkingStatus = null
                 aiMessage.text = message
                 aiMessage.debugLog = "Background inference failed: ${error.message ?: error.javaClass.simpleName}"
+                conversation.messages.forEach { msg ->
+                    if (msg != aiMessage) {
+                        msg.isThinking = false
+                        msg.thinkingStatus = null
+                    }
+                }
                 conversation.lastUpdated = System.currentTimeMillis()
                 ChatRepository.saveOrUpdateConversation(this, conversation)
             }
@@ -231,7 +262,12 @@ class ChatAiForegroundService : Service() {
         })
     }
 
-    private fun updateNotification(stepText: String) {
+    private fun updateNotification(stepText: String, force: Boolean = false) {
+        val now = System.currentTimeMillis()
+        // Updating an ongoing notification every second causes ColorOS to proxy
+        // wake locks. Status is useful, but a 5-second cadence is sufficient.
+        if (!force && now - lastNotificationUpdateMs < 1_000L) return
+        lastNotificationUpdateMs = now
         try {
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.notify(NOTIFICATION_ID, buildForegroundNotification(stepText))
@@ -289,6 +325,7 @@ class ChatAiForegroundService : Service() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+        wakeLockWatchdog.shutdownNow()
         executor.shutdownNow()
         super.onDestroy()
     }

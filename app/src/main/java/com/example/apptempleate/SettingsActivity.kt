@@ -41,6 +41,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var btnManageReminders: LinearLayout
     private lateinit var btnExportAllData: LinearLayout
     private lateinit var btnImportAllData: LinearLayout
+    private lateinit var btnOpenDeviceHelp: LinearLayout
     private lateinit var switchAppLock: androidx.appcompat.widget.SwitchCompat
     private var pendingAppLockEnableState: Boolean = false
 
@@ -170,6 +171,7 @@ class SettingsActivity : AppCompatActivity() {
 
         btnExportAllData = findViewById(R.id.btnExportAllData)
         btnImportAllData = findViewById(R.id.btnImportAllData)
+        btnOpenDeviceHelp = findViewById(R.id.btnOpenDeviceHelp)
         switchAppLock = findViewById(R.id.switchAppLock)
 
         switchAppLock.isChecked = AppLockManager.isAppLockEnabled(this)
@@ -226,12 +228,17 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         btnExportAllData.setOnClickListener {
-            val dateStr = java.text.SimpleDateFormat("yyyyMMdd_HHmm", java.util.Locale.getDefault()).format(java.util.Date())
-            createExportFileLauncher.launch("memossist_backup_$dateStr.json")
+            createExportFileLauncher.launch("memossist_backup_${System.currentTimeMillis()}.json")
         }
 
         btnImportAllData.setOnClickListener {
             openImportFileLauncher.launch(arrayOf("application/json", "*/*"))
+        }
+
+        btnOpenDeviceHelp.setOnClickListener {
+            val intent = Intent(this, DeviceHelpActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         btnClearCache.setOnClickListener {

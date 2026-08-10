@@ -45,6 +45,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
     private var isTtsReady = false
     private var isListening = false
     private var isAiResponding = false
+    private var isCallEnding = false
 
     private val audioManager by lazy { getSystemService(Context.AUDIO_SERVICE) as AudioManager }
 
@@ -210,21 +211,24 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
 
                 override fun onEndOfSpeech() {
                     isListening = false
+                    if (isCallEnding) return
                     tvVoiceStatus.text = "Thinking..."
                     tvVoiceSubStatus.text = "Processing voice input..."
                 }
 
                 override fun onError(error: Int) {
                     isListening = false
+                    if (isCallEnding) return
                     if (!isMuted && !isAiResponding) {
                         Handler(Looper.getMainLooper()).postDelayed({
-                            startListeningLoop()
+                            if (!isCallEnding) startListeningLoop()
                         }, 1200)
                     }
                 }
 
                 override fun onResults(results: Bundle?) {
                     isListening = false
+                    if (isCallEnding) return
                     val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                     if (!matches.isNullOrEmpty()) {
                         val userSpeech = matches[0]
@@ -233,7 +237,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
                             return
                         }
                     }
-                    if (!isMuted) {
+                    if (!isMuted && !isCallEnding) {
                         startListeningLoop()
                     }
                 }
@@ -267,10 +271,18 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
     }
 
     private fun processUserVoiceInput(userText: String) {
+        if (isCallEnding || userText.isBlank()) return
+
         tvVoiceStatus.text = "Thinking..."
         tvVoiceSubStatus.text = "\"$userText\""
 
         val conv = activeConversation ?: return
+
+        // Reset any prior messages so only the latest AI answer receives thinking status
+        conv.messages.forEach { msg ->
+            msg.isThinking = false
+            msg.thinkingStatus = null
+        }
 
         // 1. Update Title dynamically from first spoken user prompt (just like standard chat)
         if (conv.title == "New Chat" || conv.messages.isEmpty() || conv.messages.size <= 1) {
@@ -349,12 +361,14 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
     }
 
     private fun stopAllVoiceEngines() {
+        isCallEnding = true
         try {
             VoiceForegroundService.stopService(this)
             textToSpeech?.stop()
             textToSpeech?.shutdown()
-            speechRecognizer?.stopListening()
+            speechRecognizer?.cancel()
             speechRecognizer?.destroy()
+            speechRecognizer = null
         } catch (e: Exception) {
             e.printStackTrace()
         }

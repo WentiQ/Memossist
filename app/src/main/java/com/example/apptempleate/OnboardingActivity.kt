@@ -34,6 +34,9 @@ class OnboardingActivity : AppCompatActivity() {
     private lateinit var pillStep3: LinearLayout
     private lateinit var tvStep3Num: TextView
     private lateinit var tvStep3Text: TextView
+    private lateinit var pillStep4: LinearLayout
+    private lateinit var tvStep4Num: TextView
+    private lateinit var tvStep4Text: TextView
 
     // Step 1 Views
     private lateinit var step1Container: LinearLayout
@@ -45,13 +48,20 @@ class OnboardingActivity : AppCompatActivity() {
     private lateinit var tvNameError: TextView
     private lateinit var btnStep1Next: AppCompatButton
 
-    // Step 2 Views
+    // Step 2 Views (Background LLM & OEM Battery Setup)
     private lateinit var step2Container: LinearLayout
-    private lateinit var switchEnableAppLock: SwitchCompat
+    private lateinit var btnOnboardingNavBattery: AppCompatButton
+    private lateinit var btnOnboardingNavSleep: AppCompatButton
+    private lateinit var btnOnboardingNavAutoLaunch: AppCompatButton
     private lateinit var btnStep2Next: AppCompatButton
 
-    // Step 3 Views
+    // Step 3 Views (Security)
     private lateinit var step3Container: LinearLayout
+    private lateinit var switchEnableAppLock: SwitchCompat
+    private lateinit var btnStep3Next: AppCompatButton
+
+    // Step 4 Views (Restore & Finish)
+    private lateinit var step4Container: LinearLayout
     private lateinit var btnImportDataNow: LinearLayout
     private lateinit var btnFinishOnboarding: AppCompatButton
 
@@ -137,6 +147,9 @@ class OnboardingActivity : AppCompatActivity() {
         pillStep3 = findViewById(R.id.pillStep3)
         tvStep3Num = findViewById(R.id.tvStep3Num)
         tvStep3Text = findViewById(R.id.tvStep3Text)
+        pillStep4 = findViewById(R.id.pillStep4)
+        tvStep4Num = findViewById(R.id.tvStep4Num)
+        tvStep4Text = findViewById(R.id.tvStep4Text)
 
         // Step 1 Bindings
         step1Container = findViewById(R.id.step1Container)
@@ -148,13 +161,20 @@ class OnboardingActivity : AppCompatActivity() {
         tvNameError = findViewById(R.id.tvNameError)
         btnStep1Next = findViewById(R.id.btnStep1Next)
 
-        // Step 2 Bindings
+        // Step 2 Bindings (Battery & Background Setup)
         step2Container = findViewById(R.id.step2Container)
-        switchEnableAppLock = findViewById(R.id.switchEnableAppLock)
+        btnOnboardingNavBattery = findViewById(R.id.btnOnboardingNavBattery)
+        btnOnboardingNavSleep = findViewById(R.id.btnOnboardingNavSleep)
+        btnOnboardingNavAutoLaunch = findViewById(R.id.btnOnboardingNavAutoLaunch)
         btnStep2Next = findViewById(R.id.btnStep2Next)
 
-        // Step 3 Bindings
+        // Step 3 Bindings (Security)
         step3Container = findViewById(R.id.step3Container)
+        switchEnableAppLock = findViewById(R.id.switchEnableAppLock)
+        btnStep3Next = findViewById(R.id.btnStep3Next)
+
+        // Step 4 Bindings (Restore)
+        step4Container = findViewById(R.id.step4Container)
         btnImportDataNow = findViewById(R.id.btnImportDataNow)
         btnFinishOnboarding = findViewById(R.id.btnFinishOnboarding)
 
@@ -198,7 +218,6 @@ class OnboardingActivity : AppCompatActivity() {
             }
             tvNameError.visibility = View.GONE
 
-            // Save user profile data
             prefs.edit().putString("user_name", nameInput).apply()
             selectedAvatarUri?.let { uri ->
                 prefs.edit().putString("user_avatar_uri", uri.toString()).apply()
@@ -207,7 +226,25 @@ class OnboardingActivity : AppCompatActivity() {
             showStep2()
         }
 
-        // Step 2 App Lock Listener
+        // Step 2 Direct Navigation Buttons
+        btnOnboardingNavBattery.setOnClickListener {
+            BatteryOptimizationHelper.openAppBatterySettings(this)
+        }
+
+        btnOnboardingNavSleep.setOnClickListener {
+            BatteryOptimizationHelper.openSleepStandbySettings(this)
+        }
+
+        btnOnboardingNavAutoLaunch.setOnClickListener {
+            BatteryOptimizationHelper.openAutoLaunchSettings(this)
+        }
+
+        // Step 2 -> Step 3 Navigation
+        btnStep2Next.setOnClickListener {
+            showStep3()
+        }
+
+        // Step 3 App Lock Listener
         switchEnableAppLock.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 if (!AppLockManager.isDeviceSecure(this)) {
@@ -238,12 +275,12 @@ class OnboardingActivity : AppCompatActivity() {
             }
         }
 
-        // Step 2 -> Step 3 Navigation
-        btnStep2Next.setOnClickListener {
-            showStep3()
+        // Step 3 -> Step 4 Navigation
+        btnStep3Next.setOnClickListener {
+            showStep4()
         }
 
-        // Step 3 Actions
+        // Step 4 Actions
         btnImportDataNow.setOnClickListener {
             openImportFileLauncher.launch(arrayOf("application/json", "*/*"))
         }
@@ -256,14 +293,12 @@ class OnboardingActivity : AppCompatActivity() {
     private fun showStep2() {
         animateViewTransition(step1Container, step2Container)
 
-        // Update Pill 1 (Completed check)
+        // Pill 1 -> Checked
         pillStep1.setBackgroundResource(R.drawable.bg_tag_rounded)
         pillStep1.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.transparent)
         tvStep1Num.text = "✓"
-        tvStep1Num.setBackgroundResource(R.drawable.bg_circle_icon_button)
-        tvStep1Num.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.transparent)
 
-        // Update Pill 2 (Active dark metallic)
+        // Pill 2 -> Active
         pillStep2.setBackgroundResource(R.drawable.bg_metallic_button)
         pillStep2.backgroundTintList = null
         tvStep2Num.setBackgroundResource(R.drawable.bg_circle_icon_button)
@@ -275,19 +310,37 @@ class OnboardingActivity : AppCompatActivity() {
     private fun showStep3() {
         animateViewTransition(step2Container, step3Container)
 
-        // Update Pill 2 (Completed check)
+        // Pill 2 -> Checked
         pillStep2.setBackgroundResource(R.drawable.bg_tag_rounded)
         pillStep2.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.transparent)
         tvStep2Num.text = "✓"
-        tvStep2Text.setTextColor(ContextCompat.getColor(this, R.color.black))
+        tvStep2Text.setTextColor(ContextCompat.getColor(this, android.R.color.black))
 
-        // Update Pill 3 (Active dark metallic)
+        // Pill 3 -> Active
         pillStep3.setBackgroundResource(R.drawable.bg_metallic_button)
         pillStep3.backgroundTintList = null
         tvStep3Num.setBackgroundResource(R.drawable.bg_circle_icon_button)
         tvStep3Num.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.white)
         tvStep3Num.setTextColor(ContextCompat.getColor(this, android.R.color.black))
         tvStep3Text.setTextColor(ContextCompat.getColor(this, android.R.color.white))
+    }
+
+    private fun showStep4() {
+        animateViewTransition(step3Container, step4Container)
+
+        // Pill 3 -> Checked
+        pillStep3.setBackgroundResource(R.drawable.bg_tag_rounded)
+        pillStep3.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.transparent)
+        tvStep3Num.text = "✓"
+        tvStep3Text.setTextColor(ContextCompat.getColor(this, android.R.color.black))
+
+        // Pill 4 -> Active
+        pillStep4.setBackgroundResource(R.drawable.bg_metallic_button)
+        pillStep4.backgroundTintList = null
+        tvStep4Num.setBackgroundResource(R.drawable.bg_circle_icon_button)
+        tvStep4Num.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.white)
+        tvStep4Num.setTextColor(ContextCompat.getColor(this, android.R.color.black))
+        tvStep4Text.setTextColor(ContextCompat.getColor(this, android.R.color.white))
     }
 
     private fun animateViewTransition(fromView: View, toView: View) {

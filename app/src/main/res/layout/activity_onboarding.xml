@@ -23,8 +23,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:paddingHorizontal="24dp"
-            android:paddingTop="36dp">
+            android:paddingHorizontal="20dp"
+            android:paddingTop="32dp">
 
             <!-- Top Header Logo & Badge -->
             <LinearLayout
@@ -35,12 +35,12 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:background="@drawable/bg_profile_avatar_rounded"
                     android:gravity="center"
                     android:text="🧠"
-                    android:textSize="22sp" />
+                    android:textSize="20sp" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -54,7 +54,7 @@
                         android:letterSpacing="-0.02"
                         android:text="Memossist"
                         android:textColor="#121417"
-                        android:textSize="22sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -69,11 +69,11 @@
 
             </LinearLayout>
 
-            <!-- 3-Step Animated Progress Bar -->
+            <!-- 4-Step Animated Progress Bar -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
+                android:layout_marginTop="24dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -86,37 +86,37 @@
                     android:background="@drawable/bg_metallic_button"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="8dp">
+                    android:paddingHorizontal="4dp">
 
                     <TextView
                         android:id="@+id/tvStep1Num"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:background="@drawable/bg_circle_icon_button"
                         android:backgroundTint="#FFFFFF"
                         android:gravity="center"
                         android:text="1"
                         android:textColor="#121417"
-                        android:textSize="11sp"
+                        android:textSize="10sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
+                        android:layout_marginStart="4dp"
                         android:text="Profile"
                         android:textColor="#FFFFFF"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>
 
                 <View
-                    android:layout_width="8dp"
+                    android:layout_width="4dp"
                     android:layout_height="2dp"
                     android:background="#E5E7EB" />
 
-                <!-- Step 2 Pill -->
+                <!-- Step 2 Pill (Battery) -->
                 <LinearLayout
                     android:id="@+id/pillStep2"
                     android:layout_width="0dp"
@@ -126,38 +126,38 @@
                     android:backgroundTint="#F3F4F6"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="8dp">
+                    android:paddingHorizontal="4dp">
 
                     <TextView
                         android:id="@+id/tvStep2Num"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:background="@drawable/bg_circle_icon_button"
                         android:backgroundTint="#E5E7EB"
                         android:gravity="center"
                         android:text="2"
                         android:textColor="#4B5563"
-                        android:textSize="11sp"
+                        android:textSize="10sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvStep2Text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:text="Security"
+                        android:layout_marginStart="4dp"
+                        android:text="Battery"
                         android:textColor="#4B5563"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>
 
                 <View
-                    android:layout_width="8dp"
+                    android:layout_width="4dp"
                     android:layout_height="2dp"
                     android:background="#E5E7EB" />
 
-                <!-- Step 3 Pill -->
+                <!-- Step 3 Pill (Security) -->
                 <LinearLayout
                     android:id="@+id/pillStep3"
                     android:layout_width="0dp"
@@ -167,28 +167,69 @@
                     android:backgroundTint="#F3F4F6"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="8dp">
+                    android:paddingHorizontal="4dp">
 
                     <TextView
                         android:id="@+id/tvStep3Num"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:background="@drawable/bg_circle_icon_button"
                         android:backgroundTint="#E5E7EB"
                         android:gravity="center"
                         android:text="3"
                         android:textColor="#4B5563"
-                        android:textSize="11sp"
+                        android:textSize="10sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvStep3Text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
+                        android:layout_marginStart="4dp"
+                        android:text="Security"
+                        android:textColor="#4B5563"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="2dp"
+                    android:background="#E5E7EB" />
+
+                <!-- Step 4 Pill (Restore) -->
+                <LinearLayout
+                    android:id="@+id/pillStep4"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_tag_rounded"
+                    android:backgroundTint="#F3F4F6"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="4dp">
+
+                    <TextView
+                        android:id="@+id/tvStep4Num"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:background="@drawable/bg_circle_icon_button"
+                        android:backgroundTint="#E5E7EB"
+                        android:gravity="center"
+                        android:text="4"
+                        android:textColor="#4B5563"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvStep4Text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
                         android:text="Restore"
                         android:textColor="#4B5563"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -208,7 +249,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_metallic_card"
                     android:orientation="vertical"
-                    android:padding="24dp"
+                    android:padding="20dp"
                     android:visibility="visible">
 
                     <TextView
@@ -216,7 +257,7 @@
                         android:layout_height="wrap_content"
                         android:text="Welcome to Memossist 👋"
                         android:textColor="#111827"
-                        android:textSize="20sp"
+                        android:textSize="19sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -230,41 +271,41 @@
                     <!-- Squircle Avatar Container -->
                     <RelativeLayout
                         android:id="@+id/rlAvatarContainer"
-                        android:layout_width="88dp"
-                        android:layout_height="88dp"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="24dp"
+                        android:layout_marginTop="20dp"
                         android:clickable="true"
                         android:focusable="true">
 
                         <TextView
                             android:id="@+id/tvAvatarInitials"
-                            android:layout_width="88dp"
-                            android:layout_height="88dp"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
                             android:background="@drawable/bg_profile_avatar_rounded"
                             android:gravity="center"
                             android:text="U"
                             android:textColor="#121417"
-                            android:textSize="36sp"
+                            android:textSize="32sp"
                             android:textStyle="bold" />
 
                         <com.google.android.material.imageview.ShapeableImageView
                             android:id="@+id/ivProfilePic"
-                            android:layout_width="88dp"
-                            android:layout_height="88dp"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
                             android:scaleType="centerCrop"
                             android:visibility="gone"
                             app:shapeAppearanceOverlay="@style/ShapeAppearance.App.RoundedSquare" />
 
                         <ImageView
                             android:id="@+id/btnChangeAvatar"
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
                             android:layout_alignParentEnd="true"
                             android:layout_alignParentBottom="true"
                             android:background="@drawable/bg_end_call_button"
                             android:backgroundTint="#121417"
-                            android:padding="6dp"
+                            android:padding="5dp"
                             android:src="@drawable/ic_camera"
                             app:tint="#FFFFFF" />
 
@@ -282,7 +323,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="24dp"
+                        android:layout_marginTop="20dp"
                         android:text="Your Name *"
                         android:textColor="#111827"
                         android:textSize="13sp"
@@ -291,7 +332,7 @@
                     <EditText
                         android:id="@+id/etUserName"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="48dp"
                         android:layout_marginTop="6dp"
                         android:background="@drawable/bg_floating_chat_box"
                         android:hint="Enter your name (Required)"
@@ -315,25 +356,183 @@
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnStep1Next"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginTop="28dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="24dp"
                         android:background="@drawable/bg_metallic_button"
-                        android:text="Continue to Security →"
+                        android:text="Continue to Battery Setup →"
                         android:textAllCaps="false"
                         android:textColor="#FFFFFF"
-                        android:textSize="15sp"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>
 
-                <!-- STEP 2: Lock Screen Authentication Consent -->
+                <!-- STEP 2: Background Performance & OEM Freeze Setup -->
                 <LinearLayout
                     android:id="@+id/step2Container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_metallic_card"
                     android:orientation="vertical"
-                    android:padding="24dp"
+                    android:padding="20dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Background Performance 🔋"
+                        android:textColor="#111827"
+                        android:textSize="19sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:lineSpacingExtra="2dp"
+                        android:text="Realme, Oppo, Xiaomi &amp; Android power managers freeze background processes when locked. Please configure these 3 settings for smooth background LLM execution:"
+                        android:textColor="#4B5563"
+                        android:textSize="12sp" />
+
+                    <!-- Setting 1 Button Card -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:background="@drawable/bg_floating_chat_box"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1. App Battery Usage → Don't Optimize"
+                            android:textColor="#111827"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Settings → Apps → Memossist → Battery usage → Allow background"
+                            android:textColor="#6B7280"
+                            android:textSize="11sp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnOnboardingNavBattery"
+                            android:layout_width="match_parent"
+                            android:layout_height="38dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_button_save_pill"
+                            android:text="1. Open App Battery Settings"
+                            android:textAllCaps="false"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Setting 2 Button Card -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/bg_floating_chat_box"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2. Disable Sleep Standby Optimization"
+                            android:textColor="#111827"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Settings → Battery → More settings → Turn off Sleep standby"
+                            android:textColor="#6B7280"
+                            android:textSize="11sp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnOnboardingNavSleep"
+                            android:layout_width="match_parent"
+                            android:layout_height="38dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_button_save_pill"
+                            android:text="2. Open Battery Settings"
+                            android:textAllCaps="false"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Setting 3 Button Card -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/bg_floating_chat_box"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="3. Enable Auto Launch"
+                            android:textColor="#111827"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Settings → Apps → Auto launch → Toggle ON for Memossist"
+                            android:textColor="#6B7280"
+                            android:textSize="11sp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnOnboardingNavAutoLaunch"
+                            android:layout_width="match_parent"
+                            android:layout_height="38dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_button_save_pill"
+                            android:text="3. Open Auto Launch Manager"
+                            android:textAllCaps="false"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnStep2Next"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/bg_metallic_button"
+                        android:text="Continue to Security →"
+                        android:textAllCaps="false"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <!-- STEP 3: Lock Screen Authentication Consent -->
+                <LinearLayout
+                    android:id="@+id/step3Container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_metallic_card"
+                    android:orientation="vertical"
+                    android:padding="20dp"
                     android:visibility="gone">
 
                     <TextView
@@ -341,7 +540,7 @@
                         android:layout_height="wrap_content"
                         android:text="Security &amp; Privacy 🔒"
                         android:textColor="#111827"
-                        android:textSize="20sp"
+                        android:textSize="19sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -359,7 +558,7 @@
                         android:layout_marginTop="16dp"
                         android:background="@drawable/bg_floating_chat_box"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="14dp">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -372,7 +571,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
+                            android:layout_marginTop="6dp"
                             android:text="👁️  Hides app window in Recent Tasks app switcher (PhonePe style)"
                             android:textColor="#4B5563"
                             android:textSize="12sp" />
@@ -380,7 +579,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
+                            android:layout_marginTop="4dp"
                             android:text="⚡  Zero friction: No prompts while using app screens"
                             android:textColor="#4B5563"
                             android:textSize="12sp" />
@@ -390,11 +589,11 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="14dp"
                         android:background="@drawable/bg_floating_chat_box"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:padding="16dp">
+                        android:padding="14dp">
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -407,7 +606,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Enable App Lock"
                                 android:textColor="#111827"
-                                android:textSize="15sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                             <TextView
@@ -429,27 +628,27 @@
                     </LinearLayout>
 
                     <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btnStep2Next"
+                        android:id="@+id/btnStep3Next"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginTop="24dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="20dp"
                         android:background="@drawable/bg_metallic_button"
                         android:text="Continue to Data Restore →"
                         android:textAllCaps="false"
                         android:textColor="#FFFFFF"
-                        android:textSize="15sp"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>
 
-                <!-- STEP 3: Data Import or Start Fresh -->
+                <!-- STEP 4: Data Import or Start Fresh -->
                 <LinearLayout
-                    android:id="@+id/step3Container"
+                    android:id="@+id/step4Container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_metallic_card"
                     android:orientation="vertical"
-                    android:padding="24dp"
+                    android:padding="20dp"
                     android:visibility="gone">
 
                     <TextView
@@ -457,7 +656,7 @@
                         android:layout_height="wrap_content"
                         android:text="Restore or Import Data 📦"
                         android:textColor="#111827"
-                        android:textSize="20sp"
+                        android:textSize="19sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -472,17 +671,17 @@
                         android:id="@+id/btnImportDataNow"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="16dp"
                         android:background="@drawable/bg_floating_chat_box"
                         android:clickable="true"
                         android:focusable="true"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:padding="16dp">
+                        android:padding="14dp">
 
                         <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
                             android:src="@drawable/ic_import"
                             app:tint="#10B981"
                             android:contentDescription="Import Icon" />
@@ -490,7 +689,7 @@
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="14dp"
+                            android:layout_marginStart="12dp"
                             android:layout_weight="1"
                             android:orientation="vertical">
 
@@ -499,14 +698,14 @@
                                 android:layout_height="wrap_content"
                                 android:text="Import Backup File Now"
                                 android:textColor="#111827"
-                                android:textSize="15sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="Load chats, memories &amp; reminders from JSON backup"
+                                android:text="Load chats, memories &amp; reminders from JSON"
                                 android:textColor="#4B5563"
                                 android:textSize="12sp" />
 
@@ -525,13 +724,13 @@
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnFinishOnboarding"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginTop="24dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="20dp"
                         android:background="@drawable/bg_metallic_button"
                         android:text="Start Fresh &amp; Open Workspace ✨"
                         android:textAllCaps="false"
                         android:textColor="#FFFFFF"
-                        android:textSize="15sp"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>

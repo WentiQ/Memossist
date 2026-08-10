@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.apptempleate"
-    android:versionCode="3"
-    android:versionName="1.0.2-background" >
+    android:versionCode="5"
+    android:versionName="1.0.4-background" >
 
     <uses-sdk
         android:minSdkVersion="28"
@@ -82,6 +82,10 @@
             android:theme="@style/Theme.AppTempeLate" />
         <activity
             android:name="com.example.apptempleate.ModelMarketplaceActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+        <activity
+            android:name="com.example.apptempleate.DeviceHelpActivity"
             android:exported="false"
             android:theme="@style/Theme.AppTempeLate" />
 

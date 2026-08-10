@@ -594,34 +594,59 @@
             android:layout_height="1dp"
             android:background="#E5E7EB" />
 
-        <!-- 3. FIXED BOTTOM PINNED SETTINGS (Does NOT scroll) -->
+        <!-- 3. FIXED BOTTOM PINNED SETTINGS & HELP (Does NOT scroll) -->
         <LinearLayout
-            android:id="@+id/llPinnedSettings"
+            android:id="@+id/llPinnedBottomBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#FFFFFF"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="14dp"
-            android:clickable="true"
-            android:focusable="true">
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_settings"
-                app:tint="#424242"
-                android:contentDescription="Settings Icon" />
-
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/llPinnedSettings"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="Settings"
-                android:textColor="#121417"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:layout_weight="1"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="6dp"
+                android:paddingHorizontal="8dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_settings"
+                    app:tint="#424242"
+                    android:contentDescription="Settings Icon" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:text="Settings"
+                    android:textColor="#121417"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Help Icon Button (Right side of Settings button) -->
+            <ImageButton
+                android:id="@+id/btnSidebarHelp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_circle_icon_button"
+                android:contentDescription="Background &amp; OEM Battery Help"
+                android:padding="9dp"
+                android:src="@drawable/ic_help"
+                app:tint="#121417" />
 
         </LinearLayout>
 

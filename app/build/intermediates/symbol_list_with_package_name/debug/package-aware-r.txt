@@ -2602,6 +2602,7 @@ drawable ic_close
 drawable ic_connections
 drawable ic_edit
 drawable ic_export
+drawable ic_help
 drawable ic_import
 drawable ic_insights
 drawable ic_keyboard_black_24dp
@@ -2838,11 +2839,18 @@ id btnMarkAllRead
 id btnMic
 id btnMorningTime
 id btnMuteMic
+id btnNavAppBattery
+id btnNavAutoLaunch
 id btnNavConnections
 id btnNavHome
 id btnNavInsights
 id btnNavReminders
+id btnNavSleepStandby
 id btnNavVault
+id btnOnboardingNavAutoLaunch
+id btnOnboardingNavBattery
+id btnOnboardingNavSleep
+id btnOpenDeviceHelp
 id btnOpenMarketplaceFromPicker
 id btnOpenModelMarketplace
 id btnOptDelete
@@ -2852,12 +2860,15 @@ id btnPickDate
 id btnPickTime
 id btnPlus
 id btnRemoveAttachment
+id btnRequestExemption
 id btnResetView
 id btnSelectModelCard
+id btnSidebarHelp
 id btnSidebarNewChat
 id btnSpeakerToggle
 id btnStep1Next
 id btnStep2Next
+id btnStep3Next
 id btnTestAlarm
 id btnTestPhoneNotification
 id btnWordsDone
@@ -3053,6 +3064,7 @@ id llHistoryItemRow
 id llMessageCard
 id llNotIdealForContainer
 id llPickerModelsContainer
+id llPinnedBottomBar
 id llPinnedSettings
 id llSearchContainer
 id llStatsBanner
@@ -3175,6 +3187,7 @@ id percent
 id pillStep1
 id pillStep2
 id pillStep3
+id pillStep4
 id pin
 id position
 id postLayout
@@ -3264,6 +3277,7 @@ id staticPostLayout
 id step1Container
 id step2Container
 id step3Container
+id step4Container
 id stop
 id stretch
 id submenuarrow
@@ -3431,8 +3445,11 @@ id tvStep2Num
 id tvStep2Text
 id tvStep3Num
 id tvStep3Text
+id tvStep4Num
+id tvStep4Text
 id tvThinkingStep
 id tvTimeStatus
+id tvTitle
 id tvUserEmail
 id tvUserMsg
 id tvUserName
@@ -3597,6 +3614,7 @@ layout abc_tooltip
 layout activity_alarm_alert
 layout activity_cognitive_insights
 layout activity_connections
+layout activity_device_help
 layout activity_main
 layout activity_memory_vault
 layout activity_model_marketplace

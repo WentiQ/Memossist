@@ -85,7 +85,7 @@ object ChatRepository {
                     val timerStr = ResponseStatsRepository.formatTimerString(elapsedSec, avgSec, totalCount)
                     callback.onStepUpdate("$currentBaseStepText ($timerStr)")
                 }
-            }, 0L, 1000L, java.util.concurrent.TimeUnit.MILLISECONDS)
+            }, 0L, 1L, java.util.concurrent.TimeUnit.SECONDS)
 
             // STEP 1: Retrieve Candidate Memories from Memory Vault
             currentBaseStepText = "Step 1/6: Retrieving candidate memories…"

@@ -85,6 +85,11 @@
             android:exported="false"
             android:theme="@style/Theme.AppTempeLate" />
 
+        <activity
+            android:name=".DeviceHelpActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+
         <receiver
             android:name=".ReminderReceiver"
             android:exported="false" />
