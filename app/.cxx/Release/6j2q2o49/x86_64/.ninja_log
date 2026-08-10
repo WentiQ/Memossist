@@ -241,3 +241,7 @@
 114709	115029	8078771248320028	build-llama/vendor/cpp-httplib/libcpp-httplib.a	19a1f8bde421e3
 345212	345495	8078850742327943	C:/Users/dines/Documents/01-WORK/NOEON(The 1st AB)/Projects/App/Memossist/app/build/intermediates/cxx/Release/6j2q2o49/obj/x86_64/libai-chat.so	7b618d68e76d252
 4	1563	8078949934041742	build.ninja	b80082dbe505b61d
+17	7710	8080683516103646	CMakeFiles/ai-chat.dir/llama.cpp/examples/llama.android/lib/src/main/cpp/ai_chat.cpp.o	112f74725e957e22
+7715	8405	8080683523305939	C:/Users/dines/Documents/01-WORK/NOEON(The 1st AB)/Projects/App/Memossist/app/build/intermediates/cxx/Release/6j2q2o49/obj/x86_64/libai-chat.so	7b618d68e76d252
+17	3623	8080694719796500	CMakeFiles/ai-chat.dir/llama.cpp/examples/llama.android/lib/src/main/cpp/ai_chat.cpp.o	112f74725e957e22
+3624	3865	8080694722294824	C:/Users/dines/Documents/01-WORK/NOEON(The 1st AB)/Projects/App/Memossist/app/build/intermediates/cxx/Release/6j2q2o49/obj/x86_64/libai-chat.so	7b618d68e76d252

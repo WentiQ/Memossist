@@ -685,6 +685,7 @@ class MainActivity : AppCompatActivity() {
         refreshSidebarHistory()
 
         // Launch Foreground Service with WakeLock to guarantee 100% background LLM execution
+        BatteryOptimizationHelper.requestExemptionIfNeeded(this@MainActivity)
         ChatAiForegroundService.startService(
             context = this@MainActivity,
             conversationId = activeConv.id,

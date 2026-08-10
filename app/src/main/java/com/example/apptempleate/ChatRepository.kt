@@ -70,9 +70,9 @@ object ChatRepository {
         userAttachments: List<MediaAttachment> = emptyList(),
         callback: ChatPipelineCallback
     ) {
-        val executor = java.util.concurrent.Executors.newSingleThreadExecutor()
-
-        executor.execute {
+            // The caller is the chat foreground service's single worker.  Do not
+            // create a detached executor here: doing so lets the service lose
+            // ownership of an in-flight inference when the activity goes away.
             val startTimeMs = System.currentTimeMillis()
             var currentBaseStepText = "Step 1/6: Retrieving candidate memories…"
             var isPipelineRunning = true
@@ -225,7 +225,6 @@ object ChatRepository {
             if (!AppLifecycleTracker.isAppInForeground) {
                 sendChatAnswerNotification(context, userMessage, finalAnswer)
             }
-        }
     }
 
     fun sendChatAnswerNotification(context: Context, userQuery: String, cleanAnswerText: String) {

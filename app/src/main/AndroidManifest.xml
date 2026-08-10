@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
         android:allowBackup="true"
@@ -98,6 +99,8 @@
             android:name=".ChatAiForegroundService"
             android:enabled="true"
             android:exported="false"
+            android:process=":chat_inference"
+            android:stopWithTask="false"
             android:foregroundServiceType="dataSync" />
 
         <service

@@ -12,12 +12,14 @@ import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.Executors
 
 class ChatAiForegroundService : Service() {
 
     private var wakeLock: PowerManager.WakeLock? = null
     private val executor = Executors.newSingleThreadExecutor()
+    private val pendingWork = AtomicInteger(0)
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -49,7 +51,9 @@ class ChatAiForegroundService : Service() {
                 }
             }
             if (wakeLock?.isHeld == false) {
-                wakeLock?.acquire(30 * 60 * 1000L) // 30 min max timeout
+                // The service releases this in finishWork/onDestroy. A timed lock
+                // would let a longer local-model inference get suspended mid-answer.
+                wakeLock?.acquire()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -68,10 +72,14 @@ class ChatAiForegroundService : Service() {
         }
 
         acquireWakeLock()
+        pendingWork.incrementAndGet()
 
-        // Execute LLM Pipeline strictly inside Foreground Service process
+        // This executor is deliberately owned by the foreground service. The
+        // pipeline now runs synchronously on it, so an Activity lifecycle change
+        // cannot orphan or pause the native inference work.
         executor.execute {
-            ChatRepository.processChatMessageWithPipeline(
+            try {
+                ChatRepository.processChatMessageWithPipeline(
                 context = this@ChatAiForegroundService,
                 userMessage = userMessage,
                 userAttachments = userAttachments,
@@ -166,22 +174,61 @@ class ChatAiForegroundService : Service() {
                             )
                         }
 
-                        // Clean up service & WakeLock
-                        try {
-                            if (wakeLock?.isHeld == true) {
-                                wakeLock?.release()
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                        stopForeground(true)
-                        stopSelf()
                     }
                 }
-            )
+                )
+            } catch (t: Throwable) {
+                android.util.Log.e(TAG, "Background chat pipeline failed", t)
+                persistFailure(conversationId, t)
+            } finally {
+                finishWork(startId)
+            }
         }
 
+        // If Android reclaims the process, re-deliver the persisted request and
+        // resume it in a fresh foreground service instead of silently abandoning it.
         return START_REDELIVER_INTENT
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        android.util.Log.i(TAG, "UI task removed; keeping background inference alive")
+        acquireWakeLock()
+        updateNotification("Generating your answer in the background…")
+        super.onTaskRemoved(rootIntent)
+    }
+
+    private fun finishWork(startId: Int) {
+        if (pendingWork.decrementAndGet() > 0) return
+        try {
+            if (wakeLock?.isHeld == true) wakeLock?.release()
+        } catch (e: Exception) {
+            android.util.Log.w(TAG, "Unable to release chat wake lock", e)
+        }
+        stopForeground(true)
+        stopSelfResult(startId)
+    }
+
+    private fun persistFailure(conversationId: String, error: Throwable) {
+        val message = "I couldn't complete that response. Please try again."
+        try {
+            val conversations = ChatRepository.loadAllConversations(this)
+            val conversation = conversations.find { it.id == conversationId }
+            val aiMessage = conversation?.messages?.find { it.isThinking }
+            if (conversation != null && aiMessage != null) {
+                aiMessage.isThinking = false
+                aiMessage.thinkingStatus = null
+                aiMessage.text = message
+                aiMessage.debugLog = "Background inference failed: ${error.message ?: error.javaClass.simpleName}"
+                conversation.lastUpdated = System.currentTimeMillis()
+                ChatRepository.saveOrUpdateConversation(this, conversation)
+            }
+        } catch (saveError: Exception) {
+            android.util.Log.e(TAG, "Unable to persist failed chat response", saveError)
+        }
+        sendBroadcast(Intent(ACTION_CHAT_COMPLETED).apply {
+            putExtra(EXTRA_CONVERSATION_ID, conversationId)
+            putExtra(EXTRA_ANSWER_TEXT, message)
+        })
     }
 
     private fun updateNotification(stepText: String) {
@@ -209,6 +256,8 @@ class ChatAiForegroundService : Service() {
             .setContentTitle("Memossist AI Processing 🧠")
             .setContentText(stepText)
             .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setSilent(true)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
@@ -223,7 +272,7 @@ class ChatAiForegroundService : Service() {
                 val channel = NotificationChannel(
                     CHANNEL_ID,
                     "Background AI Processing",
-                    NotificationManager.IMPORTANCE_DEFAULT
+                    NotificationManager.IMPORTANCE_LOW
                 ).apply {
                     description = "Ongoing status notification while Memossist LLM processes chat responses in the background"
                 }
@@ -240,11 +289,15 @@ class ChatAiForegroundService : Service() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+        executor.shutdownNow()
         super.onDestroy()
     }
 
     companion object {
-        const val CHANNEL_ID = "memossist_chat_bg_channel"
+        private const val TAG = "ChatAiForegroundService"
+        // A new ID replaces the previous channel whose user/device settings may
+        // still allow a sound for every status refresh.
+        const val CHANNEL_ID = "memossist_chat_bg_channel_v2"
         const val NOTIFICATION_ID = 9991
 
         const val EXTRA_CONVERSATION_ID = "EXTRA_CONVERSATION_ID"
