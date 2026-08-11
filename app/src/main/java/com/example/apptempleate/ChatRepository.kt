@@ -220,18 +220,23 @@ object ChatRepository {
 
             // Invoke completion callback directly on execution thread
             callback.onCompleted(finalAnswer, finalDebugLog, usedExperienceAttachments)
-
-            // If the app is in background or screen turned off, send a status bar notification
-            if (!AppLifecycleTracker.isAppInForeground) {
-                sendChatAnswerNotification(context, userMessage, finalAnswer)
-            }
     }
 
     fun sendChatAnswerNotification(context: Context, userQuery: String, cleanAnswerText: String, conversationId: String? = null) {
-        // Do not post or record notification if user is currently inside that particular chat
-        if (AppLifecycleTracker.isAppInForeground && conversationId != null) {
+        val targetConvId = if (!conversationId.isNullOrEmpty()) {
+            conversationId
+        } else {
+            val cleanSnippet = cleanAnswerText.replace(Regex("[^a-zA-Z0-9\\s]"), " ").trim().lowercase().take(40)
+            val conversations = loadAllConversations(context)
+            conversations.find { conv ->
+                conv.messages.any { !it.isUser && it.text.replace(Regex("[^a-zA-Z0-9\\s]"), " ").trim().lowercase().contains(cleanSnippet) }
+            }?.id
+        }
+
+        // Do not post status bar alert or record in Notification Center if user is currently inside that particular chat
+        if (AppLifecycleTracker.isAppInForeground && targetConvId != null) {
             val activeConvId = MainActivity.activeConversationId
-            if (activeConvId == conversationId) {
+            if (activeConvId == targetConvId) {
                 return
             }
         }
@@ -265,7 +270,7 @@ object ChatRepository {
                 notification = NotificationItem(
                     id = UUID.randomUUID().toString(),
                     reminderId = null,
-                    conversationId = conversationId,
+                    conversationId = targetConvId,
                     title = "Memossist Answer Ready 💬",
                     message = if (cleanAnswerText.length > 120) cleanAnswerText.take(120) + "..." else cleanAnswerText,
                     timestamp = System.currentTimeMillis(),
@@ -277,13 +282,13 @@ object ChatRepository {
             // Intent to open MainActivity directly into target conversation
             val intent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                if (!conversationId.isNullOrEmpty()) {
-                    putExtra("OPEN_CONVERSATION_ID", conversationId)
+                if (!targetConvId.isNullOrEmpty()) {
+                    putExtra("OPEN_CONVERSATION_ID", targetConvId)
                 }
             }
             val pendingIntent = PendingIntent.getActivity(
                 context,
-                userQuery.hashCode(),
+                (userQuery + (targetConvId ?: "")).hashCode(),
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )

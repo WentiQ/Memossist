@@ -97,7 +97,22 @@ object NotificationHistoryRepository {
                 return
             }
         }
+
         val list = loadLast30DaysNotifications(context)
+
+        // De-duplication: Drop notification if an identical notification was logged within 5 seconds
+        val now = System.currentTimeMillis()
+        val isDuplicate = list.any { existing ->
+            existing.type == notification.type &&
+            existing.title == notification.title &&
+            existing.message == notification.message &&
+            (now - existing.timestamp) < 5_000L
+        }
+
+        if (isDuplicate) {
+            return
+        }
+
         list.add(0, notification)
         saveAllNotifications(context, list)
     }
