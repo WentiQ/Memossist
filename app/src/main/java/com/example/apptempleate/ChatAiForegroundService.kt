@@ -76,6 +76,7 @@ class ChatAiForegroundService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val conversationId = intent?.getStringExtra(EXTRA_CONVERSATION_ID) ?: ""
         val userMessage = intent?.getStringExtra(EXTRA_USER_MESSAGE) ?: ""
+        val targetMessageId = intent?.getStringExtra(EXTRA_TARGET_MESSAGE_ID)
         val attachmentsJson = intent?.getStringExtra(EXTRA_ATTACHMENTS_JSON)
         val userAttachments = MemoryVaultRepository.parseAttachments(attachmentsJson)
 
@@ -105,7 +106,9 @@ class ChatAiForegroundService : Service() {
                             val conversations = ChatRepository.loadAllConversations(this@ChatAiForegroundService)
                             val conv = conversations.find { it.id == conversationId }
                             if (conv != null) {
-                                val aiMsg = conv.messages.findLast { it.isThinking } ?: conv.messages.findLast { !it.isUser }
+                                val aiMsg = (if (!targetMessageId.isNullOrEmpty()) conv.messages.find { it.id == targetMessageId } else null)
+                                    ?: conv.messages.findLast { it.isThinking }
+                                    ?: conv.messages.findLast { !it.isUser }
                                 if (aiMsg != null) {
                                     aiMsg.thinkingStatus = stepText
                                     ChatRepository.saveOrUpdateConversation(this@ChatAiForegroundService, conv)
@@ -128,7 +131,9 @@ class ChatAiForegroundService : Service() {
                             val conversations = ChatRepository.loadAllConversations(this@ChatAiForegroundService)
                             val conv = conversations.find { it.id == conversationId }
                             if (conv != null) {
-                                val aiMsg = conv.messages.findLast { it.isThinking } ?: conv.messages.findLast { !it.isUser }
+                                val aiMsg = (if (!targetMessageId.isNullOrEmpty()) conv.messages.find { it.id == targetMessageId } else null)
+                                    ?: conv.messages.findLast { it.isThinking }
+                                    ?: conv.messages.findLast { !it.isUser }
                                 if (aiMsg != null) {
                                     aiMsg.text = partialText
                                     ChatRepository.saveOrUpdateConversation(this@ChatAiForegroundService, conv)
@@ -150,7 +155,10 @@ class ChatAiForegroundService : Service() {
                             val conversations = ChatRepository.loadAllConversations(this@ChatAiForegroundService)
                             val conv = conversations.find { it.id == conversationId }
                             if (conv != null) {
-                                var aiMsg = conv.messages.findLast { it.isThinking }
+                                var aiMsg = if (!targetMessageId.isNullOrEmpty()) conv.messages.find { it.id == targetMessageId } else null
+                                if (aiMsg == null) {
+                                    aiMsg = conv.messages.findLast { it.isThinking }
+                                }
                                 if (aiMsg == null) {
                                     aiMsg = conv.messages.findLast { !it.isUser }
                                 }
@@ -339,6 +347,7 @@ class ChatAiForegroundService : Service() {
 
         const val EXTRA_CONVERSATION_ID = "EXTRA_CONVERSATION_ID"
         const val EXTRA_USER_MESSAGE = "EXTRA_USER_MESSAGE"
+        const val EXTRA_TARGET_MESSAGE_ID = "EXTRA_TARGET_MESSAGE_ID"
         const val EXTRA_ATTACHMENTS_JSON = "EXTRA_ATTACHMENTS_JSON"
 
         const val ACTION_CHAT_STEP_UPDATE = "com.example.apptempleate.ACTION_CHAT_STEP_UPDATE"
@@ -350,11 +359,20 @@ class ChatAiForegroundService : Service() {
         const val EXTRA_ANSWER_TEXT = "EXTRA_ANSWER_TEXT"
         const val EXTRA_DEBUG_LOG = "EXTRA_DEBUG_LOG"
 
-        fun startService(context: Context, conversationId: String, userMessage: String, userAttachments: List<MediaAttachment>) {
+        fun startService(
+            context: Context,
+            conversationId: String,
+            userMessage: String,
+            userAttachments: List<MediaAttachment> = emptyList(),
+            targetMessageId: String? = null
+        ) {
             try {
                 val intent = Intent(context, ChatAiForegroundService::class.java).apply {
                     putExtra(EXTRA_CONVERSATION_ID, conversationId)
                     putExtra(EXTRA_USER_MESSAGE, userMessage)
+                    if (!targetMessageId.isNullOrEmpty()) {
+                        putExtra(EXTRA_TARGET_MESSAGE_ID, targetMessageId)
+                    }
                     putExtra(EXTRA_ATTACHMENTS_JSON, MemoryVaultRepository.serializeAttachments(userAttachments))
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

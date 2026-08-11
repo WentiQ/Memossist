@@ -706,7 +706,8 @@ class MainActivity : AppCompatActivity() {
             context = this@MainActivity,
             conversationId = activeConv.id,
             userMessage = userText,
-            userAttachments = currentAttachments
+            userAttachments = currentAttachments,
+            targetMessageId = aiMsg.id
         )
     }
 

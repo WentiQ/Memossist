@@ -276,7 +276,12 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         tvVoiceStatus.text = "Thinking..."
         tvVoiceSubStatus.text = "\"$userText\""
 
-        val conv = activeConversation ?: return
+        // Always reload the latest conversation state from disk before modifying it so we don't overwrite completed AI responses
+        val diskConv = activeConversation?.id?.let { convId ->
+            ChatRepository.loadAllConversations(this).find { it.id == convId }
+        }
+        val conv = diskConv ?: activeConversation ?: return
+        activeConversation = conv
 
         // Reset any prior messages so only the latest AI answer receives thinking status
         conv.messages.forEach { msg ->
@@ -310,7 +315,13 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         ChatRepository.saveOrUpdateConversation(this, conv)
 
         // 3. Launch ChatAiForegroundService so generation continues strictly in background even if user exits call
-        ChatAiForegroundService.startService(this, conv.id, userText, emptyList())
+        ChatAiForegroundService.startService(
+            context = this,
+            conversationId = conv.id,
+            userMessage = userText,
+            userAttachments = emptyList(),
+            targetMessageId = aiMsg.id
+        )
     }
 
     private fun speakAiResponse(text: String) {
@@ -392,6 +403,10 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
                             }
                         } else if (action == ChatAiForegroundService.ACTION_CHAT_COMPLETED) {
                             val cleanAnswer = intent.getStringExtra(ChatAiForegroundService.EXTRA_ANSWER_TEXT) ?: ""
+                            val updatedConv = ChatRepository.loadAllConversations(this@VoiceConversationActivity).find { it.id == convId }
+                            if (updatedConv != null) {
+                                activeConversation = updatedConv
+                            }
                             runOnUiThread {
                                 speakAiResponse(cleanAnswer)
                             }
