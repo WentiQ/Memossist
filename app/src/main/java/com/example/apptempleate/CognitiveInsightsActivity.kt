@@ -58,6 +58,11 @@ class CognitiveInsightsActivity : AppCompatActivity() {
         loadAndCalculateRealTimeInsights()
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadAndCalculateRealTimeInsights()
+    }
+
     private fun initViews() {
         btnBack = findViewById(R.id.btnBack)
         tvHumanoidAiInsightStatement = findViewById(R.id.tvHumanoidAiInsightStatement)
@@ -90,12 +95,17 @@ class CognitiveInsightsActivity : AppCompatActivity() {
         val clustersCount = clusterResult.clustersCount
         val orphansCount = clusterResult.orphansCount
 
-        // 2. Average Response Time in Chat
-        val avgResponseStr = if (avgSpeedSec > 0f) {
-            if (avgSpeedSec < 1.0f) String.format(Locale.US, "%.2fs", avgSpeedSec) else String.format(Locale.US, "%.1fs", avgSpeedSec)
+        // 2. Estimated Response Time for Next Message in Chat
+        val estNextSec = if (avgSpeedSec > 0f) {
+            avgSpeedSec
         } else {
-            val lastDur = ResponseStatsRepository.getLastDuration(this)
-            if (lastDur > 0f) String.format(Locale.US, "%.1fs", lastDur) else "--"
+            ResponseStatsRepository.getLastDuration(this)
+        }
+
+        val avgResponseStr = if (estNextSec > 0f) {
+            if (estNextSec < 1.0f) String.format(Locale.US, "%.2fs", estNextSec) else String.format(Locale.US, "%.1fs", estNextSec)
+        } else {
+            "--"
         }
 
         // 3. Memory Vault Total Data Added Calculation (Text + Attachments)
@@ -127,7 +137,7 @@ class CognitiveInsightsActivity : AppCompatActivity() {
         tvClusterSummary.text = "Identified $clustersCount connected cluster(s) and $orphansCount orphan memory item(s) in your DAG graph."
 
         // 6. Humanoid AI Insight Statement Synthesis
-        tvHumanoidAiInsightStatement.text = "Hello $userName! Your Memory Vault contains $memoriesCount memories storing $formattedDataSize of user data. Graph topology reveals $dagEdgesCount DAG synaptic edges across $clustersCount cluster(s) with $orphansCount orphan item(s). Average chat response latency is $avgResponseStr."
+        tvHumanoidAiInsightStatement.text = "Hello $userName! Your Memory Vault contains $memoriesCount memories storing $formattedDataSize of user data. Graph topology reveals $dagEdgesCount DAG synaptic edges across $clustersCount cluster(s) with $orphansCount orphan item(s). Estimated response time for your next message is $avgResponseStr."
     }
 
     private fun calculateDagClustersAndOrphans(

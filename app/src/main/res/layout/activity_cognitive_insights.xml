@@ -311,7 +311,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="⏱️ AVG RESPONSE"
+                            android:text="⏱️ EST. NEXT RESPONSE"
                             android:textColor="#6B7280"
                             android:textSize="10sp"
                             android:textStyle="bold"
@@ -332,7 +332,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Chat response latency"
+                        android:text="Est. time for next message"
                         android:textColor="#9CA3AF"
                         android:textSize="11sp" />
                 </LinearLayout>
