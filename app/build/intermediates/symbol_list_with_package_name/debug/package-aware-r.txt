@@ -2805,7 +2805,6 @@ id btnAlarmSnooze
 id btnBack
 id btnBackMarketplace
 id btnChangeAvatar
-id btnClearCache
 id btnCloseDetail
 id btnCloseLogs
 id btnClosePicker

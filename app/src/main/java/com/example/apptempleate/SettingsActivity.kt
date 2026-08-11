@@ -22,7 +22,6 @@ import androidx.appcompat.app.AppCompatActivity
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var btnBack: ImageButton
-    private lateinit var btnClearCache: LinearLayout
     private lateinit var btnDeleteUserData: LinearLayout
     private lateinit var btnOpenModelMarketplace: LinearLayout
     private lateinit var tvSettingsModelIcon: TextView
@@ -151,7 +150,6 @@ class SettingsActivity : AppCompatActivity() {
         prefs = getSharedPreferences("MemossistPrefs", Context.MODE_PRIVATE)
 
         btnBack = findViewById(R.id.btnBack)
-        btnClearCache = findViewById(R.id.btnClearCache)
         btnDeleteUserData = findViewById(R.id.btnDeleteUserData)
         btnOpenModelMarketplace = findViewById(R.id.btnOpenModelMarketplace)
         tvSettingsModelIcon = findViewById(R.id.tvSettingsModelIcon)
@@ -239,10 +237,6 @@ class SettingsActivity : AppCompatActivity() {
             val intent = Intent(this, DeviceHelpActivity::class.java)
             startActivity(intent)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-        }
-
-        btnClearCache.setOnClickListener {
-            Toast.makeText(this, "Cached index data cleared", Toast.LENGTH_SHORT).show()
         }
 
         btnDeleteUserData.setOnClickListener {
