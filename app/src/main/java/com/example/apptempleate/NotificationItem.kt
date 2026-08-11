@@ -6,11 +6,12 @@ import java.util.Locale
 
 data class NotificationItem(
     val id: String,
-    val reminderId: String?,
+    val reminderId: String? = null,
+    val conversationId: String? = null,
     val title: String,
     val message: String,
     val timestamp: Long = System.currentTimeMillis(),
-    val type: String = "SYSTEM", // ONE_DAY_BEFORE, MORNING_OF_DAY, ONE_HOUR_BEFORE, TEN_MIN_BEFORE, POST_EVENT_CHECK, SYSTEM
+    val type: String = "SYSTEM", // CHAT_ANSWER, ONE_DAY_BEFORE, MORNING_OF_DAY, ONE_HOUR_BEFORE, TEN_MIN_BEFORE, POST_EVENT_CHECK, SYSTEM
     var isRead: Boolean = false
 ) {
     fun getFormattedTime(): String {

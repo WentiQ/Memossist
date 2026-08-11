@@ -53,10 +53,43 @@ class NotificationsBottomSheet(
         adapter = NotificationsAdapter { item ->
             context?.let { ctx ->
                 NotificationHistoryRepository.markAsRead(ctx, item.id)
-                val intent = Intent(ctx, RemindersActivity::class.java).apply {
-                    putExtra("HIGHLIGHT_REMINDER_ID", item.reminderId)
+
+                val matchedConvId = findTargetConversationId(ctx, item)
+                val matchedReminderId = findTargetReminderId(ctx, item)
+
+                val isReminder = !item.reminderId.isNullOrEmpty() ||
+                        matchedReminderId != null ||
+                        item.type in listOf("ONE_DAY_BEFORE", "MORNING_OF_DAY", "ONE_HOUR_BEFORE", "TEN_MIN_BEFORE", "POST_EVENT_CHECK") ||
+                        item.title.contains("Reminder", ignoreCase = true) ||
+                        item.title.contains("Alarm", ignoreCase = true)
+
+                val isChat = item.type == "CHAT_ANSWER" ||
+                        !item.conversationId.isNullOrEmpty() ||
+                        matchedConvId != null ||
+                        item.title.contains("Memossist Answer", ignoreCase = true)
+
+                if (isChat) {
+                    val intent = Intent(ctx, MainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        if (matchedConvId != null) {
+                            putExtra("OPEN_CONVERSATION_ID", matchedConvId)
+                        }
+                    }
+                    startActivity(intent)
+                } else if (isReminder) {
+                    val intent = Intent(ctx, RemindersActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        if (matchedReminderId != null) {
+                            putExtra("HIGHLIGHT_REMINDER_ID", matchedReminderId)
+                        }
+                    }
+                    startActivity(intent)
+                } else {
+                    val intent = Intent(ctx, MainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    }
+                    startActivity(intent)
                 }
-                startActivity(intent)
             }
             dismiss()
         }
@@ -105,9 +138,84 @@ class NotificationsBottomSheet(
         loadNotifications()
     }
 
+    private fun findTargetConversationId(context: android.content.Context, item: NotificationItem): String? {
+        if (!item.conversationId.isNullOrEmpty()) {
+            return item.conversationId
+        }
+
+        val conversations = ChatRepository.loadAllConversations(context)
+        if (conversations.isEmpty()) return null
+
+        val notifClean = item.message.replace(Regex("[^a-zA-Z0-9\\s]"), " ").trim().lowercase()
+        val stopWords = setOf("memossist", "answer", "ready", "the", "a", "an", "is", "are", "to", "of", "and", "in", "on", "for", "with")
+        val notifWords = notifClean.split("\\s+".toRegex()).filter { it.length >= 3 && it !in stopWords }
+
+        if (notifWords.isNotEmpty()) {
+            var bestConvId: String? = null
+            var highestScore = 0
+
+            for (conv in conversations) {
+                var convMaxScore = 0
+                for (msg in conv.messages) {
+                    val msgClean = msg.text.replace(Regex("[^a-zA-Z0-9\\s]"), " ").trim().lowercase()
+                    val matchCount = notifWords.count { word -> msgClean.contains(word) }
+                    if (matchCount > convMaxScore) {
+                        convMaxScore = matchCount
+                    }
+                }
+                if (convMaxScore > highestScore) {
+                    highestScore = convMaxScore
+                    bestConvId = conv.id
+                }
+            }
+
+            if (highestScore >= 1) {
+                return bestConvId
+            }
+        }
+
+        return null
+    }
+
+    private fun findTargetReminderId(context: android.content.Context, item: NotificationItem): String? {
+        if (!item.reminderId.isNullOrEmpty()) {
+            return item.reminderId
+        }
+
+        val reminders = ReminderRepository.loadAllReminders(context)
+        if (reminders.isEmpty()) return null
+
+        val cleanTitle = item.title.trim().lowercase()
+        val cleanMsg = item.message.trim().lowercase()
+
+        for (reminder in reminders) {
+            val rTitle = reminder.title.trim().lowercase()
+            val rDesc = reminder.description.trim().lowercase()
+
+            if ((rTitle.isNotEmpty() && (cleanTitle.contains(rTitle) || cleanMsg.contains(rTitle))) ||
+                (rDesc.isNotEmpty() && (cleanMsg.contains(rDesc) || rDesc.contains(cleanMsg)))) {
+                return reminder.id
+            }
+        }
+        return null
+    }
+
+    private fun getFilteredNotifications(ctx: android.content.Context): List<NotificationItem> {
+        val list = NotificationHistoryRepository.loadLast30DaysNotifications(ctx)
+        val activeConvId = MainActivity.activeConversationId
+        return if (!activeConvId.isNullOrEmpty()) {
+            list.filter { item ->
+                val targetConvId = findTargetConversationId(ctx, item)
+                !(item.type == "CHAT_ANSWER" && targetConvId == activeConvId)
+            }
+        } else {
+            list
+        }
+    }
+
     private fun updateUnreadSubHeader() {
         val ctx = context ?: return
-        val list = NotificationHistoryRepository.loadLast30DaysNotifications(ctx)
+        val list = getFilteredNotifications(ctx)
         val unreadCount = list.count { !it.isRead }
         tvNotifSubHeader.text = if (unreadCount > 0) {
             "$unreadCount unread • Showing last 30 days"
@@ -118,7 +226,7 @@ class NotificationsBottomSheet(
 
     private fun loadNotifications() {
         val ctx = context ?: return
-        val list = NotificationHistoryRepository.loadLast30DaysNotifications(ctx)
+        val list = getFilteredNotifications(ctx)
 
         updateUnreadSubHeader()
 

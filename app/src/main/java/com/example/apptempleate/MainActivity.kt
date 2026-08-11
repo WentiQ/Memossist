@@ -488,24 +488,46 @@ class MainActivity : AppCompatActivity() {
         updateUnreadNotificationBadge()
         refreshWorkspaceReminders()
 
-        val activeId = currentConversation?.id
-        if (activeId != null) {
-            val updated = ChatRepository.loadAllConversations(this).find { it.id == activeId }
-            if (updated != null) {
-                loadConversationIntoView(updated, restoreScroll = true)
+        val handled = handleIncomingIntent(intent)
+        if (!handled) {
+            val activeId = currentConversation?.id
+            if (activeId != null) {
+                activeConversationId = activeId
+                val updated = ChatRepository.loadAllConversations(this).find { it.id == activeId }
+                if (updated != null) {
+                    loadConversationIntoView(updated, restoreScroll = true)
+                }
+            } else if (newChatSessionTimestamp > 0L && 
+                       allConversations.isNotEmpty() && 
+                       allConversations[0].lastUpdated > newChatSessionTimestamp && 
+                       allConversations[0].messages.isNotEmpty()) {
+                // Voice call created/updated a conversation after starting a New Chat
+                val latest = allConversations[0]
+                loadConversationIntoView(latest, restoreScroll = false)
+            } else if (isNewChatState) {
+                // Keep exact New Chat greeting state if no voice messages were created
+                activeConversationId = null
+                llGreetingContainer.visibility = View.VISIBLE
+                rvChatMessages.visibility = View.GONE
+                btnDeleteCurrentChat.visibility = View.GONE
             }
-        } else if (allConversations.isNotEmpty() && 
-                   allConversations[0].lastUpdated >= newChatSessionTimestamp && 
-                   allConversations[0].messages.isNotEmpty()) {
-            // Voice call created/updated a conversation after starting a New Chat
-            val latest = allConversations[0]
-            loadConversationIntoView(latest, restoreScroll = false)
-        } else if (isNewChatState) {
-            // Keep exact New Chat greeting state if no voice messages were created
-            llGreetingContainer.visibility = View.VISIBLE
-            rvChatMessages.visibility = View.GONE
-            btnDeleteCurrentChat.visibility = View.GONE
         }
+    }
+
+    private fun handleIncomingIntent(intent: Intent?): Boolean {
+        if (intent == null) return false
+        val targetConvId = intent.getStringExtra("OPEN_CONVERSATION_ID")
+        if (targetConvId.isNullOrEmpty()) return false
+
+        val conversations = ChatRepository.loadAllConversations(this)
+        val targetConv = conversations.find { it.id == targetConvId }
+
+        if (targetConv != null) {
+            loadConversationIntoView(targetConv, restoreScroll = false)
+            intent.removeExtra("OPEN_CONVERSATION_ID")
+            return true
+        }
+        return false
     }
 
     private fun updateUnreadNotificationBadge() {
@@ -714,6 +736,7 @@ class MainActivity : AppCompatActivity() {
     private fun loadConversationIntoView(conversation: Conversation, restoreScroll: Boolean = false) {
         isNewChatState = false
         currentConversation = conversation
+        activeConversationId = conversation.id
         llGreetingContainer.visibility = View.GONE
         rvChatMessages.visibility = View.VISIBLE
         btnDeleteCurrentChat.visibility = View.VISIBLE
@@ -734,6 +757,7 @@ class MainActivity : AppCompatActivity() {
         isNewChatState = true
         newChatSessionTimestamp = System.currentTimeMillis()
         currentConversation = null
+        activeConversationId = null
         chatListScrollState = null
         llGreetingContainer.visibility = View.VISIBLE
         rvChatMessages.visibility = View.GONE
@@ -966,6 +990,7 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         setIntent(intent)
+        handleIncomingIntent(intent)
         if (intent?.action == Intent.ACTION_MAIN && intent.hasCategory(Intent.CATEGORY_LAUNCHER)) {
             checkAndPromptAppLockIfRequired()
         }
@@ -975,5 +1000,11 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         speechRecognizer?.destroy()
         speechRecognizer = null
+        activeConversationId = null
+    }
+
+    companion object {
+        @Volatile
+        var activeConversationId: String? = null
     }
 }

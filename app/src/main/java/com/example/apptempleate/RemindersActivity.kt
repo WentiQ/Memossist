@@ -115,6 +115,26 @@ class RemindersActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         refreshRemindersList()
+        handleIncomingIntent(intent)
+    }
+
+    override fun onNewIntent(intent: android.content.Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIncomingIntent(intent)
+    }
+
+    private fun handleIncomingIntent(intent: android.content.Intent?) {
+        val targetReminderId = intent?.getStringExtra("HIGHLIGHT_REMINDER_ID")
+        if (!targetReminderId.isNullOrEmpty()) {
+            val position = allReminders.indexOfFirst { it.id == targetReminderId }
+            if (position >= 0) {
+                rvRemindersList.post {
+                    rvRemindersList.smoothScrollToPosition(position)
+                }
+                intent.removeExtra("HIGHLIGHT_REMINDER_ID")
+            }
+        }
     }
 
     private fun refreshRemindersList() {

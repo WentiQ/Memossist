@@ -27,7 +27,8 @@ object NotificationHistoryRepository {
             for (i in 0 until array.length()) {
                 val obj = array.getJSONObject(i)
                 val id = obj.getString("id")
-                val reminderId = obj.optString("reminderId", null)
+                val reminderId = obj.optString("reminderId", null).takeIf { !it.isNullOrEmpty() && it != "null" }
+                val conversationId = obj.optString("conversationId", null).takeIf { !it.isNullOrEmpty() && it != "null" }
                 val title = obj.getString("title")
                 val message = obj.getString("message")
                 val timestamp = obj.getLong("timestamp")
@@ -40,6 +41,7 @@ object NotificationHistoryRepository {
                         NotificationItem(
                             id = id,
                             reminderId = reminderId,
+                            conversationId = conversationId,
                             title = title,
                             message = message,
                             timestamp = timestamp,
@@ -71,6 +73,7 @@ object NotificationHistoryRepository {
                 val obj = JSONObject().apply {
                     put("id", item.id)
                     put("reminderId", item.reminderId)
+                    put("conversationId", item.conversationId)
                     put("title", item.title)
                     put("message", item.message)
                     put("timestamp", item.timestamp)
@@ -87,8 +90,12 @@ object NotificationHistoryRepository {
     }
 
     fun addNotification(context: Context, notification: NotificationItem) {
-        if (AppLifecycleTracker.isAppInForeground) {
-            return
+        // Do not record notification if user is currently viewing that particular chat
+        if (AppLifecycleTracker.isAppInForeground && notification.conversationId != null) {
+            val activeConvId = MainActivity.activeConversationId
+            if (activeConvId == notification.conversationId) {
+                return
+            }
         }
         val list = loadLast30DaysNotifications(context)
         list.add(0, notification)

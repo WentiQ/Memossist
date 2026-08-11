@@ -227,7 +227,15 @@ object ChatRepository {
             }
     }
 
-    fun sendChatAnswerNotification(context: Context, userQuery: String, cleanAnswerText: String) {
+    fun sendChatAnswerNotification(context: Context, userQuery: String, cleanAnswerText: String, conversationId: String? = null) {
+        // Do not post or record notification if user is currently inside that particular chat
+        if (AppLifecycleTracker.isAppInForeground && conversationId != null) {
+            val activeConvId = MainActivity.activeConversationId
+            if (activeConvId == conversationId) {
+                return
+            }
+        }
+
         try {
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -257,6 +265,7 @@ object ChatRepository {
                 notification = NotificationItem(
                     id = UUID.randomUUID().toString(),
                     reminderId = null,
+                    conversationId = conversationId,
                     title = "Memossist Answer Ready 💬",
                     message = if (cleanAnswerText.length > 120) cleanAnswerText.take(120) + "..." else cleanAnswerText,
                     timestamp = System.currentTimeMillis(),
@@ -265,9 +274,12 @@ object ChatRepository {
                 )
             )
 
-            // Intent to open MainActivity
+            // Intent to open MainActivity directly into target conversation
             val intent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                if (!conversationId.isNullOrEmpty()) {
+                    putExtra("OPEN_CONVERSATION_ID", conversationId)
+                }
             }
             val pendingIntent = PendingIntent.getActivity(
                 context,

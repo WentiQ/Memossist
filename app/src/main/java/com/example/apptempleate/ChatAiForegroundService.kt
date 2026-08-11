@@ -198,14 +198,13 @@ class ChatAiForegroundService : Service() {
                         }
                         sendBroadcast(completedIntent)
 
-                        // If user is currently in background, throw status bar completion notification
-                        if (!AppLifecycleTracker.isAppInForeground) {
-                            ChatRepository.sendChatAnswerNotification(
-                                this@ChatAiForegroundService,
-                                userMessage,
-                                cleanHumanoidAnswer
-                            )
-                        }
+                        // Send completion notification (will be suppressed if user is inside that chat)
+                        ChatRepository.sendChatAnswerNotification(
+                            this@ChatAiForegroundService,
+                            userMessage,
+                            cleanHumanoidAnswer,
+                            conversationId
+                        )
 
                     }
                 }
