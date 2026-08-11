@@ -42,6 +42,7 @@ class CognitiveInsightsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ThemeManager.applySavedTheme(this)
 
         // Remove window title & hide action bar
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)

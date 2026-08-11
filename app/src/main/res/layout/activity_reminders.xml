@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/app_window_background"
     tools:context=".RemindersActivity">
 
     <!-- Header Back Button -->
@@ -20,7 +20,7 @@
         android:src="@drawable/ic_close"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="#121417" />
+        app:tint="@color/text_primary" />
 
     <!-- Title -->
     <TextView
@@ -28,7 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Smart Reminders"
-        android:textColor="#121417"
+        android:textColor="@color/text_primary"
         android:textSize="20sp"
         android:textStyle="bold"
         android:letterSpacing="-0.01"
@@ -50,7 +50,7 @@
         android:src="@drawable/ic_bell"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="#2563EB" />
+        app:tint="@color/accent_blue" />
 
     <!-- Stats Banner Card -->
     <LinearLayout
@@ -76,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="ACTIVE REMINDERS"
-                android:textColor="#6B7280"
+                android:textColor="@color/text_secondary"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.05" />
@@ -87,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="0 Active"
-                android:textColor="#121417"
+                android:textColor="@color/text_primary"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
@@ -97,7 +97,7 @@
             android:layout_width="1dp"
             android:layout_height="36dp"
             android:layout_gravity="center_vertical"
-            android:background="#E5E7EB" />
+            android:background="@color/app_card_border" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -110,7 +110,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="NEXT UPCOMING"
-                android:textColor="#6B7280"
+                android:textColor="@color/text_secondary"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.05" />
@@ -123,7 +123,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="None scheduled"
-                android:textColor="#2563EB"
+                android:textColor="@color/accent_blue"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -151,7 +151,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_alarm"
-            app:tint="#9E9E9E"
+            app:tint="@color/text_hint"
             android:contentDescription="Search Icon" />
 
         <EditText
@@ -162,8 +162,8 @@
             android:background="@null"
             android:hint="Search reminders..."
             android:inputType="text"
-            android:textColor="#121417"
-            android:textColorHint="#9E9E9E"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_hint"
             android:textSize="15sp" />
 
     </LinearLayout>
@@ -190,7 +190,7 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
             android:text="All"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/app_window_background"
             android:textSize="13sp"
             android:textStyle="bold" />
 
@@ -205,7 +205,7 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
             android:text="Upcoming"
-            android:textColor="#4B5563"
+            android:textColor="@color/text_tertiary"
             android:textSize="13sp"
             android:textStyle="bold" />
 
@@ -220,7 +220,7 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
             android:text="Completed"
-            android:textColor="#4B5563"
+            android:textColor="@color/text_tertiary"
             android:textSize="13sp"
             android:textStyle="bold" />
 
@@ -257,7 +257,7 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:src="@drawable/ic_alarm"
-            app:tint="#D1D5DB"
+            app:tint="@color/app_card_border"
             android:contentDescription="Empty" />
 
         <TextView
@@ -265,7 +265,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:text="No Reminders Set"
-            android:textColor="#374151"
+            android:textColor="@color/text_tertiary"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -275,7 +275,7 @@
             android:layout_marginTop="4dp"
             android:gravity="center"
             android:text="Tell Memossist in chat like 'I have extra class on Sunday 2pm' or tap + to create one!"
-            android:textColor="#9CA3AF"
+            android:textColor="@color/text_hint"
             android:textSize="13sp" />
 
     </LinearLayout>
@@ -289,8 +289,8 @@
         android:layout_marginBottom="24dp"
         android:contentDescription="Add New Reminder"
         android:src="@drawable/ic_plus"
-        app:backgroundTint="#121417"
-        app:tint="#FFFFFF"
+        app:backgroundTint="@color/text_primary"
+        app:tint="@color/app_window_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

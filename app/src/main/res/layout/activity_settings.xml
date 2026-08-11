@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/app_window_background"
     tools:context=".SettingsActivity">
 
     <!-- Back Button (No container box) -->
@@ -20,7 +20,7 @@
         android:src="@drawable/ic_close"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="#121417" />
+        app:tint="@color/icon_tint" />
 
     <!-- Title -->
     <TextView
@@ -28,7 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Settings"
-        android:textColor="#121417"
+        android:textColor="@color/text_primary"
         android:textSize="20sp"
         android:textStyle="bold"
         android:letterSpacing="-0.01"
@@ -80,7 +80,7 @@
                         android:background="@drawable/bg_profile_avatar_rounded"
                         android:gravity="center"
                         android:text="D"
-                        android:textColor="#121417"
+                        android:textColor="@color/text_primary"
                         android:textSize="24sp"
                         android:textStyle="bold" />
 
@@ -101,10 +101,10 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentBottom="true"
                         android:background="@drawable/bg_end_call_button"
-                        android:backgroundTint="#121417"
+                        android:backgroundTint="@color/app_utility_text"
                         android:padding="4dp"
                         android:src="@drawable/ic_camera"
-                        app:tint="#FFFFFF" />
+                        app:tint="@color/bg_white" />
 
                 </RelativeLayout>
 
@@ -126,7 +126,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Dinesh"
-                            android:textColor="#111827"
+                            android:textColor="@color/text_primary"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -139,7 +139,7 @@
                             android:contentDescription="Edit Name"
                             android:padding="6dp"
                             android:src="@drawable/ic_edit"
-                            app:tint="#424242" />
+                            app:tint="@color/icon_tint" />
 
                     </LinearLayout>
 
@@ -153,7 +153,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="AI ENGINE &amp; MODEL MARKETPLACE"
-                android:textColor="#6B7280"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.1" />
@@ -198,7 +198,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Qwen3.5 4B"
-                            android:textColor="#111827"
+                            android:textColor="@color/text_primary"
                             android:textSize="15sp"
                             android:textStyle="bold" />
 
@@ -208,11 +208,11 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
                             android:background="@drawable/bg_tag_rounded"
-                            android:backgroundTint="#F3F4F6"
+                            android:backgroundTint="@color/app_icon_button_background"
                             android:paddingHorizontal="6dp"
                             android:paddingVertical="2dp"
                             android:text="🏆 RECOMMENDED"
-                            android:textColor="#1F2937"
+                            android:textColor="@color/text_primary"
                             android:textSize="10sp"
                             android:textStyle="bold" />
 
@@ -223,7 +223,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Tap to browse 8 local AI models &amp; specs"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp" />
 
                 </LinearLayout>
@@ -232,7 +232,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="→"
-                    android:textColor="#9CA3AF"
+                    android:textColor="@color/text_hint"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -244,7 +244,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="SMART REMINDERS &amp; BRIEFING"
-                android:textColor="#6B7280"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.1" />
@@ -266,7 +266,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_clock"
-                    app:tint="#121417"
+                    app:tint="@color/icon_tint"
                     android:contentDescription="Clock" />
 
                 <LinearLayout
@@ -280,7 +280,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Morning Start-of-Day Briefing Time"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -290,7 +290,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="7:00 AM (Default)"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp" />
 
                 </LinearLayout>
@@ -305,7 +305,65 @@
 
             </LinearLayout>
 
-            <!-- Setting Item 2: Manage Reminders Page -->
+            <!-- Setting Item 2: Theme -->
+            <LinearLayout
+                android:id="@+id/btnThemePreference"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_metallic_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_profile_avatar_rounded"
+                    android:gravity="center"
+                    android:text="☼"
+                    android:textColor="@color/text_primary"
+                    android:textSize="20sp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Theme"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvThemeValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="System default"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Change"
+                    android:textColor="#2563EB"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Setting Item 3: Manage Reminders Page -->
             <LinearLayout
                 android:id="@+id/btnManageReminders"
                 android:layout_width="match_parent"
@@ -322,7 +380,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_alarm"
-                    app:tint="#121417"
+                    app:tint="@color/icon_tint"
                     android:contentDescription="Reminders" />
 
                 <LinearLayout
@@ -336,7 +394,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="View All Set Reminders"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -345,7 +403,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Manage upcoming events, test alarms &amp; triggers"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp" />
 
                 </LinearLayout>
@@ -354,7 +412,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="→"
-                    android:textColor="#9CA3AF"
+                    android:textColor="@color/text_hint"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -366,7 +424,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="AI &amp; VOICE PREFERENCES"
-                android:textColor="#6B7280"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.1" />
@@ -391,7 +449,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Auto-Save Voice Conversations"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -400,7 +458,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Save live audio transcripts automatically to Vault"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp" />
 
                 </LinearLayout>
@@ -433,7 +491,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tactile Haptic Feedback"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -442,7 +500,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Provide subtle vibrations on touch &amp; gesture"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp" />
 
                 </LinearLayout>
@@ -461,7 +519,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="DATA BACKUP &amp; TRANSFER"
-                android:textColor="#6B7280"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.1" />
@@ -483,7 +541,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_export"
-                    app:tint="#121417"
+                    app:tint="@color/icon_tint"
                     android:contentDescription="Export Icon" />
 
                 <LinearLayout
@@ -497,7 +555,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Export All App Data"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -506,7 +564,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Save chats, memories, DAG graphs &amp; reminders to JSON file"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
                 </LinearLayout>
@@ -538,7 +596,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_import"
-                    app:tint="#121417"
+                    app:tint="@color/icon_tint"
                     android:contentDescription="Import Icon" />
 
                 <LinearLayout
@@ -552,7 +610,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Import &amp; Merge App Data"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -561,7 +619,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Import backup file &amp; add to existing data (Prefixed with 'I')"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
                 </LinearLayout>
@@ -582,7 +640,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="BACKGROUND EXECUTION &amp; OEM FREEZE FIX"
-                android:textColor="#6B7280"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.1" />
@@ -604,7 +662,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_help"
-                    app:tint="#121417"
+                    app:tint="@color/icon_tint"
                     android:contentDescription="Help Icon" />
 
                 <LinearLayout
@@ -618,7 +676,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Realme / OEM Process Freeze &amp; Battery Fix"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -627,7 +685,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Configure App Battery, Sleep Standby &amp; Auto Launch"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
                 </LinearLayout>
@@ -648,7 +706,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="SECURITY &amp; PRIVACY"
-                android:textColor="#6B7280"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.1" />
@@ -673,7 +731,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="App Lock (Phone Screen Lock)"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -682,7 +740,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Require PIN/pattern/fingerprint on launch. Hides preview in Recent Tasks."
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
                 </LinearLayout>
@@ -715,7 +773,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Encrypted Cloud Sync"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -724,7 +782,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="AES-256 end-to-end encrypted backup"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp" />
 
                 </LinearLayout>
@@ -769,7 +827,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Wipe all chats, experiences &amp; DAG graph (Screen lock required)"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
                 </LinearLayout>
@@ -790,7 +848,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="32dp"
                 android:text="Memossist v1.0.4 • Build 2026"
-                android:textColor="#9CA3AF"
+                android:textColor="@color/text_hint"
                 android:textSize="13sp" />
 
         </LinearLayout>

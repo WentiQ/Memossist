@@ -29,7 +29,7 @@
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="4dp"
                 android:text="EXP-9081"
-                android:textColor="#121417"
+                android:textColor="@color/text_primary"
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
@@ -42,7 +42,7 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="4dp"
                 android:text="Chat"
-                android:textColor="#616161"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -66,7 +66,7 @@
                 android:contentDescription="Edit Experience"
                 android:padding="7dp"
                 android:src="@drawable/ic_edit"
-                app:tint="#616161" />
+                app:tint="@color/text_secondary" />
 
             <!-- Small Delete Icon Button -->
             <ImageButton
@@ -96,7 +96,7 @@
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:src="@drawable/ic_chat_history"
-            app:tint="#616161"
+            app:tint="@color/text_secondary"
             android:contentDescription="Time Icon" />
 
         <TextView
@@ -105,7 +105,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:text="Aug 7, 2026 • 8:30 PM"
-            android:textColor="#424242"
+            android:textColor="@color/text_tertiary"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -123,7 +123,7 @@
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:src="@drawable/ic_connections"
-            app:tint="#616161"
+            app:tint="@color/text_secondary"
             android:contentDescription="Location Icon" />
 
         <TextView
@@ -132,7 +132,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:text="37.7749° N, 122.4194° W • Central Cognitive Workspace"
-            android:textColor="#424242"
+            android:textColor="@color/text_tertiary"
             android:textSize="13sp" />
 
     </LinearLayout>
@@ -141,14 +141,14 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginVertical="16dp"
-        android:background="#E5E7EB" />
+        android:background="@color/app_card_border" />
 
     <!-- Full Experience (Message) Label -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Full Experience"
-        android:textColor="#616161"
+        android:textColor="@color/text_secondary"
         android:textSize="12sp"
         android:textStyle="bold" />
 
@@ -167,7 +167,7 @@
             android:lineSpacingExtra="4dp"
             android:padding="16dp"
             android:text="Full message content goes here..."
-            android:textColor="#121417"
+            android:textColor="@color/text_primary"
             android:textSize="15sp" />
 
     </ScrollView>
@@ -198,7 +198,7 @@
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:src="@drawable/ic_insights"
-            app:tint="#121417"
+            app:tint="@color/text_primary"
             android:contentDescription="Words Icon" />
 
         <TextView
@@ -206,7 +206,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="View Words &amp; Synonyms"
-            android:textColor="#121417"
+            android:textColor="@color/text_primary"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -228,7 +228,7 @@
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:src="@drawable/ic_connections"
-            app:tint="#121417"
+            app:tint="@color/text_primary"
             android:contentDescription="Connections Icon" />
 
         <TextView
@@ -236,7 +236,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="View DAG Connections &amp; Strengths"
-            android:textColor="#121417"
+            android:textColor="@color/text_primary"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -253,7 +253,7 @@
         android:focusable="true"
         android:gravity="center"
         android:text="Close"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/app_window_background"
         android:textSize="14sp"
         android:textStyle="bold" />
 

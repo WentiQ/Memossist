@@ -1,6 +1,5 @@
 package com.example.apptempleate
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +7,7 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class RemindersAdapter(
@@ -66,16 +66,16 @@ class RemindersAdapter(
             tvTimeStatus.text = reminder.getTimeStatusLabel()
             if (reminder.isCompleted) {
                 tvTimeStatus.setBackgroundResource(R.drawable.bg_tag_rounded)
-                tvTimeStatus.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#D1FAE5"))
-                tvTimeStatus.setTextColor(Color.parseColor("#065F46"))
+                tvTimeStatus.backgroundTintList = android.content.res.ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.reminder_completed_background))
+                tvTimeStatus.setTextColor(ContextCompat.getColor(itemView.context, R.color.reminder_completed_text))
                 btnCompleteReminder.setImageResource(R.drawable.ic_check_circle)
-                btnCompleteReminder.imageTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#10B981"))
+                btnCompleteReminder.imageTintList = android.content.res.ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.reminder_completed_text))
             } else {
                 tvTimeStatus.setBackgroundResource(R.drawable.bg_tag_rounded)
-                tvTimeStatus.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#EFF6FF"))
-                tvTimeStatus.setTextColor(Color.parseColor("#2563EB"))
+                tvTimeStatus.backgroundTintList = android.content.res.ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.reminder_upcoming_background))
+                tvTimeStatus.setTextColor(ContextCompat.getColor(itemView.context, R.color.reminder_upcoming_text))
                 btnCompleteReminder.setImageResource(R.drawable.ic_check_circle)
-                btnCompleteReminder.imageTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#9CA3AF"))
+                btnCompleteReminder.imageTintList = android.content.res.ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.text_hint))
             }
 
             // Active Switch state listener
@@ -91,7 +91,7 @@ class RemindersAdapter(
                 val tvEmpty = TextView(itemView.context).apply {
                     text = "1 Alert Scheduled"
                     textSize = 11f
-                    setTextColor(Color.parseColor("#6B7280"))
+                    setTextColor(ContextCompat.getColor(itemView.context, R.color.text_secondary))
                 }
                 llTriggersContainer.addView(tvEmpty)
             } else {
@@ -99,11 +99,11 @@ class RemindersAdapter(
                     val pill = TextView(itemView.context).apply {
                         text = "${trigger.getTypeBadge()} (${trigger.getFormattedTime()})"
                         textSize = 11f
-                        setTextColor(Color.parseColor("#374151"))
+                        setTextColor(ContextCompat.getColor(itemView.context, R.color.text_tertiary))
                         setPadding(18, 8, 18, 8)
                         setBackgroundResource(R.drawable.bg_tag_rounded)
                         backgroundTintList = android.content.res.ColorStateList.valueOf(
-                            if (trigger.isTriggered) Color.parseColor("#E5E7EB") else Color.parseColor("#FEF3C7")
+                            ContextCompat.getColor(itemView.context, if (trigger.isTriggered) R.color.reminder_alert_triggered_background else R.color.reminder_alert_pending_background)
                         )
                         val layoutParams = LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.WRAP_CONTENT,

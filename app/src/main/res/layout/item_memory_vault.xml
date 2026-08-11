@@ -19,11 +19,11 @@
             android:id="@+id/tvMemoryTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#E5E7EB"
+            android:background="@color/app_tag_background"
             android:paddingHorizontal="10dp"
             android:paddingVertical="3dp"
             android:text="AUDIO"
-            android:textColor="#374151"
+            android:textColor="@color/text_tertiary"
             android:textSize="11sp"
             android:textStyle="bold" />
 
@@ -34,7 +34,7 @@
             android:layout_weight="1"
             android:gravity="end"
             android:text="4m ago"
-            android:textColor="#6B7280"
+            android:textColor="@color/text_secondary"
             android:textSize="12sp" />
 
     </LinearLayout>
@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:text="Quarterly Strategy &amp; Cognitive Notes"
-        android:textColor="#111827"
+        android:textColor="@color/text_primary"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -59,7 +59,7 @@
         android:ellipsize="end"
         android:maxLines="2"
         android:text="Key takeaways from the strategy discussion covering neural architecture designs and user cognitive flows..."
-        android:textColor="#4B5563"
+        android:textColor="@color/text_tertiary"
         android:textSize="14sp"
         android:lineSpacingExtra="2dp" />
 

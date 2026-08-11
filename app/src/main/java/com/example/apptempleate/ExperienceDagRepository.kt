@@ -290,6 +290,22 @@ object ExperienceDagRepository {
         }
     }
 
+    /**
+     * Guarantees that a vault with at least two memories has a drawable graph.
+     * This also recovers older installs whose edge file was created empty before
+     * the initial graph was seeded.
+     */
+    fun ensureGraphEdges(context: Context, memories: List<MemoryItem>): MutableList<DagEdge> {
+        val existingEdges = loadAllEdges(context)
+        if (existingEdges.isNotEmpty() || memories.size < 2) return existingEdges
+
+        val seededEdges = createInitialDagEdges(context)
+        if (seededEdges.isNotEmpty()) {
+            saveAllEdges(context, seededEdges)
+        }
+        return seededEdges
+    }
+
     fun saveAllEdges(context: Context, edges: List<DagEdge>) {
         try {
             val array = JSONArray()

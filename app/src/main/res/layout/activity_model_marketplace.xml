@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/app_window_background"
     tools:context=".ModelMarketplaceActivity">
 
     <!-- Top Toolbar Bar -->
@@ -20,14 +20,14 @@
         android:src="@drawable/ic_close"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="#121417" />
+        app:tint="@color/icon_tint" />
 
     <TextView
         android:id="@+id/tvMarketplaceTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="AI Model Marketplace"
-        android:textColor="#121417"
+        android:textColor="@color/text_primary"
         android:textSize="20sp"
         android:textStyle="bold"
         android:letterSpacing="-0.01"
@@ -59,7 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Choose the AI model that fits your phone hardware and daily workflow."
-                android:textColor="#4B5563"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp"
                 android:lineSpacingExtra="2dp" />
 
@@ -124,7 +124,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="FILTER MODEL CATALOG"
-                android:textColor="#6B7280"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.08" />
@@ -155,7 +155,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="12dp"
                 android:text="All Available Models (8)"
-                android:textColor="#111827"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 

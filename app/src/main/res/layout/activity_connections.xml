@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F9FAFB"
+    android:background="@color/app_window_background"
     tools:context=".ConnectionsActivity">
 
     <!-- 2D Infinite Graph View Filling Screen -->
@@ -17,6 +17,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Chat-style translucent fade, applied only to the top of the graph. -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="96dp"
+        android:background="@drawable/bg_top_chat_gradient"
+        android:clickable="false"
+        android:elevation="6dp"
+        android:focusable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <!-- Top Overlay Header Row -->
     <RelativeLayout
         android:id="@+id/headerOverlay"
@@ -25,7 +37,8 @@
         android:paddingHorizontal="16dp"
         android:paddingTop="16dp"
         android:paddingBottom="12dp"
-        android:background="#D9FFFFFF"
+        android:background="@android:color/transparent"
+        android:elevation="8dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
@@ -38,7 +51,7 @@
             android:contentDescription="Back"
             android:padding="9dp"
             android:src="@drawable/ic_close"
-            app:tint="#121417" />
+            app:tint="@color/text_primary" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -52,7 +65,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="2D DAG Knowledge Plane"
-                android:textColor="#121417"
+                android:textColor="@color/text_primary"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
@@ -62,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="0 Active Non-Zero Connections"
-                android:textColor="#2563EB"
+                android:textColor="@color/accent_blue"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -78,7 +91,7 @@
             android:contentDescription="Reset Graph Position"
             android:padding="10dp"
             android:src="@drawable/ic_insights"
-            app:tint="#121417" />
+            app:tint="@color/text_primary" />
 
     </RelativeLayout>
 
@@ -101,7 +114,7 @@
             android:contentDescription="Zoom In"
             android:padding="10dp"
             android:src="@drawable/ic_plus"
-            app:tint="#121417" />
+            app:tint="@color/text_primary" />
 
         <ImageButton
             android:id="@+id/btnZoomOut"
@@ -112,7 +125,7 @@
             android:contentDescription="Zoom Out"
             android:padding="10dp"
             android:src="@drawable/ic_trash"
-            app:tint="#121417" />
+            app:tint="@color/text_primary" />
 
     </LinearLayout>
 
@@ -129,7 +142,7 @@
         android:paddingHorizontal="16dp"
         android:paddingVertical="10dp"
         android:text="2D Infinite Plane • Drag to Pan • Pinch to Zoom • Tap Dot for Connections"
-        android:textColor="#4B5563"
+        android:textColor="@color/text_tertiary"
         android:textSize="12sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

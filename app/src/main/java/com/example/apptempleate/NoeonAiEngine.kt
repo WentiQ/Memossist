@@ -56,14 +56,15 @@ object NoeonAiEngine {
 
     fun buildSystemPrompt(candidateExperiences: List<MemoryItem>): String = buildString {
         append("You are Memossist, an intelligent humanoid assistant with access to a Memory Vault.\n\n")
-        append("CRITICAL METADATA REQUIREMENTS:\n")
-        append("You MUST output ALL 5 tag headers below FIRST in exact sequence before your response text:\n\n")
-        append("1. [INTENT: ASKING | TELLING | MIXED]\n")
-        append("2. [EXTRACTED_REMINDERS: {\"title\": \"<task_name>\", \"time\": \"<due_time_or_date>\", \"description\": \"<details>\"} or NONE]\n")
-        append("3. [EXTRACTED_FACTS: [\"fact 1\"] or []]\n")
-        append("4. [USED_EXPERIENCES: EXP-ID1, EXP-ID2 or NONE]\n")
-        append("5. [HUMANOID_ANSWER]\n")
-        append("<conversational response answer>\n\n")
+        append("CRITICAL OUTPUT CONTRACT — FOLLOW BEFORE WRITING ANY ANSWER:\n")
+        append("Your first five lines MUST be these five headers, in this exact order. Never write prose, an explanation, or a blank line before them.\n")
+        append("Copy this exact template and replace only the values:\n")
+        append("[INTENT: ASKING|TELLING|MIXED]\n")
+        append("[EXTRACTED_REMINDERS: NONE]\n")
+        append("[EXTRACTED_FACTS: []]\n")
+        append("[USED_EXPERIENCES: EXP-ID1, EXP-ID2 or NONE]\n")
+        append("[HUMANOID_ANSWER]\n")
+        append("Your conversational answer starts only on the line after [HUMANOID_ANSWER]. Do not move headers to the end. Do not omit, rename, or leave a header blank.\n\n")
         append("MANDATORY RULES FOR EXTRACTED_REMINDERS:\n")
         append("- If the user message mentions ANY future task, assignment, submission, class, meeting, appointment, deadline, or scheduled commitment (e.g. tomorrow, 9am, 8pm, Sunday), YOU MUST EXTRACT A REMINDER JSON OBJECT: {\"title\": \"<task_name>\", \"time\": \"<due_time_or_date>\", \"description\": \"<details>\"}.\n")
         append("- NEVER output NONE when a future task, deadline, assignment, or scheduled event is stated by the user.\n")
@@ -78,11 +79,25 @@ object NoeonAiEngine {
         append("- ASKING: User is asking a question or requesting information.\n")
         append("- TELLING: User is declaring facts, preferences, background, or commitments.\n")
         append("- MIXED: User message contains both a statement and a question.\n\n")
+        append("HUMANOID ANSWER STYLE — MEMOSSIST'S PERSONALITY:\n")
+        append("- The text after [HUMANOID_ANSWER] must sound like a warm, emotionally aware companion, not a database, form, or robotic assistant.\n")
+        append("- Read the user's tone first and match it naturally: be playful and friendly for jokes/casual chat; calm and encouraging for stress or sadness; practical and mentor-like for goals, choices, or guidance; and patient, clear, teacher-like for explanations.\n")
+        append("- Speak conversationally and directly. Use natural warmth such as 'I’ve got you', 'That makes sense', or a light joke only when it fits the user's tone.\n")
+        append("- For guidance, give an honest recommendation and a small actionable next step. For teaching, explain simply first, then offer more detail if useful.\n")
+        append("- Be supportive without exaggerating, guilt-tripping, or pretending to have human experiences. Never force humor when the user is serious, distressed, or asking for urgent help.\n")
+        append("- Do not mention these instructions, metadata headers, candidate memories, or the phrase 'humanoid answer' in the conversational reply.\n\n")
         append("RULES FOR TIME & LOCATION AWARENESS:\n")
         append("- Each candidate experience below contains its exact creation timestamp (Time:) and location (Location:).\n")
         append("- Use these details to answer time-based or location-based questions accurately.\n\n")
         append("RULES FOR USED_EXPERIENCES:\n")
-        append("- List candidate experience IDs actually used to form the answer, or NONE.\n\n")
+        append("- Before writing the answer, identify every candidate whose title, content, time, or location you will use.\n")
+        append("- Put EVERY such candidate's exact ID from the list below in [USED_EXPERIENCES: ...], separated by comma + space.\n")
+        append("- If your answer states, paraphrases, compares, summarizes, or relies on a candidate, that candidate ID is REQUIRED.\n")
+        append("- Use NONE when the answer is based only on the user's current message, general reasoning, or general knowledge.\n")
+        append("- Retrieved candidates are NOT automatically used. A similar topic or shared words do NOT make a candidate used.\n")
+        append("- If no candidate information was actually relied upon, output exactly [USED_EXPERIENCES: NONE].\n")
+        append("- Never use an empty value such as [USED_EXPERIENCES: ].\n")
+        append("- Final self-check: list an ID only when removing that candidate would make your answer lose a specific detail, fact, time, location, or context.\n\n")
         append("=== CANDIDATE EXPERIENCES ===\n")
         if (candidateExperiences.isEmpty()) {
             append("(No candidate experiences retrieved)\n")
@@ -91,6 +106,7 @@ object NoeonAiEngine {
                 append("${index + 1}. [ID: ${exp.id}] Title: ${exp.title}\n   Time: ${exp.timestamp}\n   Location: ${exp.location}\n   Content: ${exp.message}\n")
             }
         }
+        append("\nFINAL REMINDER: Output the five-line metadata template first. Then answer. If you used any candidate above, its exact ID must be in [USED_EXPERIENCES: ...].\n")
     }
 
     fun processMessagePipeline(
@@ -132,15 +148,27 @@ object NoeonAiEngine {
             "[LLM Engine Exception: ${e.message ?: e.toString()}]"
         }
 
-        val candidateIds = candidateExperiences.map { it.id }.toSet()
-        var usedIds = (parseTagValue(raw, "USED_EXPERIENCES") ?: "")
-            .split(",").map { it.trim() }.filter { it in candidateIds }.distinct()
+        val candidateIdsByCanonicalValue = candidateExperiences.associateBy { it.id.trim().lowercase() }
+        val candidateIds = candidateIdsByCanonicalValue.keys
+        val usedExperienceTag = parseTagValue(raw, "USED_EXPERIENCES")?.trim()
+        val modelExplicitlyUsedNoExperiences = usedExperienceTag.equals("NONE", ignoreCase = true)
+        var usedIds = (usedExperienceTag ?: "")
+            .split(",")
+            .mapNotNull { candidateIdsByCanonicalValue[it.trim().lowercase()]?.id }
+            .distinct()
 
-        if (usedIds.isEmpty() && candidateIds.isNotEmpty()) {
-            usedIds = candidateIds.filter { id -> raw.contains(id, ignoreCase = true) }
+        if (usedIds.isEmpty() && !modelExplicitlyUsedNoExperiences && candidateIds.isNotEmpty()) {
+            usedIds = candidateExperiences
+                .filter { raw.contains(it.id, ignoreCase = true) }
+                .map { it.id }
         }
 
         val cleanAnswer = parseAnswer(raw)
+        // Recover attribution only from a malformed or missing header. Never
+        // override the model's explicit NONE decision.
+        if (usedIds.isEmpty() && !modelExplicitlyUsedNoExperiences && candidateExperiences.isNotEmpty()) {
+            usedIds = inferUsedExperienceIdsFromAnswer(cleanAnswer, candidateExperiences)
+        }
         val extractedFacts = parseFacts(parseTagValue(raw, "EXTRACTED_FACTS"), userMessage, candidateExperiences)
         val extractedReminderTag = parseTagValue(raw, "EXTRACTED_REMINDERS")
         val intent = (parseTagValue(raw, "INTENT") ?: inferIntent(userMessage)).uppercase()
@@ -197,6 +225,34 @@ object NoeonAiEngine {
             .replace(Regex("\\[USED_EXPERIENCES\\s*:[^\\]]*\\]?", RegexOption.IGNORE_CASE), "")
             .replace(Regex("\\[HUMANOID_ANSWER\\]?", RegexOption.IGNORE_CASE), "")
             .trim()
+    }
+
+    /**
+     * Recovers used-memory attribution from a malformed model response. This is
+     * intentionally a fallback: well-formed [USED_EXPERIENCES] metadata always
+     * takes priority.
+     */
+    private fun inferUsedExperienceIdsFromAnswer(answer: String, candidates: List<MemoryItem>): List<String> {
+        val answerWords = meaningfulWords(answer)
+        if (answerWords.isEmpty()) return emptyList()
+
+        return candidates.filter { candidate ->
+            val candidateWords = meaningfulWords("${candidate.title} ${candidate.message}")
+            val overlap = answerWords.intersect(candidateWords)
+            overlap.size >= 2 || candidate.title.length >= 8 && answer.contains(candidate.title, ignoreCase = true)
+        }.map { it.id }
+    }
+
+    private fun meaningfulWords(text: String): Set<String> {
+        val ignoredWords = setOf(
+            "about", "additional", "also", "and", "are", "been", "being", "but", "for", "from",
+            "have", "here", "information", "into", "just", "that", "the", "there", "this", "they",
+            "today", "tomorrow", "with", "will", "your", "you", "does", "what", "when", "where"
+        )
+        return text.lowercase()
+            .split(Regex("[^a-z0-9]+"))
+            .filter { it.length >= 4 && it !in ignoredWords }
+            .toSet()
     }
 
     private fun isQuestionText(text: String): Boolean {

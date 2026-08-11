@@ -137,6 +137,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ThemeManager.applySavedTheme(this)
 
         val prefs = getSharedPreferences("MemossistPrefs", MODE_PRIVATE)
         if (prefs.getBoolean("is_first_launch", true)) {
@@ -367,11 +368,11 @@ class MainActivity : AppCompatActivity() {
                 if (hasText && !isListening) {
                     btnMic.setImageResource(R.drawable.ic_send)
                     btnMic.contentDescription = "Send Message"
-                    btnMic.imageTintList = ColorStateList.valueOf(Color.parseColor("#121417"))
+                    btnMic.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this@MainActivity, R.color.icon_tint))
                 } else if (!isListening) {
                     btnMic.setImageResource(R.drawable.ic_mic)
                     btnMic.contentDescription = "Voice Input"
-                    btnMic.imageTintList = ColorStateList.valueOf(Color.parseColor("#424242"))
+                    btnMic.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this@MainActivity, R.color.icon_tint))
                 }
             }
             override fun afterTextChanged(s: Editable?) {}
@@ -636,11 +637,11 @@ class MainActivity : AppCompatActivity() {
         if (hasText || hasAttachments) {
             btnMic.setImageResource(R.drawable.ic_send)
             btnMic.contentDescription = "Send Message"
-            btnMic.imageTintList = ColorStateList.valueOf(Color.parseColor("#121417"))
+            btnMic.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.icon_tint))
         } else {
             btnMic.setImageResource(R.drawable.ic_mic)
             btnMic.contentDescription = "Voice Input"
-            btnMic.imageTintList = ColorStateList.valueOf(Color.parseColor("#424242"))
+            btnMic.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.icon_tint))
         }
         etChatInput.hint = "Ask Memossist..."
     }

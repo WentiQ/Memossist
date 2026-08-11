@@ -12,6 +12,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class ModelDetailBottomSheet(
@@ -118,7 +119,7 @@ class ModelDetailBottomSheet(
         for (item in model.recommendedFor) {
             val tv = TextView(context).apply {
                 text = "✓ $item"
-                setTextColor(Color.parseColor("#111827"))
+                setTextColor(ContextCompat.getColor(context, R.color.text_primary))
                 textSize = 13f
                 setPadding(0, 4, 0, 4)
             }
@@ -130,7 +131,7 @@ class ModelDetailBottomSheet(
         if (model.notIdealFor.isEmpty()) {
             val tv = TextView(context).apply {
                 text = "None noted"
-                setTextColor(Color.parseColor("#6B7280"))
+                setTextColor(ContextCompat.getColor(context, R.color.text_secondary))
                 textSize = 13f
             }
             llNotIdealForContainer.addView(tv)
@@ -138,7 +139,7 @@ class ModelDetailBottomSheet(
             for (item in model.notIdealFor) {
                 val tv = TextView(context).apply {
                     text = "× $item"
-                    setTextColor(Color.parseColor("#4B5563"))
+                    setTextColor(ContextCompat.getColor(context, R.color.text_secondary))
                     textSize = 13f
                     setPadding(0, 4, 0, 4)
                 }
@@ -155,7 +156,6 @@ class ModelDetailBottomSheet(
         updateUIState()
 
         btnCloseDetail.setOnClickListener {
-            // Closing detail sheet leaves background download running safely!
             dismiss()
         }
 
@@ -215,8 +215,8 @@ class ModelDetailBottomSheet(
             btnDeleteModel.visibility = View.VISIBLE
         } else if (currentIsDownloaded) {
             btnDetailAction.text = "SELECT & USE THIS MODEL"
-            btnDetailAction.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#121417"))
-            btnDetailAction.setTextColor(Color.WHITE)
+            btnDetailAction.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.app_utility_text))
+            btnDetailAction.setTextColor(ContextCompat.getColor(context, R.color.app_window_background))
             btnDeleteModel.visibility = View.VISIBLE
         } else {
             btnDetailAction.text = "DOWNLOAD REAL GGUF (${model.downloadSizeMb} MB)"

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/app_window_background"
     tools:context=".VoiceConversationActivity">
 
     <!-- Status Tag Badge (Centered cleanly near top without header bar) -->
@@ -17,7 +17,7 @@
         android:paddingHorizontal="18dp"
         android:paddingVertical="8dp"
         android:text="MEMOSSIST LIVE"
-        android:textColor="#121417"
+        android:textColor="@color/text_primary"
         android:textSize="12sp"
         android:textStyle="bold"
         android:letterSpacing="0.15"
@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
         android:text="Listening..."
-        android:textColor="#121417"
+        android:textColor="@color/text_primary"
         android:textSize="22sp"
         android:textStyle="bold"
         android:letterSpacing="0.05"
@@ -57,7 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Speak now or tap to pause"
-        android:textColor="#616161"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -85,7 +85,7 @@
             android:contentDescription="Mute Microphone"
             android:padding="16dp"
             android:src="@drawable/ic_mic"
-            app:tint="#424242" />
+            app:tint="@color/icon_tint" />
 
         <!-- Red Circular End Call / Exit Button -->
         <ImageButton
@@ -108,7 +108,7 @@
             android:contentDescription="Speaker Output"
             android:padding="16dp"
             android:src="@drawable/ic_speaker"
-            app:tint="#424242" />
+            app:tint="@color/icon_tint" />
 
     </LinearLayout>
 

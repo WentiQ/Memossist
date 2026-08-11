@@ -16,7 +16,7 @@
         android:layout_width="38dp"
         android:layout_height="38dp"
         android:background="@drawable/bg_circle_icon_button"
-        android:backgroundTint="#F3F4F6"
+        android:backgroundTint="@color/app_icon_button_background"
         android:gravity="center"
         android:text="🔔"
         android:textSize="18sp" />
@@ -44,7 +44,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="Extra Class Reminder"
-                android:textColor="#121417"
+                android:textColor="@color/text_primary"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="Today 7:00 AM"
-                android:textColor="#9CA3AF"
+                android:textColor="@color/text_hint"
                 android:textSize="12sp" />
 
         </LinearLayout>
@@ -67,7 +67,7 @@
             android:layout_marginTop="4dp"
             android:lineSpacingExtra="2dp"
             android:text="Hey Dinesh, do you remember today you have extra class at 2pm right?"
-            android:textColor="#4B5563"
+            android:textColor="@color/text_secondary"
             android:textSize="13sp" />
 
     </LinearLayout>

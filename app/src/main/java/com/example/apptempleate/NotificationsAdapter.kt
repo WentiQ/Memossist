@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class NotificationsAdapter(
@@ -48,6 +49,7 @@ class NotificationsAdapter(
         private val vUnreadDot: View = itemView.findViewById(R.id.vUnreadDot)
 
         fun bind(item: NotificationItem) {
+            val context = itemView.context
             tvNotifIcon.text = item.getTypeIconText()
             tvNotifTitle.text = item.title
             tvNotifTime.text = item.getFormattedTime()
@@ -55,15 +57,15 @@ class NotificationsAdapter(
 
             vUnreadDot.visibility = if (item.isRead) View.GONE else View.VISIBLE
 
-            // Dim item ONLY if read
+            // Dim item and adjust dynamic theme text colors based on read state
             if (item.isRead) {
-                itemView.alpha = 0.5f
-                tvNotifTitle.setTextColor(android.graphics.Color.parseColor("#6B7280"))
-                tvNotifMessage.setTextColor(android.graphics.Color.parseColor("#9CA3AF"))
+                itemView.alpha = 0.55f
+                tvNotifTitle.setTextColor(ContextCompat.getColor(context, R.color.text_secondary))
+                tvNotifMessage.setTextColor(ContextCompat.getColor(context, R.color.text_hint))
             } else {
                 itemView.alpha = 1.0f
-                tvNotifTitle.setTextColor(android.graphics.Color.parseColor("#111827"))
-                tvNotifMessage.setTextColor(android.graphics.Color.parseColor("#374151"))
+                tvNotifTitle.setTextColor(ContextCompat.getColor(context, R.color.text_primary))
+                tvNotifMessage.setTextColor(ContextCompat.getColor(context, R.color.text_secondary))
             }
 
             itemView.setOnClickListener {

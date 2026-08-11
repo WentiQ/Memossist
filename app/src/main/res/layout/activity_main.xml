@@ -5,7 +5,7 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/app_window_background"
     tools:context=".MainActivity">
 
     <!-- Main Content Canvas Layout -->
@@ -13,7 +13,7 @@
         android:id="@+id/mainContentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF">
+        android:background="@color/app_window_background">
 
         <!-- Active Chat Messages List (Full height from top to bottom edge) -->
         <androidx.recyclerview.widget.RecyclerView
@@ -31,7 +31,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Floating Top Fade Gradient Overlay (White to Transparent) -->
+        <!-- Floating Top Fade Gradient Overlay -->
         <View
             android:id="@+id/vTopGradientOverlay"
             android:layout_width="0dp"
@@ -58,7 +58,7 @@
             android:src="@drawable/ic_menu"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="#121417" />
+            app:tint="@color/icon_tint" />
 
         <!-- Gemini-Style Header Model Selector Pill -->
         <LinearLayout
@@ -90,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:text="Qwen3.5 4B"
-                android:textColor="#121417"
+                android:textColor="@color/text_primary"
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
@@ -99,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:text="▾"
-                android:textColor="#616161"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -122,7 +122,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="#DC2626" />
 
-        <!-- Header Notification Center Action Button (Replaces top Plus icon) -->
+        <!-- Header Notification Center Action Button -->
         <FrameLayout
             android:id="@+id/flHeaderNotifications"
             android:layout_width="44dp"
@@ -141,7 +141,7 @@
                 android:contentDescription="Open Notification Center"
                 android:padding="10dp"
                 android:src="@drawable/ic_bell"
-                app:tint="#121417" />
+                app:tint="@color/icon_tint" />
 
             <!-- Red Unread Badge Indicator Dot -->
             <View
@@ -176,7 +176,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Good afternoon,"
-                android:textColor="#616161"
+                android:textColor="@color/text_secondary"
                 android:textSize="26sp"
                 android:letterSpacing="0.01" />
 
@@ -187,7 +187,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="What would you like to recall today?"
-                android:textColor="#121417"
+                android:textColor="@color/text_primary"
                 android:textSize="32sp"
                 android:textStyle="bold"
                 android:lineSpacingExtra="4dp"
@@ -212,7 +212,7 @@
 
         </LinearLayout>
 
-        <!-- Floating Bottom Fade Gradient Overlay (Transparent to Opaque White) -->
+        <!-- Floating Bottom Fade Gradient Overlay -->
         <View
             android:id="@+id/vBottomGradientOverlay"
             android:layout_width="0dp"
@@ -225,7 +225,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- Attachment Previews Container (Visible when user selects attachments via + button) -->
+        <!-- Attachment Previews Container -->
         <LinearLayout
             android:id="@+id/llAttachmentPreviewContainer"
             android:layout_width="0dp"
@@ -277,7 +277,7 @@
                 android:contentDescription="Add Attachment"
                 android:padding="8dp"
                 android:src="@drawable/ic_plus"
-                app:tint="#424242" />
+                app:tint="@color/icon_tint" />
 
             <!-- Multiline Chat Input Box -->
             <EditText
@@ -292,8 +292,8 @@
                 android:inputType="textMultiLine|textCapSentences"
                 android:maxLines="4"
                 android:paddingVertical="6dp"
-                android:textColor="#121417"
-                android:textColorHint="#9E9E9E"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
                 android:textSize="16sp" />
 
             <!-- Microphone / Voice Input Button -->
@@ -305,7 +305,7 @@
                 android:contentDescription="Voice Input"
                 android:padding="8dp"
                 android:src="@drawable/ic_mic"
-                app:tint="#424242" />
+                app:tint="@color/icon_tint" />
 
             <!-- Live Voice Conversation Button -->
             <ImageButton
@@ -317,7 +317,7 @@
                 android:contentDescription="Live Voice Conversation"
                 android:padding="8dp"
                 android:src="@drawable/ic_live_voice"
-                app:tint="#424242" />
+                app:tint="@color/icon_tint" />
 
         </LinearLayout>
 
@@ -328,7 +328,7 @@
         android:layout_width="280dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#FFFFFF"
+        android:background="@color/app_surface_background"
         android:clickable="true"
         android:focusable="true"
         android:orientation="vertical">
@@ -367,7 +367,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Memossist"
-                        android:textColor="#121417"
+                        android:textColor="@color/text_primary"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.02" />
@@ -377,7 +377,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1dp"
                         android:text="Cognitive Workspace"
-                        android:textColor="#616161"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
                 </LinearLayout>
@@ -401,7 +401,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_plus"
-                    app:tint="#121417"
+                    app:tint="@color/icon_tint"
                     android:contentDescription="New Chat Icon" />
 
                 <TextView
@@ -409,7 +409,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:text="New Chat"
-                    android:textColor="#121417"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -432,14 +432,14 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_menu"
-                    app:tint="#121417" />
+                    app:tint="@color/icon_tint" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:text="Home Workspace"
-                    android:textColor="#121417"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -460,14 +460,14 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_alarm"
-                    app:tint="#121417" />
+                    app:tint="@color/icon_tint" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:text="Smart Reminders"
-                    android:textColor="#121417"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -488,14 +488,14 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_vault"
-                    app:tint="#121417" />
+                    app:tint="@color/icon_tint" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:text="Memory Vault"
-                    android:textColor="#121417"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -516,14 +516,14 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_insights"
-                    app:tint="#121417" />
+                    app:tint="@color/icon_tint" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:text="Cognitive Insights"
-                    android:textColor="#121417"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -544,14 +544,14 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_connections"
-                    app:tint="#121417" />
+                    app:tint="@color/icon_tint" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:text="Connections"
-                    android:textColor="#121417"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -563,7 +563,7 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
-                android:background="#E5E7EB" />
+                android:background="@color/app_card_border" />
 
             <!-- Recent History Subheader Title -->
             <TextView
@@ -571,7 +571,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="Recent History"
-                android:textColor="#616161"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -591,14 +591,14 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#E5E7EB" />
+            android:background="@color/app_card_border" />
 
         <!-- 3. FIXED BOTTOM PINNED SETTINGS & HELP (Does NOT scroll) -->
         <LinearLayout
             android:id="@+id/llPinnedBottomBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
+            android:background="@color/app_surface_background"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="16dp"
@@ -621,7 +621,7 @@
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:src="@drawable/ic_settings"
-                    app:tint="#424242"
+                    app:tint="@color/icon_tint"
                     android:contentDescription="Settings Icon" />
 
                 <TextView
@@ -629,7 +629,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:text="Settings"
-                    android:textColor="#121417"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -645,7 +645,7 @@
                 android:contentDescription="Background &amp; OEM Battery Help"
                 android:padding="9dp"
                 android:src="@drawable/ic_help"
-                app:tint="#121417" />
+                app:tint="@color/icon_tint" />
 
         </LinearLayout>
 

@@ -13,7 +13,7 @@
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="14dp"
-        android:background="#D1D5DB" />
+        android:background="@color/app_card_border" />
 
     <!-- Title Row -->
     <LinearLayout
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="🧠 LLM &amp; DAG Backend Diagnostic Logs"
-            android:textColor="#111827"
+            android:textColor="@color/text_primary"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -39,7 +39,7 @@
             android:contentDescription="Close"
             android:padding="6dp"
             android:src="@drawable/ic_close"
-            app:tint="#4B5563" />
+            app:tint="@color/icon_tint" />
 
     </LinearLayout>
 
@@ -48,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="Detailed breakdown of system prompt, LLM output, fact extraction, and mathematical DAG connection strength calculations."
-        android:textColor="#6B7280"
+        android:textColor="@color/text_secondary"
         android:textSize="12sp" />
 
     <ScrollView
@@ -74,7 +74,7 @@
                 android:lineSpacingExtra="3dp"
                 android:padding="16dp"
                 android:text="Log data..."
-                android:textColor="#1F2937"
+                android:textColor="@color/text_primary"
                 android:textSize="12sp" />
 
         </LinearLayout>

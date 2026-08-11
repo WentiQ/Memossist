@@ -13,7 +13,7 @@
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="16dp"
-        android:background="#D1D5DB" />
+        android:background="@color/app_card_border" />
 
     <!-- Model Header Row -->
     <LinearLayout
@@ -49,7 +49,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Qwen3.5 4B"
-                    android:textColor="#111827"
+                    android:textColor="@color/text_primary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -59,11 +59,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:background="@drawable/bg_tag_rounded"
-                    android:backgroundTint="#F3F4F6"
+                    android:backgroundTint="@color/app_icon_button_background"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="3dp"
                     android:text="🏆 RECOMMENDED"
-                    android:textColor="#1F2937"
+                    android:textColor="@color/text_primary"
                     android:textSize="11sp"
                     android:textStyle="bold" />
 
@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="BEST OVERALL"
-                android:textColor="#6B7280"
+                android:textColor="@color/text_secondary"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.05" />
@@ -90,7 +90,7 @@
             android:contentDescription="Close"
             android:padding="8dp"
             android:src="@drawable/ic_close"
-            app:tint="#4B5563" />
+            app:tint="@color/icon_tint" />
 
     </LinearLayout>
 
@@ -113,7 +113,7 @@
                 android:layout_height="wrap_content"
                 android:lineSpacingExtra="3dp"
                 android:text="A powerful compact AI that provides an excellent balance between intelligence, speed and memory usage."
-                android:textColor="#374151"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
             <!-- Performance Metrics Section -->
@@ -122,7 +122,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="PERFORMANCE METRICS"
-                android:textColor="#6B7280"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.08" />
@@ -147,7 +147,7 @@
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:text="Intelligence"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -167,7 +167,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="end"
                         android:text="9/10"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -185,7 +185,7 @@
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:text="Speed"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -205,7 +205,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="end"
                         android:text="8/10"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -223,7 +223,7 @@
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:text="Memory Req"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -243,7 +243,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="end"
                         android:text="6/10"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -261,7 +261,7 @@
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:text="Reasoning"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -281,7 +281,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="end"
                         android:text="9/10"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -299,7 +299,7 @@
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:text="Coding"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -319,7 +319,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="end"
                         android:text="9/10"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -337,7 +337,7 @@
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:text="Long Context"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -357,7 +357,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="end"
                         android:text="9/10"
-                        android:textColor="#4B5563"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -420,7 +420,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Estimated Download"
-                        android:textColor="#6B7280"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
                     <TextView
@@ -429,7 +429,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="2600 MB"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -439,7 +439,7 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:layout_marginHorizontal="12dp"
-                    android:background="#E5E7EB" />
+                    android:background="@color/app_card_border" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -451,7 +451,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Estimated RAM"
-                        android:textColor="#6B7280"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
                     <TextView
@@ -460,7 +460,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="4.5 GB"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -481,7 +481,7 @@
         android:background="@drawable/bg_chip_selected"
         android:gravity="center"
         android:text="SELECT MODEL"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/app_window_background"
         android:textSize="15sp"
         android:textStyle="bold" />
 

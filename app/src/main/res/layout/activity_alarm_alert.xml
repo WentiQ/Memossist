@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/app_window_background"
     android:padding="24dp"
     tools:context=".AlarmAlertActivity">
 
@@ -31,7 +31,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="@drawable/bg_circle_icon_button"
-                android:backgroundTint="#1A121417" />
+                android:backgroundTint="@color/app_tag_background" />
 
             <ImageView
                 android:id="@+id/ivAlarmLogo"
@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Memossist"
-                android:textColor="#121417"
+                android:textColor="@color/text_primary"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.02" />
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
                 android:text="Cognitive Workspace • Smart Alert"
-                android:textColor="#64748B"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
 
         </LinearLayout>
@@ -74,11 +74,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_tag_rounded"
-            android:backgroundTint="#F1F5F9"
+            android:backgroundTint="@color/app_tag_background"
             android:paddingHorizontal="10dp"
             android:paddingVertical="5dp"
             android:text="2:00 PM"
-            android:textColor="#121417"
+            android:textColor="@color/text_primary"
             android:textSize="12sp"
             android:textStyle="bold" />
 
@@ -103,11 +103,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_tag_rounded"
-            android:backgroundTint="#F1F5F9"
+            android:backgroundTint="@color/app_tag_background"
             android:paddingHorizontal="14dp"
             android:paddingVertical="6dp"
             android:text="🚨 SMART REMINDER"
-            android:textColor="#121417"
+            android:textColor="@color/text_primary"
             android:textSize="12sp"
             android:textStyle="bold"
             android:letterSpacing="0.04" />
@@ -120,7 +120,7 @@
             android:layout_marginTop="12dp"
             android:gravity="center"
             android:text="Extra Class"
-            android:textColor="#121417"
+            android:textColor="@color/text_primary"
             android:textSize="28sp"
             android:textStyle="bold"
             android:letterSpacing="-0.02" />
@@ -141,7 +141,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_tag_rounded"
-                android:backgroundTint="#F1F5F9"
+                android:backgroundTint="@color/app_tag_background"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingHorizontal="10dp"
@@ -158,7 +158,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
                     android:text="Memossist AI"
-                    android:textColor="#121417"
+                    android:textColor="@color/text_primary"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -172,7 +172,7 @@
                 android:layout_marginTop="12dp"
                 android:lineSpacingExtra="4dp"
                 android:text="Hey Dinesh, do you remember today you have extra class at 2pm right?"
-                android:textColor="#334155"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp" />
 
             <!-- Scheduled Event Time Row -->
@@ -187,7 +187,7 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_clock"
-                    app:tint="#64748B"
+                    app:tint="@color/text_secondary"
                     android:contentDescription="Clock" />
 
                 <TextView
@@ -196,7 +196,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:text="Scheduled for Today at 2:00 PM"
-                    android:textColor="#64748B"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
 
             </LinearLayout>
@@ -222,7 +222,7 @@
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:background="@drawable/bg_button_save_pill"
-            android:backgroundTint="#121417"
+            android:backgroundTint="@color/text_primary"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
@@ -232,7 +232,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_check_circle"
-                app:tint="#FFFFFF"
+                app:tint="@color/app_window_background"
                 android:contentDescription="Check" />
 
             <TextView
@@ -240,7 +240,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text="Got It / Mark Done"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/app_window_background"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -262,7 +262,7 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:src="@drawable/ic_clock"
-                app:tint="#121417"
+                app:tint="@color/text_primary"
                 android:contentDescription="Snooze" />
 
             <TextView
@@ -270,7 +270,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text="Snooze 10 Minutes"
-                android:textColor="#121417"
+                android:textColor="@color/text_primary"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -285,7 +285,7 @@
             android:layout_marginTop="16dp"
             android:padding="8dp"
             android:text="Dismiss Alert"
-            android:textColor="#64748B"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp"
             android:textStyle="bold" />
 

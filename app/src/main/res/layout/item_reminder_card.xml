@@ -20,7 +20,7 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:background="@drawable/bg_circle_icon_button"
-            android:backgroundTint="#F3F4F6"
+            android:backgroundTint="@color/app_card_background"
             android:gravity="center"
             android:text="⏰"
             android:textSize="18sp" />
@@ -37,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Extra Class"
-                android:textColor="#121417"
+                android:textColor="@color/text_primary"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Sun, Aug 16 at 2:00 PM"
-                android:textColor="#4B5563"
+                android:textColor="@color/text_tertiary"
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
@@ -60,11 +60,11 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:background="@drawable/bg_tag_rounded"
-            android:backgroundTint="#EFF6FF"
+            android:backgroundTint="@color/reminder_upcoming_background"
             android:paddingHorizontal="10dp"
             android:paddingVertical="4dp"
             android:text="In 2 days"
-            android:textColor="#2563EB"
+            android:textColor="@color/reminder_upcoming_text"
             android:textSize="11sp"
             android:textStyle="bold" />
 
@@ -73,8 +73,8 @@
             android:id="@+id/switchActive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:thumbTint="#121417"
-            app:trackTint="#D1D5DB" />
+            app:thumbTint="@color/text_primary"
+            app:trackTint="@color/app_card_border" />
 
     </LinearLayout>
 
@@ -85,7 +85,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:text="Extra class on Sunday at 2pm"
-        android:textColor="#6B7280"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         android:visibility="visible" />
 
@@ -94,7 +94,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginVertical="12dp"
-        android:background="#F3F4F6" />
+        android:background="@color/app_card_background" />
 
     <!-- Triggers Heading & Multi-Timestamp Pills -->
     <LinearLayout
@@ -107,7 +107,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Scheduled Alerts:"
-            android:textColor="#9CA3AF"
+            android:textColor="@color/text_hint"
             android:textSize="11sp"
             android:textStyle="bold" />
 
@@ -146,7 +146,7 @@
             android:layout_width="wrap_content"
             android:layout_height="32dp"
             android:background="@drawable/bg_button_cancel_pill"
-            android:backgroundTint="#F3F4F6"
+            android:backgroundTint="@color/app_card_background"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
@@ -156,7 +156,7 @@
                 android:layout_width="14dp"
                 android:layout_height="14dp"
                 android:src="@drawable/ic_alarm"
-                app:tint="#121417"
+                app:tint="@color/text_primary"
                 android:contentDescription="Test Alarm" />
 
             <TextView
@@ -164,7 +164,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:text="Test Alert Now"
-                android:textColor="#121417"
+                android:textColor="@color/text_primary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -184,7 +184,7 @@
             android:contentDescription="Mark Completed"
             android:padding="6dp"
             android:src="@drawable/ic_check_circle"
-            app:tint="#10B981" />
+            app:tint="@color/reminder_completed_text" />
 
         <!-- Edit Button -->
         <ImageButton
@@ -196,7 +196,7 @@
             android:contentDescription="Edit Reminder"
             android:padding="6dp"
             android:src="@drawable/ic_edit"
-            app:tint="#4B5563" />
+            app:tint="@color/text_tertiary" />
 
         <!-- Delete Button -->
         <ImageButton

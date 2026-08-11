@@ -1,13 +1,20 @@
 <resources>
-    <style name="Theme.AppTempeLate" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.AppTempeLate" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
 
-        <item name="android:windowBackground">@color/white</item>
-        <item name="android:statusBarColor">@color/white</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:windowBackground">@color/app_window_background</item>
+        <item name="android:statusBarColor">@color/app_window_background</item>
+        <item name="android:navigationBarColor">@color/app_window_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="colorSurface">@color/app_surface_background</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:colorBackground">@color/app_window_background</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="colorBackgroundFloating">@color/app_surface_background</item>
     </style>
 </resources>

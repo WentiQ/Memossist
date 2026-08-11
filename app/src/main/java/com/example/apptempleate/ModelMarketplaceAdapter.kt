@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class ModelMarketplaceAdapter(
@@ -82,13 +83,13 @@ class ModelMarketplaceAdapter(
         } else if (isDownloadedOnDisk) {
             holder.btnSelectModelCard.text = "SELECT"
             holder.btnSelectModelCard.setBackgroundResource(R.drawable.bg_chip_selected)
-            holder.btnSelectModelCard.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#121417"))
-            holder.btnSelectModelCard.setTextColor(Color.WHITE)
+            holder.btnSelectModelCard.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.app_utility_text))
+            holder.btnSelectModelCard.setTextColor(ContextCompat.getColor(context, R.color.app_window_background))
         } else {
             holder.btnSelectModelCard.text = "DOWNLOAD"
             holder.btnSelectModelCard.setBackgroundResource(R.drawable.bg_chip_unselected)
-            holder.btnSelectModelCard.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#F3F4F6"))
-            holder.btnSelectModelCard.setTextColor(Color.parseColor("#1F2937"))
+            holder.btnSelectModelCard.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.app_icon_button_background))
+            holder.btnSelectModelCard.setTextColor(ContextCompat.getColor(context, R.color.text_primary))
         }
 
         holder.itemView.setOnClickListener {

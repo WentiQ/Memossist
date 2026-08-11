@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -124,10 +125,10 @@ class ModelMarketplaceActivity : AppCompatActivity() {
 
                 if (isSelected) {
                     setBackgroundResource(R.drawable.bg_chip_selected)
-                    setTextColor(Color.WHITE)
+                    setTextColor(ContextCompat.getColor(this@ModelMarketplaceActivity, R.color.app_window_background))
                 } else {
                     setBackgroundResource(R.drawable.bg_chip_unselected)
-                    setTextColor(Color.parseColor("#374151"))
+                    setTextColor(ContextCompat.getColor(this@ModelMarketplaceActivity, R.color.text_secondary))
                 }
 
                 setOnClickListener {

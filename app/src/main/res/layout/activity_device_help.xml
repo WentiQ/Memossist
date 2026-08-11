@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/app_window_background"
     tools:context=".DeviceHelpActivity">
 
     <!-- Header Navigation Back Button -->
@@ -20,7 +20,7 @@
         android:src="@drawable/ic_close"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="#121417" />
+        app:tint="@color/text_primary" />
 
     <!-- Screen Title -->
     <TextView
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:letterSpacing="-0.01"
         android:text="Background &amp; OEM Freeze Help"
-        android:textColor="#121417"
+        android:textColor="@color/text_primary"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/btnBack"
@@ -67,7 +67,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_tag_rounded"
-                    android:backgroundTint="#FEF3C7"
+                    android:backgroundTint="@color/reminder_alert_pending_background"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingHorizontal="8dp"
@@ -77,7 +77,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="⚡ REALME / OEM PROCESS FREEZE ISSUE"
-                        android:textColor="#92400E"
+                        android:textColor="@color/reminder_upcoming_text"
                         android:textSize="11sp"
                         android:textStyle="bold" />
 
@@ -88,7 +88,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="Continuous Background LLM Execution"
-                    android:textColor="#111827"
+                    android:textColor="@color/text_primary"
                     android:textSize="17sp"
                     android:textStyle="bold" />
 
@@ -98,7 +98,7 @@
                     android:layout_marginTop="6dp"
                     android:lineSpacingExtra="3dp"
                     android:text="Realme's Oplus Hans Manager (and similar managers in Oppo, Vivo, Xiaomi) freezes app processes at lock screen (scene: LcdOff) and forcibly drops wake locks. To let local AI models execute smoothly while your screen is locked, configure these 3 settings:"
-                    android:textColor="#4B5563"
+                    android:textColor="@color/text_tertiary"
                     android:textSize="13sp" />
 
             </LinearLayout>
@@ -110,7 +110,7 @@
                 android:layout_marginTop="24dp"
                 android:letterSpacing="0.1"
                 android:text="REQUIRED DEVICE SETTINGS"
-                android:textColor="#6B7280"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -133,10 +133,10 @@
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:background="@drawable/bg_circle_icon_button"
-                        android:backgroundTint="#121417"
+                        android:backgroundTint="@color/text_primary"
                         android:gravity="center"
                         android:text="1"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/app_window_background"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -146,7 +146,7 @@
                         android:layout_marginStart="12dp"
                         android:layout_weight="1"
                         android:text="Allow Background Activity"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -158,7 +158,7 @@
                     android:layout_marginTop="10dp"
                     android:lineSpacingExtra="2dp"
                     android:text="Settings → Apps → App management → Memossist → Battery usage → Select 'Allow background activity' or 'Don't optimize'."
-                    android:textColor="#4B5563"
+                    android:textColor="@color/text_tertiary"
                     android:textSize="13sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -169,7 +169,7 @@
                     android:background="@drawable/bg_button_save_pill"
                     android:text="1. Open App Battery Settings →"
                     android:textAllCaps="false"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/app_window_background"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
@@ -194,10 +194,10 @@
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:background="@drawable/bg_circle_icon_button"
-                        android:backgroundTint="#121417"
+                        android:backgroundTint="@color/text_primary"
                         android:gravity="center"
                         android:text="2"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/app_window_background"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -207,7 +207,7 @@
                         android:layout_marginStart="12dp"
                         android:layout_weight="1"
                         android:text="Disable Sleep Standby Optimization"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -219,7 +219,7 @@
                     android:layout_marginTop="10dp"
                     android:lineSpacingExtra="2dp"
                     android:text="Settings → Battery → More settings → Turn off 'Sleep standby optimization' (name varies by OS version)."
-                    android:textColor="#4B5563"
+                    android:textColor="@color/text_tertiary"
                     android:textSize="13sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -230,7 +230,7 @@
                     android:background="@drawable/bg_button_save_pill"
                     android:text="2. Open Battery &amp; Standby Settings →"
                     android:textAllCaps="false"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/app_window_background"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
@@ -255,10 +255,10 @@
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:background="@drawable/bg_circle_icon_button"
-                        android:backgroundTint="#121417"
+                        android:backgroundTint="@color/text_primary"
                         android:gravity="center"
                         android:text="3"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/app_window_background"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -268,7 +268,7 @@
                         android:layout_marginStart="12dp"
                         android:layout_weight="1"
                         android:text="Enable Auto Launch / Auto Start"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -280,7 +280,7 @@
                     android:layout_marginTop="10dp"
                     android:lineSpacingExtra="2dp"
                     android:text="Settings → Apps → Auto launch → Toggle ON for Memossist to prevent kill on reboot or idle."
-                    android:textColor="#4B5563"
+                    android:textColor="@color/text_tertiary"
                     android:textSize="13sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -291,7 +291,7 @@
                     android:background="@drawable/bg_button_save_pill"
                     android:text="3. Open Auto Launch Settings →"
                     android:textAllCaps="false"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/app_window_background"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
@@ -316,7 +316,7 @@
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:background="@drawable/bg_circle_icon_button"
-                        android:backgroundTint="#2563EB"
+                        android:backgroundTint="@color/accent_blue"
                         android:gravity="center"
                         android:text="4"
                         android:textColor="#FFFFFF"
@@ -329,7 +329,7 @@
                         android:layout_marginStart="12dp"
                         android:layout_weight="1"
                         android:text="Request Battery Exemption"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -341,7 +341,7 @@
                     android:layout_marginTop="10dp"
                     android:lineSpacingExtra="2dp"
                     android:text="Whitelist Memossist directly from standard Android Doze battery optimizations."
-                    android:textColor="#4B5563"
+                    android:textColor="@color/text_tertiary"
                     android:textSize="13sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -352,7 +352,7 @@
                     android:background="@drawable/bg_metallic_button"
                     android:text="4. Request Battery Exemption Whitelist →"
                     android:textAllCaps="false"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/app_window_background"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 

@@ -633,10 +633,20 @@
     <color name="abc_search_url_text_normal">#7fa87f</color>
     <color name="abc_search_url_text_pressed">@android:color/black</color>
     <color name="abc_search_url_text_selected">@android:color/black</color>
+    <color name="accent_blue">#2563EB</color>
     <color name="accent_material_dark">@color/material_deep_teal_200</color>
     <color name="accent_material_light">@color/material_deep_teal_500</color>
     <color name="androidx_core_ripple_material_light">#1f000000</color>
     <color name="androidx_core_secondary_text_default_material_light">#8a000000</color>
+    <color name="app_bottom_gradient_end">#FFFFFF</color>
+    <color name="app_card_background">#F3F4F6</color>
+    <color name="app_card_border">#E5E7EB</color>
+    <color name="app_icon_button_background">#F1F3F5</color>
+    <color name="app_surface_background">#F7F8FA</color>
+    <color name="app_tag_background">#E5E7EB</color>
+    <color name="app_top_gradient_end">#FFFFFF</color>
+    <color name="app_utility_text">#111827</color>
+    <color name="app_window_background">#FFFFFF</color>
     <color name="background_floating_material_dark">@color/material_grey_800</color>
     <color name="background_floating_material_light">@android:color/white</color>
     <color name="background_material_dark">@color/material_grey_850</color>
@@ -701,6 +711,9 @@
     <color name="error_color_material_light">#ff5722</color>
     <color name="foreground_material_dark">@android:color/white</color>
     <color name="foreground_material_light">@android:color/black</color>
+    <color name="graph_edge">#2563EB</color>
+    <color name="graph_edge_label">#1D4ED8</color>
+    <color name="graph_edge_selected">#10B981</color>
     <color name="highlighted_text_material_dark">#6680cbc4</color>
     <color name="highlighted_text_material_light">#66009688</color>
     <color name="icon_tint">#424242</color>
@@ -870,6 +883,12 @@
     <color name="primary_text_default_material_light">#de000000</color>
     <color name="primary_text_disabled_material_dark">#4Dffffff</color>
     <color name="primary_text_disabled_material_light">#39000000</color>
+    <color name="reminder_alert_pending_background">#FEF3C7</color>
+    <color name="reminder_alert_triggered_background">#E5E7EB</color>
+    <color name="reminder_completed_background">#D1FAE5</color>
+    <color name="reminder_completed_text">#065F46</color>
+    <color name="reminder_upcoming_background">#EFF6FF</color>
+    <color name="reminder_upcoming_text">#2563EB</color>
     <color name="ripple_material_dark">#33ffffff</color>
     <color name="ripple_material_light">#1f000000</color>
     <color name="secondary_text_default_material_dark">#b3ffffff</color>
@@ -883,6 +902,7 @@
     <color name="text_hint">#9E9E9E</color>
     <color name="text_primary">#121417</color>
     <color name="text_secondary">#616161</color>
+    <color name="text_tertiary">#4B5563</color>
     <color name="tooltip_background_dark">#e6616161</color>
     <color name="tooltip_background_light">#e6FFFFFF</color>
     <color name="white">#FFFFFF</color>
@@ -5876,18 +5896,20 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    <style name="Theme.AppTempeLate" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.AppTempeLate" parent="Theme.Material3.DayNight.NoActionBar">
         
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
 
-        
-        <item name="android:windowBackground">@color/white</item>
-        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowBackground">@color/app_window_background</item>
+        <item name="android:statusBarColor">@color/app_window_background</item>
+        <item name="android:navigationBarColor">@color/app_window_background</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:navigationBarColor">@color/white</item>
+        <item name="colorSurface">@color/app_surface_background</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorBackgroundFloating">@color/app_surface_background</item>
     </style>
     <style name="Theme.Design" parent="Theme.AppCompat">
   </style>

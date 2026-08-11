@@ -1,13 +1,34 @@
 <resources>
-    <!-- Plain White Theme Color Palette -->
+    <!-- Light theme palette -->
     <color name="bg_white">#FFFFFF</color>
     <color name="text_primary">#121417</color>
     <color name="text_secondary">#616161</color>
+    <color name="text_tertiary">#4B5563</color>
     <color name="text_hint">#9E9E9E</color>
 
     <color name="chat_box_bg">#F5F6F8</color>
     <color name="chat_box_border">#E0E0E0</color>
     <color name="icon_tint">#424242</color>
+
+    <color name="app_window_background">#FFFFFF</color>
+    <color name="app_surface_background">#F7F8FA</color>
+    <color name="app_card_background">#F3F4F6</color>
+    <color name="app_card_border">#E5E7EB</color>
+    <color name="app_icon_button_background">#F1F3F5</color>
+    <color name="app_top_gradient_end">#FFFFFF</color>
+    <color name="app_bottom_gradient_end">#FFFFFF</color>
+    <color name="app_utility_text">#111827</color>
+    <color name="app_tag_background">#E5E7EB</color>
+    <color name="graph_edge">#2563EB</color>
+    <color name="graph_edge_selected">#10B981</color>
+    <color name="graph_edge_label">#1D4ED8</color>
+    <color name="accent_blue">#2563EB</color>
+    <color name="reminder_upcoming_background">#EFF6FF</color>
+    <color name="reminder_upcoming_text">#2563EB</color>
+    <color name="reminder_completed_background">#D1FAE5</color>
+    <color name="reminder_completed_text">#065F46</color>
+    <color name="reminder_alert_pending_background">#FEF3C7</color>
+    <color name="reminder_alert_triggered_background">#E5E7EB</color>
 
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>

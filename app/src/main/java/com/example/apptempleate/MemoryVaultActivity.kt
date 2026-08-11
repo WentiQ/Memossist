@@ -13,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -29,6 +30,7 @@ class MemoryVaultActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ThemeManager.applySavedTheme(this)
 
         // Remove window title & hide action bar
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -194,7 +196,7 @@ class MemoryVaultActivity : AppCompatActivity() {
 
                         val tvConnectedId = TextView(context).apply {
                             text = "$targetId: $targetTitle"
-                            setTextColor(android.graphics.Color.parseColor("#111827"))
+                            setTextColor(ContextCompat.getColor(this@MemoryVaultActivity, R.color.text_primary))
                             textSize = 14f
                             setTypeface(null, android.graphics.Typeface.BOLD)
                             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f)
@@ -215,7 +217,7 @@ class MemoryVaultActivity : AppCompatActivity() {
                     val strengthFormatted = String.format("%.3f", edge.strength)
                     val tvDetails = TextView(context).apply {
                         text = "Co-used Count (t): ${edge.usageCount} • Connection Strength: $strengthFormatted"
-                        setTextColor(android.graphics.Color.parseColor("#4B5563"))
+                        setTextColor(ContextCompat.getColor(this@MemoryVaultActivity, R.color.text_tertiary))
                         textSize = 12f
                         setPadding(0, 6, 0, 0)
                     }
@@ -228,7 +230,7 @@ class MemoryVaultActivity : AppCompatActivity() {
 
                     val tvTerms = TextView(context).apply {
                         text = sharedTermsText
-                        setTextColor(android.graphics.Color.parseColor("#6B7280"))
+                        setTextColor(ContextCompat.getColor(this@MemoryVaultActivity, R.color.text_secondary))
                         textSize = 11f
                         setPadding(0, 4, 0, 0)
                     }

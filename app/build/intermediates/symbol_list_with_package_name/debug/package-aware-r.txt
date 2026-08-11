@@ -1268,10 +1268,20 @@ color abc_tint_edittext
 color abc_tint_seek_thumb
 color abc_tint_spinner
 color abc_tint_switch_track
+color accent_blue
 color accent_material_dark
 color accent_material_light
 color androidx_core_ripple_material_light
 color androidx_core_secondary_text_default_material_light
+color app_bottom_gradient_end
+color app_card_background
+color app_card_border
+color app_icon_button_background
+color app_surface_background
+color app_tag_background
+color app_top_gradient_end
+color app_utility_text
+color app_window_background
 color background_floating_material_dark
 color background_floating_material_light
 color background_material_dark
@@ -1339,6 +1349,9 @@ color error_color_material_dark
 color error_color_material_light
 color foreground_material_dark
 color foreground_material_light
+color graph_edge
+color graph_edge_label
+color graph_edge_selected
 color highlighted_text_material_dark
 color highlighted_text_material_light
 color icon_tint
@@ -1838,6 +1851,12 @@ color primary_text_default_material_dark
 color primary_text_default_material_light
 color primary_text_disabled_material_dark
 color primary_text_disabled_material_light
+color reminder_alert_pending_background
+color reminder_alert_triggered_background
+color reminder_completed_background
+color reminder_completed_text
+color reminder_upcoming_background
+color reminder_upcoming_text
 color ripple_material_dark
 color ripple_material_light
 color secondary_text_default_material_dark
@@ -1853,6 +1872,7 @@ color switch_thumb_normal_material_light
 color text_hint
 color text_primary
 color text_secondary
+color text_tertiary
 color tooltip_background_dark
 color tooltip_background_light
 color white
@@ -2880,6 +2900,7 @@ id btnStep2Next
 id btnStep3Next
 id btnTestAlarm
 id btnTestPhoneNotification
+id btnThemePreference
 id btnWordsDone
 id btnZoomIn
 id btnZoomOut
@@ -3450,6 +3471,7 @@ id tvStep3Num
 id tvStep3Text
 id tvStep4Num
 id tvStep4Text
+id tvThemeValue
 id tvThinkingStep
 id tvTimeStatus
 id tvTitle

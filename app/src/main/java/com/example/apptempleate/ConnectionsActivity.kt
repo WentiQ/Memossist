@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 
 class ConnectionsActivity : AppCompatActivity() {
 
@@ -21,6 +22,7 @@ class ConnectionsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ThemeManager.applySavedTheme(this)
 
         // Remove window title & hide action bar
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -65,12 +67,11 @@ class ConnectionsActivity : AppCompatActivity() {
 
     private fun render2DGraphPlane() {
         val memories = MemoryVaultRepository.loadAllMemories(this)
-        val allEdges = ExperienceDagRepository.loadAllEdges(this)
-        val nonZeroEdges = allEdges.filter { it.strength > 0.0 }
+        val allEdges = ExperienceDagRepository.ensureGraphEdges(this, memories)
 
-        tvConnectionsCount.text = "${nonZeroEdges.size} Active Non-Zero Connections in 2D Plane"
+        tvConnectionsCount.text = "${allEdges.size} Connections in 2D Plane"
 
-        dagGraph2DView.setData(memories, nonZeroEdges)
+        dagGraph2DView.setData(memories, allEdges)
     }
 
     private fun showNodeDetailsDialog(memory: MemoryItem, connectedEdges: List<DagEdge>) {
@@ -125,7 +126,7 @@ class ConnectionsActivity : AppCompatActivity() {
 
                         val tvConnectedId = TextView(context).apply {
                             text = "$targetId: $targetTitle"
-                            setTextColor(android.graphics.Color.parseColor("#111827"))
+                            setTextColor(ContextCompat.getColor(context, R.color.text_primary))
                             textSize = 14f
                             setTypeface(null, android.graphics.Typeface.BOLD)
                             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f)
@@ -134,7 +135,7 @@ class ConnectionsActivity : AppCompatActivity() {
                         val strengthFormatted = String.format("%.3f", edge.strength)
                         val tvBadge = TextView(context).apply {
                             text = "S_ij = $strengthFormatted"
-                            setTextColor(android.graphics.Color.parseColor("#2563EB"))
+                            setTextColor(ContextCompat.getColor(context, R.color.accent_blue))
                             textSize = 13f
                             setTypeface(null, android.graphics.Typeface.BOLD)
                         }
@@ -146,7 +147,7 @@ class ConnectionsActivity : AppCompatActivity() {
                     val strengthFormatted = String.format("%.3f", edge.strength)
                     val tvDetails = TextView(context).apply {
                         text = "Co-used Count (t): ${edge.usageCount} • Strength Weight: $strengthFormatted"
-                        setTextColor(android.graphics.Color.parseColor("#4B5563"))
+                        setTextColor(ContextCompat.getColor(context, R.color.text_tertiary))
                         textSize = 12f
                         setPadding(0, 6, 0, 0)
                     }
@@ -159,7 +160,7 @@ class ConnectionsActivity : AppCompatActivity() {
 
                     val tvTerms = TextView(context).apply {
                         text = sharedTermsText
-                        setTextColor(android.graphics.Color.parseColor("#6B7280"))
+                        setTextColor(ContextCompat.getColor(context, R.color.text_secondary))
                         textSize = 11f
                         setPadding(0, 4, 0, 0)
                     }

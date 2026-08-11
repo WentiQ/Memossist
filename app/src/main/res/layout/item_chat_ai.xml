@@ -17,7 +17,7 @@
         android:background="@drawable/bg_profile_avatar_rounded"
         android:gravity="center"
         android:text="M"
-        android:textColor="#121417"
+        android:textColor="@color/text_primary"
         android:textSize="14sp"
         android:textStyle="bold" />
 
@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:lineSpacingExtra="3dp"
             android:text="Memossist response"
-            android:textColor="#121417"
+            android:textColor="@color/text_primary"
             android:textSize="15sp" />
 
         <!-- Attached Media & Files from Used Experiences -->

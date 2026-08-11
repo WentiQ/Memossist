@@ -1,11 +1,14 @@
 package com.example.apptempleate
 
 import android.content.Context
+import android.content.Intent
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.view.View
@@ -22,6 +25,10 @@ import java.util.UUID
 
 class AlarmAlertActivity : AppCompatActivity() {
 
+    companion object {
+        private const val AUTO_SNOOZE_DELAY_MILLIS = 30_000L
+    }
+
     private lateinit var tvAlarmTitle: TextView
     private lateinit var tvAlarmMessage: TextView
     private lateinit var tvAlarmEventTime: TextView
@@ -32,9 +39,13 @@ class AlarmAlertActivity : AppCompatActivity() {
     private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
     private var reminderId: String? = null
+    private var hasUserActed = false
+    private val autoSnoozeHandler = Handler(Looper.getMainLooper())
+    private val autoSnoozeRunnable = Runnable { handleUnansweredAlert() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ThemeManager.applySavedTheme(this)
 
         // Show over lockscreen and turn screen on
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -111,8 +122,10 @@ class AlarmAlertActivity : AppCompatActivity() {
         }
 
         startAlarmSoundAndVibration()
+        autoSnoozeHandler.postDelayed(autoSnoozeRunnable, AUTO_SNOOZE_DELAY_MILLIS)
 
         btnAlarmGotIt.setOnClickListener {
+            registerUserInteraction()
             stopAlarmSoundAndVibration()
             reminderId?.let { id ->
                 ReminderRepository.toggleReminderCompleted(this, id)
@@ -122,6 +135,7 @@ class AlarmAlertActivity : AppCompatActivity() {
         }
 
         btnAlarmSnooze.setOnClickListener {
+            registerUserInteraction()
             stopAlarmSoundAndVibration()
             snoozeReminder(10)
             Toast.makeText(this, "Snoozed for 10 minutes", Toast.LENGTH_SHORT).show()
@@ -129,6 +143,7 @@ class AlarmAlertActivity : AppCompatActivity() {
         }
 
         btnAlarmDismiss.setOnClickListener {
+            registerUserInteraction()
             stopAlarmSoundAndVibration()
             finish()
         }
@@ -204,7 +219,45 @@ class AlarmAlertActivity : AppCompatActivity() {
         ReminderRepository.addOrUpdateReminder(this, item)
     }
 
+    private fun registerUserInteraction() {
+        hasUserActed = true
+        autoSnoozeHandler.removeCallbacks(autoSnoozeRunnable)
+        reminderId?.let { ReminderRepository.resetUnansweredFullscreenAlertCount(this, it) }
+    }
+
+    private fun handleUnansweredAlert() {
+        if (hasUserActed || isFinishing) return
+
+        stopAlarmSoundAndVibration()
+        val rId = reminderId
+        if (rId != null && !ReminderRepository.handleUnansweredFullscreenAlert(this, rId)) {
+            sendUnansweredReminderNotification(rId)
+        }
+        finish()
+    }
+
+    private fun sendUnansweredReminderNotification(rId: String) {
+        sendBroadcast(Intent(this, ReminderReceiver::class.java).apply {
+            action = "com.example.apptempleate.ACTION_TRIGGER_REMINDER"
+            putExtra("EXTRA_REMINDER_ID", rId)
+            putExtra("EXTRA_TITLE", "Reminder still needs attention")
+            putExtra(
+                "EXTRA_MESSAGE",
+                "${tvAlarmTitle.text}: full-screen alerts were paused after 3 unanswered reminders."
+            )
+            putExtra("EXTRA_DELIVERY_STYLE", "NOTIFICATION")
+            putExtra("EXTRA_IMPORTANCE", "MEDIUM")
+            putExtra("EXTRA_EVENT_TIME", intent.getLongExtra("EXTRA_EVENT_TIME", System.currentTimeMillis()))
+        })
+    }
+
+    override fun onBackPressed() {
+        registerUserInteraction()
+        super.onBackPressed()
+    }
+
     override fun onDestroy() {
+        autoSnoozeHandler.removeCallbacks(autoSnoozeRunnable)
         super.onDestroy()
         stopAlarmSoundAndVibration()
     }

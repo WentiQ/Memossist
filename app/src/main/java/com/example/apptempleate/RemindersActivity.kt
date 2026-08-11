@@ -17,6 +17,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -45,6 +46,7 @@ class RemindersActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ThemeManager.applySavedTheme(this)
 
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         supportActionBar?.hide()
@@ -212,13 +214,13 @@ class RemindersActivity : AppCompatActivity() {
         val unselectedBg = R.drawable.bg_chip_unselected
 
         chipAll.setBackgroundResource(if (currentFilter == "ALL") selectedBg else unselectedBg)
-        chipAll.setTextColor(if (currentFilter == "ALL") Color.WHITE else Color.parseColor("#4B5563"))
+        chipAll.setTextColor(if (currentFilter == "ALL") ContextCompat.getColor(this, R.color.app_window_background) else ContextCompat.getColor(this, R.color.text_tertiary))
 
         chipUpcoming.setBackgroundResource(if (currentFilter == "UPCOMING") selectedBg else unselectedBg)
-        chipUpcoming.setTextColor(if (currentFilter == "UPCOMING") Color.WHITE else Color.parseColor("#4B5563"))
+        chipUpcoming.setTextColor(if (currentFilter == "UPCOMING") ContextCompat.getColor(this, R.color.app_window_background) else ContextCompat.getColor(this, R.color.text_tertiary))
 
         chipCompleted.setBackgroundResource(if (currentFilter == "COMPLETED") selectedBg else unselectedBg)
-        chipCompleted.setTextColor(if (currentFilter == "COMPLETED") Color.WHITE else Color.parseColor("#4B5563"))
+        chipCompleted.setTextColor(if (currentFilter == "COMPLETED") ContextCompat.getColor(this, R.color.app_window_background) else ContextCompat.getColor(this, R.color.text_tertiary))
     }
 
     private fun showAddOrEditReminderDialog(existingItem: ReminderItem?) {

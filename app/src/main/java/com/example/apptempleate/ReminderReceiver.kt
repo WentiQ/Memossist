@@ -25,6 +25,10 @@ class ReminderReceiver : BroadcastReceiver() {
         val deliveryStyle = intent.getStringExtra("EXTRA_DELIVERY_STYLE") ?: "NOTIFICATION"
         val importance = intent.getStringExtra("EXTRA_IMPORTANCE") ?: "MEDIUM"
         val eventTime = intent.getLongExtra("EXTRA_EVENT_TIME", System.currentTimeMillis())
+        val reminder = ReminderRepository.loadAllReminders(context).find { it.id == reminderId }
+        val shouldUseFullscreenAlert =
+            (deliveryStyle == "FULLSCREEN_ALARM" || deliveryStyle == "CALL_SIMULATION" || importance == "HIGH") &&
+                (reminder?.consecutiveUnansweredFullscreenAlerts ?: 0) < 3
 
         if (triggerId.isNotBlank()) {
             ReminderRepository.markTriggerAsFired(context, triggerId)
@@ -90,7 +94,7 @@ class ReminderReceiver : BroadcastReceiver() {
             .setAutoCancel(true)
             .setContentIntent(pendingOpenIntent)
 
-        if (deliveryStyle == "FULLSCREEN_ALARM" || deliveryStyle == "CALL_SIMULATION" || importance == "HIGH") {
+        if (shouldUseFullscreenAlert) {
             builder.setFullScreenIntent(fullScreenPendingIntent, true)
             // Also launch full screen activity directly for maximum visibility
             try {

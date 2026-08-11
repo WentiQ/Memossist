@@ -13,7 +13,7 @@
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="14dp"
-        android:background="#D1D5DB" />
+        android:background="@color/app_card_border" />
 
     <!-- Title Row -->
     <LinearLayout
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Choose Active AI Model"
-            android:textColor="#111827"
+            android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -39,7 +39,7 @@
             android:contentDescription="Close"
             android:padding="6dp"
             android:src="@drawable/ic_close"
-            app:tint="#4B5563" />
+            app:tint="@color/icon_tint" />
 
     </LinearLayout>
 
@@ -48,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="Select the intelligence model driving your local chat responses."
-        android:textColor="#6B7280"
+        android:textColor="@color/text_secondary"
         android:textSize="13sp" />
 
     <!-- Quick List Container -->
@@ -63,7 +63,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginVertical="16dp"
-        android:background="#E5E7EB" />
+        android:background="@color/app_card_border" />
 
     <!-- Open Marketplace Action Row -->
     <LinearLayout
@@ -87,7 +87,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="Browse Model Marketplace"
-            android:textColor="#121417"
+            android:textColor="@color/text_primary"
             android:textSize="14sp"
             android:textStyle="bold" />
 

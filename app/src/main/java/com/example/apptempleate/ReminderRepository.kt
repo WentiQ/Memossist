@@ -35,6 +35,7 @@ object ReminderRepository {
                 val category = obj.optString("category", "PERSONAL")
                 val isActive = obj.optBoolean("isActive", true)
                 val isCompleted = obj.optBoolean("isCompleted", false)
+                val consecutiveUnansweredFullscreenAlerts = obj.optInt("consecutiveUnansweredFullscreenAlerts", 0)
                 val createdTimestamp = obj.optLong("createdTimestamp", System.currentTimeMillis())
 
                 val triggersList = mutableListOf<ReminderTrigger>()
@@ -74,6 +75,7 @@ object ReminderRepository {
                         category = category,
                         isActive = isActive,
                         isCompleted = isCompleted,
+                        consecutiveUnansweredFullscreenAlerts = consecutiveUnansweredFullscreenAlerts,
                         createdTimestamp = createdTimestamp,
                         triggers = triggersList
                     )
@@ -101,6 +103,7 @@ object ReminderRepository {
                     put("category", item.category)
                     put("isActive", item.isActive)
                     put("isCompleted", item.isCompleted)
+                    put("consecutiveUnansweredFullscreenAlerts", item.consecutiveUnansweredFullscreenAlerts)
                     put("createdTimestamp", item.createdTimestamp)
 
                     val tArray = JSONArray()
@@ -205,6 +208,46 @@ object ReminderRepository {
                 break
             }
         }
+    }
+
+    /**
+     * Records a direct response to a full-screen reminder. Manual snoozes are unlimited
+     * and, like Dismiss and Got It, break the consecutive unanswered-alert streak.
+     */
+    fun resetUnansweredFullscreenAlertCount(context: Context, reminderId: String) {
+        val list = loadAllReminders(context)
+        val item = list.find { it.id == reminderId } ?: return
+        if (item.consecutiveUnansweredFullscreenAlerts == 0) return
+        item.consecutiveUnansweredFullscreenAlerts = 0
+        saveAllReminders(context, list)
+    }
+
+    /**
+     * Returns true when a five-minute automatic snooze was created. On the third
+     * consecutive unanswered full-screen alert, it returns false so the caller can
+     * fall back to a regular notification instead of another intrusive alert.
+     */
+    fun handleUnansweredFullscreenAlert(context: Context, reminderId: String): Boolean {
+        val list = loadAllReminders(context)
+        val item = list.find { it.id == reminderId } ?: return false
+
+        item.consecutiveUnansweredFullscreenAlerts += 1
+        if (item.consecutiveUnansweredFullscreenAlerts >= 3) {
+            saveAllReminders(context, list)
+            return false
+        }
+
+        val snoozeTrigger = ReminderTrigger(
+            triggerId = "TRG_AUTO_SNZ_${UUID.randomUUID().toString().take(6)}",
+            reminderId = reminderId,
+            triggerTimeMillis = System.currentTimeMillis() + 5 * 60_000L,
+            type = "CUSTOM",
+            deliveryStyle = "FULLSCREEN_ALARM",
+            humanoidMessage = "⏰ Reminder: '${item.title}' still needs your attention."
+        )
+        item.triggers.add(snoozeTrigger)
+        addOrUpdateReminder(context, item)
+        return true
     }
 
     fun scheduleSystemAlarmsForReminder(context: Context, reminder: ReminderItem) {

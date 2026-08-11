@@ -16,7 +16,7 @@
         android:layout_width="18dp"
         android:layout_height="18dp"
         android:src="@drawable/ic_chat_history"
-        app:tint="#616161" />
+        app:tint="@color/icon_tint" />
 
     <TextView
         android:id="@+id/tvHistoryTitle"
@@ -27,7 +27,7 @@
         android:ellipsize="end"
         android:singleLine="true"
         android:text="Chat Title"
-        android:textColor="#121417"
+        android:textColor="@color/text_primary"
         android:textSize="14sp" />
 
 </LinearLayout>

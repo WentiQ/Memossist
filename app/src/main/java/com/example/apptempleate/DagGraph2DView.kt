@@ -54,24 +54,25 @@ class DagGraph2DView @JvmOverloads constructor(
 
     // Paints
     private val gridDotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#D1D5DB")
+        color = context.getColor(R.color.app_card_border)
         style = Paint.Style.FILL
     }
 
     private val edgePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#2563EB")
-        strokeWidth = 4f
+        color = context.getColor(R.color.graph_edge)
+        strokeWidth = 5f
         style = Paint.Style.STROKE
     }
 
     private val edgeTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#1D4ED8")
+        color = context.getColor(R.color.graph_edge_label)
         textSize = 24f
         typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
     }
 
     private val nodeBodyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#1F2937")
+        // Keep nodes visibly distinct from the black graph canvas in dark mode.
+        color = context.getColor(R.color.app_card_border)
         style = Paint.Style.FILL
     }
 
@@ -87,13 +88,13 @@ class DagGraph2DView @JvmOverloads constructor(
     }
 
     private val nodeTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#111827")
+        color = context.getColor(R.color.text_primary)
         textSize = 26f
         typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
     }
 
     private val nodeSubTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#4B5563")
+        color = context.getColor(R.color.text_secondary)
         textSize = 22f
     }
 
@@ -170,14 +171,19 @@ class DagGraph2DView @JvmOverloads constructor(
     })
 
     init {
-        setBackgroundColor(Color.parseColor("#F9FAFB"))
+        setBackgroundColor(context.getColor(R.color.app_window_background))
     }
 
     fun setData(memories: List<MemoryItem>, dagEdges: List<DagEdge>) {
         nodes.clear()
         edges.clear()
 
-        edges.addAll(dagEdges.filter { it.strength > 0.0 })
+        // Draw every stored relationship, including zero-strength edges. A zero
+        // score is still a real graph relationship and must not disappear.
+        edges.addAll(dagEdges.filter {
+            it.experienceId1.isNotBlank() && it.experienceId2.isNotBlank() &&
+                it.strength.isFinite()
+        })
 
         if (memories.isEmpty()) {
             invalidate()
@@ -206,7 +212,9 @@ class DagGraph2DView @JvmOverloads constructor(
             }
         }
 
-        resetViewAnimated()
+        // The view can still be unmeasured when data arrives from an Activity's
+        // onCreate. Post the reset so graph coordinates use its real size.
+        post { resetViewAnimated() }
     }
 
     fun resetView() {
@@ -421,22 +429,24 @@ class DagGraph2DView @JvmOverloads constructor(
     }
 
     private fun drawEdges(canvas: Canvas) {
-        val nodeMap = nodes.associateBy { it.memory.id }
+        val nodeMap = nodes.associateBy { canonicalId(it.memory.id) }
 
         for (edge in edges) {
-            val n1 = nodeMap[edge.experienceId1] ?: nodes.find { it.memory.id.equals(edge.experienceId1, ignoreCase = true) }
-            val n2 = nodeMap[edge.experienceId2] ?: nodes.find { it.memory.id.equals(edge.experienceId2, ignoreCase = true) }
+            val n1 = nodeMap[canonicalId(edge.experienceId1)]
+            val n2 = nodeMap[canonicalId(edge.experienceId2)]
 
             if (n1 != null && n2 != null) {
                 val isConnectedToSelected = selectedNode != null &&
                         (selectedNode!!.memory.id.equals(n1.memory.id, ignoreCase = true) ||
                          selectedNode!!.memory.id.equals(n2.memory.id, ignoreCase = true))
 
-                val alpha = if (isConnectedToSelected) 255 else (120 + (edge.strength * 135).coerceAtMost(135.0)).toInt()
-                val thickness = if (isConnectedToSelected) 7f else (3f + (edge.strength * 6.0).toFloat())
+                val alpha = 255
+                val thickness = if (isConnectedToSelected) 10f else (6f + (edge.strength * 5.0).toFloat())
 
                 edgePaint.strokeWidth = thickness
-                edgePaint.color = if (isConnectedToSelected) Color.parseColor("#10B981") else Color.parseColor("#2563EB")
+                edgePaint.color = context.getColor(
+                    if (isConnectedToSelected) R.color.graph_edge_selected else R.color.graph_edge
+                )
                 edgePaint.alpha = alpha
 
                 canvas.drawLine(n1.x, n1.y, n2.x, n2.y, edgePaint)
@@ -444,11 +454,14 @@ class DagGraph2DView @JvmOverloads constructor(
                 val midX = (n1.x + n2.x) / 2f
                 val midY = (n1.y + n2.y) / 2f
                 val strengthText = String.format("S_ij=%.3f", edge.strength)
-                edgeTextPaint.color = if (isConnectedToSelected) Color.parseColor("#047857") else Color.parseColor("#1D4ED8")
+                edgeTextPaint.color = context.getColor(R.color.graph_edge_label)
+                edgeTextPaint.alpha = 255
                 canvas.drawText(strengthText, midX + 8f, midY - 8f, edgeTextPaint)
             }
         }
     }
+
+    private fun canonicalId(id: String): String = id.trim().lowercase()
 
     private fun drawNodes(canvas: Canvas) {
         for (node in nodes) {

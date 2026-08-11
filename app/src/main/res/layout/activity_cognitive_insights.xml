@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC"
+    android:background="@color/app_window_background"
     tools:context=".CognitiveInsightsActivity">
 
     <!-- Top Navigation Header -->
@@ -20,14 +20,14 @@
         android:src="@drawable/ic_close"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="#121417" />
+        app:tint="@color/text_primary" />
 
     <TextView
         android:id="@+id/tvInsightsTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Cognitive Insights"
-        android:textColor="#121417"
+        android:textColor="@color/text_primary"
         android:textSize="20sp"
         android:textStyle="bold"
         android:letterSpacing="-0.01"
@@ -78,7 +78,7 @@
                     android:layout_weight="1"
                     android:layout_marginStart="12dp"
                     android:text="Analyzing your Memory Vault neural metrics..."
-                    android:textColor="#1F2937"
+                    android:textColor="@color/app_utility_text"
                     android:textSize="13sp"
                     android:lineSpacingExtra="3dp"
                     android:textStyle="bold" />
@@ -114,7 +114,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="🧠 MEMORIES"
-                            android:textColor="#6B7280"
+                            android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.05" />
@@ -126,7 +126,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
                         android:text="0"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="24sp"
                         android:textStyle="bold" />
 
@@ -135,7 +135,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Vault items stored"
-                        android:textColor="#9CA3AF"
+                        android:textColor="@color/text_hint"
                         android:textSize="11sp" />
                 </LinearLayout>
 
@@ -159,7 +159,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="⚡ DAG EDGES"
-                            android:textColor="#6B7280"
+                            android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.05" />
@@ -171,7 +171,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
                         android:text="0"
-                        android:textColor="#111827"
+                        android:textColor="@color/text_primary"
                         android:textSize="24sp"
                         android:textStyle="bold" />
 
@@ -180,7 +180,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Synaptic connections"
-                        android:textColor="#9CA3AF"
+                        android:textColor="@color/text_hint"
                         android:textSize="11sp" />
                 </LinearLayout>
 
@@ -213,7 +213,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="🌐 DAG CLUSTERS"
-                            android:textColor="#6B7280"
+                            android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.05" />
@@ -234,7 +234,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Connected subgraphs"
-                        android:textColor="#9CA3AF"
+                        android:textColor="@color/text_hint"
                         android:textSize="11sp" />
                 </LinearLayout>
 
@@ -258,7 +258,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="🔍 ORPHANS"
-                            android:textColor="#6B7280"
+                            android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.05" />
@@ -279,7 +279,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="No connections at all"
-                        android:textColor="#9CA3AF"
+                        android:textColor="@color/text_hint"
                         android:textSize="11sp" />
                 </LinearLayout>
 
@@ -312,7 +312,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="⏱️ EST. NEXT RESPONSE"
-                            android:textColor="#6B7280"
+                            android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.05" />
@@ -333,7 +333,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Est. time for next message"
-                        android:textColor="#9CA3AF"
+                        android:textColor="@color/text_hint"
                         android:textSize="11sp" />
                 </LinearLayout>
 
@@ -357,7 +357,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="💾 VAULT DATA"
-                            android:textColor="#6B7280"
+                            android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.05" />
@@ -378,7 +378,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Memories &amp; media size"
-                        android:textColor="#9CA3AF"
+                        android:textColor="@color/text_hint"
                         android:textSize="11sp" />
                 </LinearLayout>
 
@@ -403,7 +403,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🕸️ DAG TOPOLOGY ANALYSIS"
-                        android:textColor="#374151"
+                        android:textColor="@color/text_tertiary"
                         android:textSize="12sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.05" />
@@ -435,7 +435,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Connected Knowledge Ratio"
-                        android:textColor="#1F2937"
+                        android:textColor="@color/app_utility_text"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -444,7 +444,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0% Connected (0 of 0)"
-                        android:textColor="#6B7280"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -457,7 +457,8 @@
                     android:layout_marginTop="6dp"
                     android:max="100"
                     android:progress="0"
-                    android:progressTint="#2563EB" />
+                    android:progressBackgroundTint="@color/app_card_border"
+                    android:progressTint="@color/text_primary" />
 
                 <!-- Cluster Summary Info -->
                 <TextView
@@ -466,7 +467,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
                     android:text="0 clusters formed, 0 orphan memories."
-                    android:textColor="#4B5563"
+                    android:textColor="@color/text_tertiary"
                     android:textSize="12sp"
                     android:lineSpacingExtra="2dp" />
 

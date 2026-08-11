@@ -37,6 +37,8 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var btnEditName: ImageButton
     private lateinit var btnMorningTime: LinearLayout
     private lateinit var tvMorningTimeValue: TextView
+    private lateinit var btnThemePreference: LinearLayout
+    private lateinit var tvThemeValue: TextView
     private lateinit var btnManageReminders: LinearLayout
     private lateinit var btnExportAllData: LinearLayout
     private lateinit var btnImportAllData: LinearLayout
@@ -140,6 +142,7 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ThemeManager.applySavedTheme(this)
 
         // Remove window title & hide action bar
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -165,6 +168,8 @@ class SettingsActivity : AppCompatActivity() {
         btnEditName = findViewById(R.id.btnEditName)
         btnMorningTime = findViewById(R.id.btnMorningTime)
         tvMorningTimeValue = findViewById(R.id.tvMorningTimeValue)
+        btnThemePreference = findViewById(R.id.btnThemePreference)
+        tvThemeValue = findViewById(R.id.tvThemeValue)
         btnManageReminders = findViewById(R.id.btnManageReminders)
 
         btnExportAllData = findViewById(R.id.btnExportAllData)
@@ -207,6 +212,7 @@ class SettingsActivity : AppCompatActivity() {
         // Load saved user profile data
         loadUserProfileData()
         updateMorningTimeDisplay()
+        updateThemeDisplay()
 
         btnBack.setOnClickListener {
             finishWithSmoothAnimation()
@@ -214,6 +220,10 @@ class SettingsActivity : AppCompatActivity() {
 
         btnMorningTime.setOnClickListener {
             showMorningTimePickerDialog()
+        }
+
+        btnThemePreference.setOnClickListener {
+            showThemePickerDialog()
         }
 
         btnManageReminders.setOnClickListener {
@@ -402,6 +412,38 @@ class SettingsActivity : AppCompatActivity() {
             else -> hour
         }
         tvMorningTimeValue.text = "$displayHour:00 $ampm (${if (hour == 7) "Default" else "Custom"})"
+    }
+
+    private fun updateThemeDisplay() {
+        tvThemeValue.text = ThemeManager.displayName(ThemeManager.getSavedTheme(this))
+    }
+
+    private fun showThemePickerDialog() {
+        val currentTheme = ThemeManager.getSavedTheme(this)
+        val options = arrayOf(
+            ThemeManager.displayName(ThemeManager.THEME_LIGHT),
+            ThemeManager.displayName(ThemeManager.THEME_DARK),
+            ThemeManager.displayName(ThemeManager.THEME_SYSTEM)
+        )
+        val themeValues = arrayOf(
+            ThemeManager.THEME_LIGHT,
+            ThemeManager.THEME_DARK,
+            ThemeManager.THEME_SYSTEM
+        )
+        val selectedIndex = themeValues.indexOf(currentTheme).coerceAtLeast(0)
+
+        AlertDialog.Builder(this)
+            .setTitle("Choose app theme")
+            .setSingleChoiceItems(options, selectedIndex) { dialog, which ->
+                val chosenTheme = themeValues[which]
+                ThemeManager.setTheme(this, chosenTheme)
+                updateThemeDisplay()
+                Toast.makeText(this, "Theme set to ${ThemeManager.displayName(chosenTheme)}", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+                recreate()
+            }
+            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+            .show()
     }
 
     private fun showMorningTimePickerDialog() {

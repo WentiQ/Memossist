@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="strategy"
-            android:textColor="#121417"
+            android:textColor="@color/text_primary"
             android:textSize="15sp"
             android:textStyle="bold" />
 
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="• 5 synonyms"
-            android:textColor="#757575"
+            android:textColor="@color/text_secondary"
             android:textSize="12sp" />
 
     </LinearLayout>
@@ -41,7 +41,7 @@
         android:layout_marginTop="4dp"
         android:lineSpacingExtra="2dp"
         android:text="plan, masterplan, approach, scheme, tactics"
-        android:textColor="#424242"
+        android:textColor="@color/text_tertiary"
         android:textSize="14sp" />
 
     <!-- Thin Minimal Divider -->
@@ -49,6 +49,6 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="10dp"
-        android:background="#F3F4F6" />
+        android:background="@color/app_card_background" />
 
 </LinearLayout>

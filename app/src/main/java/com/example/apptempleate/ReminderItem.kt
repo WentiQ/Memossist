@@ -40,6 +40,7 @@ data class ReminderItem(
     var category: String = "PERSONAL", // CLASS, MEETING, DOCTOR, TASK, PERSONAL
     var isActive: Boolean = true,
     var isCompleted: Boolean = false,
+    var consecutiveUnansweredFullscreenAlerts: Int = 0,
     val createdTimestamp: Long = System.currentTimeMillis(),
     val triggers: MutableList<ReminderTrigger> = mutableListOf()
 ) {

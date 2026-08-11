@@ -1,6 +1,7 @@
 package com.example.apptempleate
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class ModelPickerBottomSheet(
@@ -22,6 +24,11 @@ class ModelPickerBottomSheet(
         setStyle(STYLE_NORMAL, R.style.TransparentBottomSheetDialog)
     }
 
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.background = ColorDrawable(Color.TRANSPARENT)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -30,46 +37,40 @@ class ModelPickerBottomSheet(
         return inflater.inflate(R.layout.dialog_chat_model_picker, container, false)
     }
 
-    override fun onStart() {
-        super.onStart()
-        // Ensure transparent container background so rounded top corners render smoothly
-        dialog?.window?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.background = ColorDrawable(Color.TRANSPARENT)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val context = requireContext()
+
         val btnClosePicker: ImageButton = view.findViewById(R.id.btnClosePicker)
         val llPickerModelsContainer: LinearLayout = view.findViewById(R.id.llPickerModelsContainer)
-        val btnOpenMarketplaceFromPicker: View = view.findViewById(R.id.btnOpenMarketplaceFromPicker)
+        val btnOpenMarketplaceFromPicker: LinearLayout = view.findViewById(R.id.btnOpenMarketplaceFromPicker)
+
+        btnClosePicker.setOnClickListener {
+            dismiss()
+        }
 
         val currentModel = NoeonAiEngine.getSelectedModel(context)
-
-        btnClosePicker.setOnClickListener { dismiss() }
-
-        // Filter: ONLY models that are ACTUALLY downloaded on device storage
-        val downloadedModels = ModelCatalog.models.filter { model ->
-            NoeonAiEngine.isModelDownloaded(context, model.id)
-        }
+        val downloadedModels = ModelCatalog.models.filter { model -> NoeonAiEngine.isModelDownloaded(context, model.id) }
 
         llPickerModelsContainer.removeAllViews()
 
         if (downloadedModels.isEmpty()) {
-            // Empty state when no offline models are downloaded on disk yet
+            // Show empty state card if no offline GGUF models exist
             val emptyCard = LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL
-                setPadding(24, 32, 24, 32)
+                gravity = android.view.Gravity.CENTER
                 setBackgroundResource(R.drawable.bg_metallic_card)
+                setPadding(24, 24, 24, 24)
 
                 val tvIcon = TextView(context).apply {
-                    text = "📥"
-                    textSize = 28f
+                    text = "📦"
+                    textSize = 32f
                     gravity = android.view.Gravity.CENTER
                 }
                 val tvTitle = TextView(context).apply {
                     text = "No Local Models Downloaded Yet"
-                    setTextColor(Color.parseColor("#111827"))
+                    setTextColor(ContextCompat.getColor(context, R.color.text_primary))
                     textSize = 15f
                     setTypeface(null, android.graphics.Typeface.BOLD)
                     gravity = android.view.Gravity.CENTER
@@ -77,7 +78,7 @@ class ModelPickerBottomSheet(
                 }
                 val tvDesc = TextView(context).apply {
                     text = "Download local GGUF models from the marketplace to run ultra-fast offline AI inference."
-                    setTextColor(Color.parseColor("#6B7280"))
+                    setTextColor(ContextCompat.getColor(context, R.color.text_secondary))
                     textSize = 13f
                     gravity = android.view.Gravity.CENTER
                 }
@@ -88,7 +89,7 @@ class ModelPickerBottomSheet(
                     setTypeface(null, android.graphics.Typeface.BOLD)
                     gravity = android.view.Gravity.CENTER
                     setBackgroundResource(R.drawable.bg_chip_selected)
-                    backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#121417"))
+                    backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.app_utility_text))
                     setPadding(24, 16, 24, 16)
                     val lp = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -149,12 +150,12 @@ class ModelPickerBottomSheet(
                 if (isSelected) {
                     btnAction.text = "🟢 ACTIVE"
                     btnAction.setBackgroundResource(R.drawable.bg_chip_selected)
-                    btnAction.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#10B981"))
+                    btnAction.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#10B981"))
                     btnAction.setTextColor(Color.WHITE)
                 } else {
                     btnAction.text = "SELECT"
                     btnAction.setBackgroundResource(R.drawable.bg_chip_selected)
-                    btnAction.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#121417"))
+                    btnAction.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.app_utility_text))
                     btnAction.setTextColor(Color.WHITE)
                 }
 

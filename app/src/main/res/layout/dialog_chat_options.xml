@@ -15,7 +15,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="Chat Options"
-        android:textColor="#121417"
+        android:textColor="@color/text_primary"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginVertical="16dp"
-        android:background="#E5E7EB" />
+        android:background="@color/app_card_border" />
 
     <!-- Action 1: Pin / Unpin -->
     <LinearLayout
@@ -42,7 +42,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_pin"
-            app:tint="#121417"
+            app:tint="@color/icon_tint"
             android:contentDescription="Pin Icon" />
 
         <TextView
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="14dp"
             android:text="Pin Chat"
-            android:textColor="#121417"
+            android:textColor="@color/text_primary"
             android:textSize="15sp"
             android:textStyle="bold" />
 
@@ -74,7 +74,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_edit"
-            app:tint="#121417"
+            app:tint="@color/icon_tint"
             android:contentDescription="Rename Icon" />
 
         <TextView
@@ -82,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="14dp"
             android:text="Rename Chat"
-            android:textColor="#121417"
+            android:textColor="@color/text_primary"
             android:textSize="15sp"
             android:textStyle="bold" />
 
