@@ -6,6 +6,7 @@ INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Me
 INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:2:1-129:12
 MERGED from [com.google.android.material:material:1.7.0] C:\Users\dines\.gradle\caches\transforms-3\3b75d48d141959e246c2b330b3775d98\transformed\material-1.7.0\AndroidManifest.xml:17:1-26:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\dines\.gradle\caches\transforms-3\b33890605d4ea705a62c3c6d94ee3f6c\transformed\constraintlayout-2.1.4\AndroidManifest.xml:2:1-11:12
+MERGED from [androidx.biometric:biometric:1.1.0] C:\Users\dines\.gradle\caches\transforms-3\58f7a70c44aa8c6c59fee79a265b6132\transformed\biometric-1.1.0\AndroidManifest.xml:17:1-29:12
 MERGED from [androidx.appcompat:appcompat-resources:1.5.1] C:\Users\dines\.gradle\caches\transforms-3\b40c7a0e93501db5fbfcf2371306e302\transformed\jetified-appcompat-resources-1.5.1\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.appcompat:appcompat:1.5.1] C:\Users\dines\.gradle\caches\transforms-3\8a2ec3dcaff7cb2dcb5e290d7acf860b\transformed\appcompat-1.5.1\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.viewpager2:viewpager2:1.0.0] C:\Users\dines\.gradle\caches\transforms-3\feb049c96a633b9e0f356b84f2ff2932\transformed\jetified-viewpager2-1.0.0\AndroidManifest.xml:17:1-24:12
@@ -319,6 +320,8 @@ MERGED from [com.google.android.material:material:1.7.0] C:\Users\dines\.gradle\
 MERGED from [com.google.android.material:material:1.7.0] C:\Users\dines\.gradle\caches\transforms-3\3b75d48d141959e246c2b330b3775d98\transformed\material-1.7.0\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\dines\.gradle\caches\transforms-3\b33890605d4ea705a62c3c6d94ee3f6c\transformed\constraintlayout-2.1.4\AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\dines\.gradle\caches\transforms-3\b33890605d4ea705a62c3c6d94ee3f6c\transformed\constraintlayout-2.1.4\AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.biometric:biometric:1.1.0] C:\Users\dines\.gradle\caches\transforms-3\58f7a70c44aa8c6c59fee79a265b6132\transformed\biometric-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.biometric:biometric:1.1.0] C:\Users\dines\.gradle\caches\transforms-3\58f7a70c44aa8c6c59fee79a265b6132\transformed\biometric-1.1.0\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.appcompat:appcompat-resources:1.5.1] C:\Users\dines\.gradle\caches\transforms-3\b40c7a0e93501db5fbfcf2371306e302\transformed\jetified-appcompat-resources-1.5.1\AndroidManifest.xml:20:5-44
 MERGED from [androidx.appcompat:appcompat-resources:1.5.1] C:\Users\dines\.gradle\caches\transforms-3\b40c7a0e93501db5fbfcf2371306e302\transformed\jetified-appcompat-resources-1.5.1\AndroidManifest.xml:20:5-44
 MERGED from [androidx.appcompat:appcompat:1.5.1] C:\Users\dines\.gradle\caches\transforms-3\8a2ec3dcaff7cb2dcb5e290d7acf860b\transformed\appcompat-1.5.1\AndroidManifest.xml:20:5-44
@@ -405,6 +408,14 @@ INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Me
 		INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml
 		ADDED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml
 		INJECTED from C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml
+uses-permission#android.permission.USE_BIOMETRIC
+ADDED from [androidx.biometric:biometric:1.1.0] C:\Users\dines\.gradle\caches\transforms-3\58f7a70c44aa8c6c59fee79a265b6132\transformed\biometric-1.1.0\AndroidManifest.xml:24:5-72
+	android:name
+		ADDED from [androidx.biometric:biometric:1.1.0] C:\Users\dines\.gradle\caches\transforms-3\58f7a70c44aa8c6c59fee79a265b6132\transformed\biometric-1.1.0\AndroidManifest.xml:24:22-69
+uses-permission#android.permission.USE_FINGERPRINT
+ADDED from [androidx.biometric:biometric:1.1.0] C:\Users\dines\.gradle\caches\transforms-3\58f7a70c44aa8c6c59fee79a265b6132\transformed\biometric-1.1.0\AndroidManifest.xml:27:5-74
+	android:name
+		ADDED from [androidx.biometric:biometric:1.1.0] C:\Users\dines\.gradle\caches\transforms-3\58f7a70c44aa8c6c59fee79a265b6132\transformed\biometric-1.1.0\AndroidManifest.xml:27:22-71
 provider#androidx.startup.InitializationProvider
 ADDED from [androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
 MERGED from [androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\dines\.gradle\caches\transforms-3\cc28b3cef285540baa54cd92fdd92fcf\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:26:9-34:20

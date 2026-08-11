@@ -186,19 +186,22 @@ class SettingsActivity : AppCompatActivity() {
                 return@setOnCheckedChangeListener
             }
 
-            pendingAppLockEnableState = isChecked
-            val intent = AppLockManager.createDeviceCredentialIntent(
-                this,
-                if (isChecked) "Confirm App Lock Activation" else "Confirm App Lock Deactivation",
-                if (isChecked) "Authenticate with your phone lock to enable App Lock." else "Authenticate with your phone lock to disable App Lock."
+            AppLockManager.showBiometricPrompt(
+                activity = this,
+                title = if (isChecked) "Confirm App Lock Activation" else "Confirm App Lock Deactivation",
+                subtitle = if (isChecked) "Authenticate to enable App Lock." else "Authenticate to disable App Lock.",
+                onSuccess = {
+                    AppLockManager.setAppLockEnabled(this, isChecked)
+                    AppLockManager.isSessionAuthenticated = true
+                    AppLockManager.applySecureFlag(this)
+                    switchAppLock.isChecked = isChecked
+                    val statusMsg = if (isChecked) "App Lock enabled" else "App Lock disabled"
+                    Toast.makeText(this, statusMsg, Toast.LENGTH_SHORT).show()
+                },
+                onFailure = {
+                    switchAppLock.isChecked = !isChecked
+                }
             )
-            if (intent != null) {
-                appLockToggleAuthLauncher.launch(intent)
-            } else {
-                AppLockManager.setAppLockEnabled(this, isChecked)
-                AppLockManager.applySecureFlag(this)
-                Toast.makeText(this, if (isChecked) "App Lock enabled" else "App Lock disabled", Toast.LENGTH_SHORT).show()
-            }
         }
 
         // Load saved user profile data
@@ -360,17 +363,18 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun authenticateDeviceLockAndExecute() {
-        val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-        if (keyguardManager.isDeviceSecure) {
-            val intent = keyguardManager.createConfirmDeviceCredentialIntent(
-                "Confirm Data Deletion",
-                "Authenticate with your phone screen lock to permanently delete all chats and memory vault data."
+        if (AppLockManager.isDeviceSecure(this)) {
+            AppLockManager.showBiometricPrompt(
+                activity = this,
+                title = "Confirm Data Deletion",
+                subtitle = "Authenticate to permanently delete all chats and memory vault data",
+                onSuccess = {
+                    executeDeleteAllUserData()
+                },
+                onFailure = {
+                    Toast.makeText(this, "Authentication failed. Data preserved.", Toast.LENGTH_SHORT).show()
+                }
             )
-            if (intent != null) {
-                deviceCredentialAuthLauncher.launch(intent)
-            } else {
-                executeDeleteAllUserData()
-            }
         } else {
             executeDeleteAllUserData()
         }

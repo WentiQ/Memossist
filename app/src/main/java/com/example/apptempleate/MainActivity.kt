@@ -133,16 +133,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val appLockAuthLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            AppLockManager.isSessionAuthenticated = true
-        } else {
-            Toast.makeText(this, "App Lock authentication required", Toast.LENGTH_SHORT).show()
-            finish()
-        }
-    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -974,16 +965,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkAndPromptAppLockIfRequired() {
         if (AppLockManager.isAppLockEnabled(this) && !AppLockManager.isSessionAuthenticated) {
-            val intent = AppLockManager.createDeviceCredentialIntent(
-                this,
-                "Unlock Memossist",
-                "Authenticate with your phone lock to access Memossist"
+            AppLockManager.showBiometricPrompt(
+                activity = this,
+                title = "Unlock Memossist",
+                subtitle = "Authenticate to access your Vault and chats",
+                onSuccess = {
+                    AppLockManager.isSessionAuthenticated = true
+                },
+                onFailure = {
+                    Toast.makeText(this, "App Lock authentication required", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
             )
-            if (intent != null) {
-                appLockAuthLauncher.launch(intent)
-            } else {
-                AppLockManager.isSessionAuthenticated = true
-            }
         }
     }
 

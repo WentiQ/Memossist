@@ -80,21 +80,7 @@ class OnboardingActivity : AppCompatActivity() {
         }
     }
 
-    private val appLockAuthLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            AppLockManager.setAppLockEnabled(this, true)
-            AppLockManager.isSessionAuthenticated = true
-            AppLockManager.applySecureFlag(this)
-            switchEnableAppLock.isChecked = true
-            Toast.makeText(this, "App Lock enabled", Toast.LENGTH_SHORT).show()
-        } else {
-            switchEnableAppLock.isChecked = false
-            AppLockManager.setAppLockEnabled(this, false)
-            Toast.makeText(this, "Authentication cancelled. App Lock disabled.", Toast.LENGTH_SHORT).show()
-        }
-    }
+
 
     private val openImportFileLauncher = registerForActivityResult(
         ActivityResultContracts.OpenDocument()
@@ -257,18 +243,22 @@ class OnboardingActivity : AppCompatActivity() {
                     return@setOnCheckedChangeListener
                 }
 
-                val intent = AppLockManager.createDeviceCredentialIntent(
-                    this,
-                    "Enable App Lock",
-                    "Authenticate with your phone lock to enable App Lock for Memossist."
+                AppLockManager.showBiometricPrompt(
+                    activity = this,
+                    title = "Enable App Lock",
+                    subtitle = "Authenticate to enable App Lock for Memossist",
+                    onSuccess = {
+                        AppLockManager.setAppLockEnabled(this, true)
+                        AppLockManager.isSessionAuthenticated = true
+                        AppLockManager.applySecureFlag(this)
+                        switchEnableAppLock.isChecked = true
+                        Toast.makeText(this, "App Lock enabled", Toast.LENGTH_SHORT).show()
+                    },
+                    onFailure = {
+                        switchEnableAppLock.isChecked = false
+                        AppLockManager.setAppLockEnabled(this, false)
+                    }
                 )
-                if (intent != null) {
-                    appLockAuthLauncher.launch(intent)
-                } else {
-                    AppLockManager.setAppLockEnabled(this, true)
-                    AppLockManager.isSessionAuthenticated = true
-                    AppLockManager.applySecureFlag(this)
-                }
             } else {
                 AppLockManager.setAppLockEnabled(this, false)
                 AppLockManager.applySecureFlag(this)
