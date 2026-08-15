@@ -260,16 +260,26 @@ object ChatRepository {
             }
 
             // Extract and set Smart Reminders if present in user message
-            val extractedReminder = ReminderExtractor.extractAndCreateReminder(context, userMessage, llmResult.extractedReminderTag)
+            val extractedReminders = ReminderExtractor.extractAndCreateAllReminders(context, userMessage, llmResult.extractedReminderTag)
             var createdReminderId: String? = null
             var reminderConfirmationBanner = ""
-            if (classification.messageType in listOf(MessageType.REMINDER_ONLY, MessageType.REMINDER_AND_ASKING, MessageType.REMINDER_AND_TELLING, MessageType.REMINDER_AND_MIXED) || extractedReminder != null) {
+            if (classification.messageType in listOf(MessageType.REMINDER_ONLY, MessageType.REMINDER_AND_ASKING, MessageType.REMINDER_AND_TELLING, MessageType.REMINDER_AND_MIXED) || extractedReminders.isNotEmpty()) {
                 currentStep++
                 updateLiveStep("Step $currentStep/$totalSteps: Scheduling smart reminder alerts…")
-                if (extractedReminder != null) {
-                    createdReminderId = extractedReminder.id
-                    ReminderRepository.addOrUpdateReminder(context, extractedReminder)
-                    reminderConfirmationBanner = "\n\n⏰ **Reminder Set!** ${extractedReminder.getCategoryIconText()} `${extractedReminder.title}` on ${extractedReminder.getFormattedEventDateTime()} (${extractedReminder.triggers.size} scheduled alerts)."
+                if (extractedReminders.isNotEmpty()) {
+                    createdReminderId = extractedReminders.first().id
+                    for (reminder in extractedReminders) {
+                        ReminderRepository.addOrUpdateReminder(context, reminder)
+                    }
+                    reminderConfirmationBanner = if (extractedReminders.size == 1) {
+                        val single = extractedReminders[0]
+                        "\n\n⏰ **Reminder Set!** ${single.getCategoryIconText()} `${single.title}` on ${single.getFormattedEventDateTime()} (${single.triggers.size} scheduled alerts)."
+                    } else {
+                        val items = extractedReminders.joinToString("\n") {
+                            "• ${it.getCategoryIconText()} `${it.title}` on ${it.getFormattedEventDateTime()} (${it.triggers.size} scheduled alerts)"
+                        }
+                        "\n\n⏰ **Reminders Set (${extractedReminders.size}):**\n$items"
+                    }
                 }
             }
 
@@ -350,8 +360,9 @@ object ChatRepository {
             debugLogBuilder.append(llmResult.cleanHumanoidAnswer)
             debugLogBuilder.append("\n\n[USED_EXPERIENCES: ${llmResult.relevantExperienceIds.joinToString(", ")}]\n")
             debugLogBuilder.append("[EXTRACTED_FACTS: ${llmResult.extractedInformativeFacts}]\n")
-            if (extractedReminder != null) {
-                debugLogBuilder.append("[EXTRACTED_REMINDER: Title=${extractedReminder.title}, Time=${extractedReminder.getFormattedEventDateTime()}, Triggers=${extractedReminder.triggers.size}]\n")
+            if (extractedReminders.isNotEmpty()) {
+                val remLog = extractedReminders.joinToString("; ") { "Title=${it.title}, Time=${it.getFormattedEventDateTime()}, Triggers=${it.triggers.size}" }
+                debugLogBuilder.append("[EXTRACTED_REMINDERS (${extractedReminders.size}): $remLog]\n")
             }
             debugLogBuilder.append("\n")
 

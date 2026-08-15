@@ -226,13 +226,36 @@ object NoeonAiEngine {
     }
 
     private fun parseTagValue(content: String, tagName: String): String? {
-        val regex = Regex("\\[$tagName\\s*:\\s*([^\\]]+)\\]", RegexOption.IGNORE_CASE)
-        val match = regex.find(content)
-        if (match != null) {
-            return match.groupValues[1].trim()
+        val startMarker = "[$tagName:"
+        val startIndex = content.indexOf(startMarker, ignoreCase = true)
+        if (startIndex == -1) return null
+
+        val tagContentStart = startIndex + startMarker.length
+        val remaining = content.substring(tagContentStart)
+
+        // Find boundary of this tag (before subsequent known tags or newline)
+        val nextTagRegex = Regex("(?:\\[(?:HUMANOID_ANSWER|USED_EXPERIENCES|EXTRACTED_FACTS|EXTRACTED_REMINDERS|INTENT))", RegexOption.IGNORE_CASE)
+        val nextTagMatch = nextTagRegex.find(remaining)
+        val rawTagBody = if (nextTagMatch != null) {
+            remaining.substring(0, nextTagMatch.range.first).trim()
+        } else {
+            val endLineIdx = remaining.indexOf('\n')
+            if (endLineIdx != -1) remaining.substring(0, endLineIdx).trim() else remaining.trim()
         }
-        val fallbackRegex = Regex("\\[$tagName\\s*:\\s*(.*)", RegexOption.IGNORE_CASE)
-        return fallbackRegex.find(content)?.groupValues?.get(1)?.trim()
+
+        val trimmed = rawTagBody.trim()
+        return if (trimmed.endsWith("]")) {
+            // Check if it's an array e.g. [{"title":"..."}] followed by the outer tag bracket ']'
+            if (trimmed.startsWith("[") && trimmed.count { it == '[' } < trimmed.count { it == ']' }) {
+                trimmed.removeSuffix("]").trim()
+            } else if (!trimmed.startsWith("[")) {
+                trimmed.removeSuffix("]").trim()
+            } else {
+                trimmed
+            }
+        } else {
+            trimmed
+        }
     }
 
     private fun parseAnswer(content: String): String {

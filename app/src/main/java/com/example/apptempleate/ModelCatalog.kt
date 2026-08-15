@@ -12,7 +12,7 @@ object ModelCatalog {
             tagline = "Ultra Fast",
             badge = "ULTRA FAST",
             isRecommended = false,
-            icon = "🪶",
+            icon = "",
             description = "A tiny AI designed for speed and efficiency. Great for quick questions, text processing, classification, simple summaries and everyday commands.",
             parameters = "~0.8B",
             contextWindow = "Large Context",
@@ -24,11 +24,11 @@ object ModelCatalog {
             longContextRating = 6,
             categoryTags = listOf("Fastest", "Low Memory"),
             strengths = listOf(
-                "⚡ Extremely fast response times",
-                "🔋 Low battery usage",
-                "📱 Works smoothly on lower-spec phones",
-                "💾 Very small storage footprint",
-                "📴 Completely offline operation"
+                "Extremely fast response times",
+                "Low battery usage",
+                "Works smoothly on lower-spec phones",
+                "Very small storage footprint",
+                "Completely offline operation"
             ),
             weaknesses = listOf(
                 "Less capable at complex multi-step reasoning",
@@ -58,7 +58,7 @@ object ModelCatalog {
             tagline = "Everyday AI",
             badge = "FAST & BALANCED",
             isRecommended = false,
-            icon = "⚡",
+            icon = "",
             description = "A balanced lightweight model for everyday conversations, summarization, rewriting, knowledge extraction and general assistance.",
             parameters = "~2B",
             contextWindow = "Large Context",
@@ -70,11 +70,11 @@ object ModelCatalog {
             longContextRating = 7,
             categoryTags = listOf("Fastest", "Low Memory"),
             strengths = listOf(
-                "⚡ Very fast generation speed",
-                "💾 Low memory requirements",
-                "🧠 Better reasoning than 0.8B model",
-                "📝 Good general-purpose capability",
-                "📱 Excellent optimization for smartphones"
+                "Very fast generation speed",
+                "Low memory requirements",
+                "Better reasoning than 0.8B model",
+                "Good general-purpose capability",
+                "Excellent optimization for smartphones"
             ),
             weaknesses = listOf(
                 "May struggle with advanced technical code",
@@ -100,9 +100,9 @@ object ModelCatalog {
             id = "qwen3.5_4b",
             name = "Qwen3.5 4B",
             tagline = "Best Overall",
-            badge = "🏆 RECOMMENDED",
+            badge = "RECOMMENDED",
             isRecommended = true,
-            icon = "🧠",
+            icon = "",
             description = "A powerful compact AI that provides an excellent balance between intelligence, speed and memory usage. Recommended for users who want a capable general-purpose local assistant.",
             parameters = "~4B",
             contextWindow = "Large Context",
@@ -114,12 +114,12 @@ object ModelCatalog {
             longContextRating = 9,
             categoryTags = listOf("Smartest", "Coding", "Best Overall"),
             strengths = listOf(
-                "🧠 Strong reasoning & problem solving",
-                "💻 Good coding and script generation",
-                "📚 Good document analysis & synthesis",
-                "✍️ Strong creative and formal writing",
-                "⚡ Practical speed on modern smartphones",
-                "🔒 100% offline & private"
+                "Strong reasoning & problem solving",
+                "Good coding and script generation",
+                "Good document analysis & synthesis",
+                "Strong creative and formal writing",
+                "Practical speed on modern smartphones",
+                "100% offline & private"
             ),
             weaknesses = listOf(
                 "Requires more RAM than 0.8B/2B",
@@ -149,7 +149,7 @@ object ModelCatalog {
             tagline = "Mobile Multimodal",
             badge = "MULTIMODAL",
             isRecommended = false,
-            icon = "👁️",
+            icon = "",
             description = "A mobile-optimized AI designed by Google for efficient on-device interaction with text, visual inputs, and audio information.",
             parameters = "~2B active",
             contextWindow = "Large Context",
@@ -161,11 +161,11 @@ object ModelCatalog {
             longContextRating = 7,
             categoryTags = listOf("Multimodal", "Fastest"),
             strengths = listOf(
-                "📱 Custom-built for mobile silicon",
-                "👁️ Native multimodal visual & voice processing",
-                "⚡ Highly efficient execution engine",
-                "🔋 Lower resource & battery footprint",
-                "📴 Offline image & speech comprehension"
+                "Custom-built for mobile silicon",
+                "Native multimodal visual & voice processing",
+                "Highly efficient execution engine",
+                "Lower resource & battery footprint",
+                "Offline image & speech comprehension"
             ),
             weaknesses = listOf(
                 "Lower text-only reasoning than 4B class models",
@@ -192,7 +192,7 @@ object ModelCatalog {
             tagline = "Advanced Multimodal",
             badge = "ADVANCED MULTIMODAL",
             isRecommended = false,
-            icon = "👁️🧠",
+            icon = "",
             description = "A more capable mobile AI for users who want stronger reasoning together with multimodal visual and voice interaction.",
             parameters = "~4B active",
             contextWindow = "Large Context",
@@ -204,10 +204,10 @@ object ModelCatalog {
             longContextRating = 8,
             categoryTags = listOf("Multimodal", "Smartest"),
             strengths = listOf(
-                "🖼️ High-precision image & document understanding",
-                "🎙️ Seamless voice & audio context interaction",
-                "🧠 Superior multimodal reasoning capacity",
-                "📚 Comprehensive document analysis"
+                "High-precision image & document understanding",
+                "Seamless voice & audio context interaction",
+                "Superior multimodal reasoning capacity",
+                "Comprehensive document analysis"
             ),
             weaknesses = listOf(
                 "Requires at least 6 GB device RAM",
@@ -234,7 +234,7 @@ object ModelCatalog {
             tagline = "Reasoning Specialist",
             badge = "REASONING",
             isRecommended = false,
-            icon = "🧮",
+            icon = "",
             description = "A compact reasoning-focused AI designed for mathematics, logic, structured tasks, coding and complex instructions.",
             parameters = "3.8B",
             contextWindow = "128K Context",
@@ -246,12 +246,12 @@ object ModelCatalog {
             longContextRating = 9,
             categoryTags = listOf("Reasoning", "Coding", "Smartest"),
             strengths = listOf(
-                "🧮 Advanced mathematical accuracy",
-                "🧠 High-density logical reasoning",
-                "💻 Superior code generation & debugging",
-                "📊 Structured JSON & schema output",
-                "📚 Massive 128K context window capacity",
-                "📱 Mobile CPU/ONNX optimized variant"
+                "Advanced mathematical accuracy",
+                "High-density logical reasoning",
+                "Superior code generation & debugging",
+                "Structured JSON & schema output",
+                "Massive 128K context window capacity",
+                "Mobile CPU/ONNX optimized variant"
             ),
             weaknesses = listOf(
                 "Requires careful prompt formatting",
@@ -279,7 +279,7 @@ object ModelCatalog {
             tagline = "Long Context",
             badge = "LONG CONTEXT",
             isRecommended = false,
-            icon = "📚",
+            icon = "",
             description = "A compact reasoning model designed to handle very large conversations and documents while maintaining a relatively small memory footprint.",
             parameters = "3B",
             contextWindow = "128K Context",
@@ -291,11 +291,11 @@ object ModelCatalog {
             longContextRating = 10,
             categoryTags = listOf("Long Context", "Reasoning"),
             strengths = listOf(
-                "📚 Massive 128K context window capacity",
-                "🧠 Built-in hybrid reasoning mode",
-                "⚡ Small 3B parameter memory efficiency",
-                "🔎 Deep long-document analysis & retrieval",
-                "🧩 Efficient Grouped Query Attention (GQA)"
+                "Massive 128K context window capacity",
+                "Built-in hybrid reasoning mode",
+                "Small 3B parameter memory efficiency",
+                "Deep long-document analysis & retrieval",
+                "Efficient Grouped Query Attention (GQA)"
             ),
             weaknesses = listOf(
                 "Slightly slower when filling high context lengths"
@@ -321,7 +321,7 @@ object ModelCatalog {
             tagline = "Speed Specialist",
             badge = "LIGHTNING FAST",
             isRecommended = false,
-            icon = "🚀",
+            icon = "",
             description = "A compact architecture optimized for low-latency local inference. Ideal when response speed matters more than maximum reasoning ability.",
             parameters = "1.2–2.6B",
             contextWindow = "Moderate",
@@ -333,10 +333,10 @@ object ModelCatalog {
             longContextRating = 5,
             categoryTags = listOf("Fastest", "Low Memory"),
             strengths = listOf(
-                "🚀 Instantaneous response latency",
-                "🎙️ Perfect for real-time voice conversations",
-                "⚡ Ultra-low power CPU usage",
-                "📱 Fluid operation on budget Android devices"
+                "Instantaneous response latency",
+                "Perfect for real-time voice conversations",
+                "Ultra-low power CPU usage",
+                "Fluid operation on budget Android devices"
             ),
             weaknesses = listOf(
                 "Moderate reasoning on complex coding challenges",

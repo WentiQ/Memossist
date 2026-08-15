@@ -10,27 +10,24 @@
     android:orientation="vertical"
     android:padding="18dp">
 
-    <!-- Top Row: Icon, Title, Badge, & Checkmark -->
+    <!-- Top Row: Title, Badge, & Checkmark -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <!-- Model Emoji/Icon Badge -->
+        <!-- Hidden Model Emoji Badge (kept for id compatibility) -->
         <TextView
             android:id="@+id/tvModelIcon"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="@drawable/bg_profile_avatar_rounded"
-            android:gravity="center"
-            android:text="🧠"
-            android:textSize="22sp" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
+            android:layout_marginStart="0dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -60,7 +57,7 @@
                     android:backgroundTint="@color/app_icon_button_background"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="3dp"
-                    android:text="🏆 RECOMMENDED"
+                    android:text="RECOMMENDED"
                     android:textColor="@color/text_primary"
                     android:textSize="10sp"
                     android:textStyle="bold" />
@@ -124,7 +121,7 @@
             android:id="@+id/tvSpeedStars"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="⚡⚡⚡⚡☆ Speed"
+            android:text="★★★★☆ Speed"
             android:textColor="#10B981"
             android:textSize="12sp"
             android:textStyle="bold" />

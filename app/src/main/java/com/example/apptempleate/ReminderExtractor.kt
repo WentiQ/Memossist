@@ -20,135 +20,149 @@ object ReminderExtractor {
     )
 
     /**
-     * Extracts reminder details from LLM response or user text, and creates a full ReminderItem
-     * with multi-timestamp triggers.
+     * Extracts ALL reminder details from LLM response (or fallback text) and creates full ReminderItems
+     * with multi-timestamp triggers for each.
+     */
+    fun extractAndCreateAllReminders(
+        context: Context,
+        userMessage: String,
+        llmExtractedTag: String? = null
+    ): List<ReminderItem> {
+        val dataList = parseAllReminderData(userMessage, llmExtractedTag)
+        if (dataList.isEmpty()) return emptyList()
+
+        val userName = getSavedUserName(context)
+        val morningHour = getSavedMorningHour(context) // Default 7 (7 AM)
+        val now = System.currentTimeMillis()
+
+        return dataList.map { data ->
+            val reminderId = "REM-${UUID.randomUUID().toString().take(6).uppercase()}"
+            val sdfTime = SimpleDateFormat("h:mm a", Locale.getDefault())
+            val timeStr = sdfTime.format(Date(data.targetTimeMillis))
+
+            val triggers = mutableListOf<ReminderTrigger>()
+            val eventTime = data.targetTimeMillis
+
+            // 1. One Day Before Trigger (T - 24 hours)
+            val oneDayBefore = eventTime - 24 * 3600_000L
+            if (oneDayBefore > now) {
+                triggers.add(
+                    ReminderTrigger(
+                        triggerId = "TRG_1D_${UUID.randomUUID().toString().take(6)}",
+                        reminderId = reminderId,
+                        triggerTimeMillis = oneDayBefore,
+                        type = "ONE_DAY_BEFORE",
+                        deliveryStyle = "NOTIFICATION",
+                        humanoidMessage = "Hey $userName! Gentle reminder for tomorrow: You have '${data.title}' scheduled at $timeStr. Don't forget to prepare!"
+                    )
+                )
+            }
+
+            // 2. Start of Day Morning Briefing Trigger (Morning Hour on Event Day, e.g. 7:00 AM)
+            val calMorning = Calendar.getInstance().apply {
+                timeInMillis = eventTime
+                set(Calendar.HOUR_OF_DAY, morningHour)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val morningTime = calMorning.timeInMillis
+            if (morningTime > now && morningTime < eventTime - 15 * 60_000L) {
+                triggers.add(
+                    ReminderTrigger(
+                        triggerId = "TRG_MRN_${UUID.randomUUID().toString().take(6)}",
+                        reminderId = reminderId,
+                        triggerTimeMillis = morningTime,
+                        type = "MORNING_OF_DAY",
+                        deliveryStyle = "NOTIFICATION",
+                        humanoidMessage = "Good morning $userName! Do you remember today you have '${data.title}' at $timeStr right? Have a productive day!"
+                    )
+                )
+            }
+
+            // 3. 1 Hour Before Trigger (T - 1 hour)
+            val oneHourBefore = eventTime - 3600_000L
+            if (oneHourBefore > now) {
+                triggers.add(
+                    ReminderTrigger(
+                        triggerId = "TRG_1H_${UUID.randomUUID().toString().take(6)}",
+                        reminderId = reminderId,
+                        triggerTimeMillis = oneHourBefore,
+                        type = "ONE_HOUR_BEFORE",
+                        deliveryStyle = "NOTIFICATION",
+                        humanoidMessage = "Hey $userName, your '${data.title}' is coming up in 1 hour ($timeStr)! Time to get ready."
+                    )
+                )
+            }
+
+            // 4. 10 Minutes Before Trigger (T - 10 minutes) - Full Screen Alarm Alert
+            val tenMinBefore = eventTime - 10 * 60_000L
+            if (tenMinBefore > now) {
+                triggers.add(
+                    ReminderTrigger(
+                        triggerId = "TRG_10M_${UUID.randomUUID().toString().take(6)}",
+                        reminderId = reminderId,
+                        triggerTimeMillis = tenMinBefore,
+                        type = "TEN_MIN_BEFORE",
+                        deliveryStyle = "FULLSCREEN_ALARM",
+                        humanoidMessage = "🚨 Heading out? '${data.title}' starts in 10 minutes ($timeStr)!"
+                    )
+                )
+            }
+
+            // 5. Post-Event Follow-up Check Trigger (T + 45 minutes)
+            val postEventTime = eventTime + 45 * 60_000L
+            if (postEventTime > now) {
+                triggers.add(
+                    ReminderTrigger(
+                        triggerId = "TRG_POST_${UUID.randomUUID().toString().take(6)}",
+                        reminderId = reminderId,
+                        triggerTimeMillis = postEventTime,
+                        type = "POST_EVENT_CHECK",
+                        deliveryStyle = "NOTIFICATION",
+                        humanoidMessage = "Hey $userName, did you go for '${data.title}' today? Hope it went really well!"
+                    )
+                )
+            }
+
+            // Fallback: If no future trigger was calculated (event is very soon e.g. in 5 mins), add a 1-min alert
+            if (triggers.isEmpty() && eventTime > now) {
+                triggers.add(
+                    ReminderTrigger(
+                        triggerId = "TRG_IMM_${UUID.randomUUID().toString().take(6)}",
+                        reminderId = reminderId,
+                        triggerTimeMillis = (now + 10_000L).coerceAtMost(eventTime),
+                        type = "CUSTOM",
+                        deliveryStyle = "FULLSCREEN_ALARM",
+                        humanoidMessage = "Hey $userName, reminder alert for '${data.title}' at $timeStr!"
+                    )
+                )
+            }
+
+            ReminderItem(
+                id = reminderId,
+                title = data.title,
+                description = data.description,
+                eventTimeMillis = data.targetTimeMillis,
+                importance = data.importance,
+                category = data.category,
+                isActive = true,
+                isCompleted = false,
+                createdTimestamp = now,
+                triggers = triggers
+            )
+        }
+    }
+
+    /**
+     * Legacy single reminder helper.
      */
     fun extractAndCreateReminder(
         context: Context,
         userMessage: String,
         llmExtractedTag: String? = null
     ): ReminderItem? {
-        val data = parseReminderData(userMessage, llmExtractedTag) ?: return null
-        val userName = getSavedUserName(context)
-        val morningHour = getSavedMorningHour(context) // Default 7 (7 AM)
-
-        val reminderId = "REM-${UUID.randomUUID().toString().take(6).uppercase()}"
-        val sdfTime = SimpleDateFormat("h:mm a", Locale.getDefault())
-        val timeStr = sdfTime.format(Date(data.targetTimeMillis))
-
-        val triggers = mutableListOf<ReminderTrigger>()
-        val now = System.currentTimeMillis()
-        val eventTime = data.targetTimeMillis
-
-        // 1. One Day Before Trigger (T - 24 hours)
-        val oneDayBefore = eventTime - 24 * 3600_000L
-        if (oneDayBefore > now) {
-            triggers.add(
-                ReminderTrigger(
-                    triggerId = "TRG_1D_${UUID.randomUUID().toString().take(6)}",
-                    reminderId = reminderId,
-                    triggerTimeMillis = oneDayBefore,
-                    type = "ONE_DAY_BEFORE",
-                    deliveryStyle = "NOTIFICATION",
-                    humanoidMessage = "Hey $userName! Gentle reminder for tomorrow: You have '${data.title}' scheduled at $timeStr. Don't forget to prepare!"
-                )
-            )
-        }
-
-        // 2. Start of Day Morning Briefing Trigger (Morning Hour on Event Day, e.g. 7:00 AM)
-        val calMorning = Calendar.getInstance().apply {
-            timeInMillis = eventTime
-            set(Calendar.HOUR_OF_DAY, morningHour)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-        val morningTime = calMorning.timeInMillis
-        // Only add morning trigger if it occurs before the event and after current time
-        if (morningTime > now && morningTime < eventTime - 15 * 60_000L) {
-            triggers.add(
-                ReminderTrigger(
-                    triggerId = "TRG_MRN_${UUID.randomUUID().toString().take(6)}",
-                    reminderId = reminderId,
-                    triggerTimeMillis = morningTime,
-                    type = "MORNING_OF_DAY",
-                    deliveryStyle = "NOTIFICATION",
-                    humanoidMessage = "Good morning $userName! Do you remember today you have '${data.title}' at $timeStr right? Have a productive day!"
-                )
-            )
-        }
-
-        // 3. 1 Hour Before Trigger (T - 1 hour)
-        val oneHourBefore = eventTime - 3600_000L
-        if (oneHourBefore > now) {
-            triggers.add(
-                ReminderTrigger(
-                    triggerId = "TRG_1H_${UUID.randomUUID().toString().take(6)}",
-                    reminderId = reminderId,
-                    triggerTimeMillis = oneHourBefore,
-                    type = "ONE_HOUR_BEFORE",
-                    deliveryStyle = "NOTIFICATION",
-                    humanoidMessage = "Hey $userName, your '${data.title}' is coming up in 1 hour ($timeStr)! Time to get ready."
-                )
-            )
-        }
-
-        // 4. 10 Minutes Before Trigger (T - 10 minutes) - Full Screen Alarm Alert
-        val tenMinBefore = eventTime - 10 * 60_000L
-        if (tenMinBefore > now) {
-            triggers.add(
-                ReminderTrigger(
-                    triggerId = "TRG_10M_${UUID.randomUUID().toString().take(6)}",
-                    reminderId = reminderId,
-                    triggerTimeMillis = tenMinBefore,
-                    type = "TEN_MIN_BEFORE",
-                    deliveryStyle = "FULLSCREEN_ALARM",
-                    humanoidMessage = "🚨 Heading out? '${data.title}' starts in 10 minutes ($timeStr)!"
-                )
-            )
-        }
-
-        // 5. Post-Event Follow-up Check Trigger (T + 45 minutes)
-        val postEventTime = eventTime + 45 * 60_000L
-        if (postEventTime > now) {
-            triggers.add(
-                ReminderTrigger(
-                    triggerId = "TRG_POST_${UUID.randomUUID().toString().take(6)}",
-                    reminderId = reminderId,
-                    triggerTimeMillis = postEventTime,
-                    type = "POST_EVENT_CHECK",
-                    deliveryStyle = "NOTIFICATION",
-                    humanoidMessage = "Hey $userName, did you go for '${data.title}' today? Hope it went really well!"
-                )
-            )
-        }
-
-        // Fallback: If no future trigger was calculated (event is very soon e.g. in 5 mins), add a 1-min alert
-        if (triggers.isEmpty() && eventTime > now) {
-            triggers.add(
-                ReminderTrigger(
-                    triggerId = "TRG_IMM_${UUID.randomUUID().toString().take(6)}",
-                    reminderId = reminderId,
-                    triggerTimeMillis = (now + 10_000L).coerceAtMost(eventTime),
-                    type = "CUSTOM",
-                    deliveryStyle = "FULLSCREEN_ALARM",
-                    humanoidMessage = "Hey $userName, reminder alert for '${data.title}' at $timeStr!"
-                )
-            )
-        }
-
-        return ReminderItem(
-            id = reminderId,
-            title = data.title,
-            description = data.description,
-            eventTimeMillis = data.targetTimeMillis,
-            importance = data.importance,
-            category = data.category,
-            isActive = true,
-            isCompleted = false,
-            createdTimestamp = now,
-            triggers = triggers
-        )
+        return extractAndCreateAllReminders(context, userMessage, llmExtractedTag).firstOrNull()
     }
 
     private fun isQuestionText(text: String): Boolean {
@@ -164,35 +178,106 @@ object ReminderExtractor {
         return questionKeywords.any { lower.startsWith(it) || lower.contains(" $it") }
     }
 
-    private fun parseReminderData(userMessage: String, llmTag: String?): ExtractedReminderData? {
-        if (llmTag.isNullOrBlank()) {
-            return null
+    fun parseAllReminderData(userMessage: String, llmTag: String?): List<ExtractedReminderData> {
+        val results = mutableListOf<ExtractedReminderData>()
+
+        if (!llmTag.isNullOrBlank()) {
+            val upperTag = llmTag.trim().uppercase()
+            if (upperTag != "NONE" && upperTag != "[]" && upperTag != "[\"\"]" && upperTag != "NULL") {
+                val cleanTag = llmTag.trim()
+
+                try {
+                    if (cleanTag.startsWith("[")) {
+                        try {
+                            val jsonArray = JSONArray(cleanTag)
+                            for (i in 0 until jsonArray.length()) {
+                                val item = jsonArray.optJSONObject(i)
+                                if (item != null) {
+                                    parseSingleReminderJson(item, userMessage)?.let { results.add(it) }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            val inner = cleanTag.removeSurrounding("[", "]").trim()
+                            if (inner.startsWith("{")) {
+                                try {
+                                    val jsonObj = JSONObject(inner)
+                                    parseSingleReminderJson(jsonObj, userMessage)?.let { results.add(it) }
+                                } catch (e2: Exception) {
+                                    parseObjectsByRegex(inner, userMessage, results)
+                                }
+                            } else {
+                                parseObjectsByRegex(cleanTag, userMessage, results)
+                            }
+                        }
+                    } else if (cleanTag.startsWith("{")) {
+                        try {
+                            val jsonObj = JSONObject(cleanTag)
+                            parseSingleReminderJson(jsonObj, userMessage)?.let { results.add(it) }
+                        } catch (e: Exception) {
+                            parseObjectsByRegex(cleanTag, userMessage, results)
+                        }
+                    } else {
+                        try {
+                            val jsonObj = JSONObject("{ $cleanTag }")
+                            parseSingleReminderJson(jsonObj, userMessage)?.let { results.add(it) }
+                        } catch (e: Exception) {
+                            parseObjectsByRegex(cleanTag, userMessage, results)
+                        }
+                    }
+                } catch (e: Exception) {
+                    // Ignore malformed tag errors
+                }
+            }
         }
 
-        val upperTag = llmTag.trim().uppercase()
-        if (upperTag == "NONE" || upperTag == "[]" || upperTag == "[\"\"]" || upperTag == "NULL") {
-            return null
+        // Fallback: If no reminder extracted from tag, but user text contains reminder intent
+        if (results.isEmpty() && isReminderIntentText(userMessage)) {
+            val timeMillis = parseNaturalLanguageDateTime(userMessage)
+            if (timeMillis > System.currentTimeMillis()) {
+                val cat = inferCategory(userMessage)
+                val title = extractTitle(userMessage, cat)
+                results.add(ExtractedReminderData(title, userMessage, timeMillis, cat, "HIGH"))
+            }
         }
 
-        return try {
-            val cleanTag = llmTag.trim().removeSurrounding("[", "]").trim()
-            val jsonObj = if (cleanTag.startsWith("{")) JSONObject(cleanTag) else JSONObject("{ $cleanTag }")
-            val title = jsonObj.optString("title", "").ifBlank { jsonObj.optString("event", "") }
-            val desc = jsonObj.optString("description", userMessage)
-            val dateStr = jsonObj.optString("date", "")
-            val timeStr = jsonObj.optString("time", "")
-            val imp = jsonObj.optString("importance", "MEDIUM").uppercase()
-            val cat = jsonObj.optString("category", inferCategory(title + " " + desc)).uppercase()
+        return results
+    }
 
-            if (title.isNotBlank() && !isQuestionText(title)) {
-                val timeMillis = parseTargetDateTime(dateStr, timeStr, userMessage)
-                if (timeMillis > System.currentTimeMillis()) {
-                    ExtractedReminderData(title, desc, timeMillis, cat, imp)
-                } else null
-            } else null
-        } catch (e: Exception) {
-            null
+    private fun parseSingleReminderJson(jsonObj: JSONObject, userMessage: String): ExtractedReminderData? {
+        val title = jsonObj.optString("title", "").ifBlank { jsonObj.optString("event", "") }
+        val desc = jsonObj.optString("description", userMessage)
+        val dateStr = jsonObj.optString("date", "")
+        val timeStr = jsonObj.optString("time", "")
+        val imp = jsonObj.optString("importance", "MEDIUM").uppercase()
+        val cat = jsonObj.optString("category", inferCategory(title + " " + desc)).uppercase()
+
+        if (title.isNotBlank() && !isQuestionText(title)) {
+            val timeMillis = parseTargetDateTime(dateStr, timeStr, userMessage)
+            if (timeMillis > System.currentTimeMillis()) {
+                return ExtractedReminderData(title, desc, timeMillis, cat, imp)
+            }
         }
+        return null
+    }
+
+    private fun parseObjectsByRegex(text: String, userMessage: String, results: MutableList<ExtractedReminderData>) {
+        val objRegex = Regex("\\{[^{}]+\\}")
+        val matches = objRegex.findAll(text)
+        for (m in matches) {
+            try {
+                val jsonObj = JSONObject(m.value)
+                parseSingleReminderJson(jsonObj, userMessage)?.let { results.add(it) }
+            } catch (e: Exception) {
+                // ignore
+            }
+        }
+    }
+
+    private fun isReminderIntentText(text: String): Boolean {
+        val lower = text.lowercase()
+        return lower.contains("remind") || lower.contains("reminder") ||
+                lower.contains("alarm") || lower.contains("don't forget") ||
+                lower.contains("dont forget") || lower.contains("schedule")
     }
 
     private fun inferCategory(text: String): String {

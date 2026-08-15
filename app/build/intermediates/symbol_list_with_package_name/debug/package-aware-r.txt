@@ -2615,6 +2615,7 @@ drawable bg_tag_rounded
 drawable bg_top_chat_gradient
 drawable bg_video_play_circle
 drawable bg_voice_orb
+drawable bg_workspace_mid_gradient
 drawable btn_checkbox_checked_mtrl
 drawable btn_checkbox_checked_to_unchecked_mtrl_animation
 drawable btn_checkbox_unchecked_mtrl
@@ -3054,6 +3055,7 @@ id frost
 id fullscreen_header
 id ghost_view
 id ghost_view_holder
+id glWorkspaceMidLine
 id gone
 id graph
 id graph_wrap
@@ -3586,8 +3588,10 @@ id useLogo
 id vBottomGradientOverlay
 id vHeaderUnreadBadge
 id vLogoPulseRing
+id vTopFadeOverlay
 id vTopGradientOverlay
 id vUnreadDot
+id vWorkspaceMidGradientOverlay
 id vertical_only
 id view_offset_helper
 id view_transition

@@ -63,11 +63,6 @@ class ModelPickerBottomSheet(
                 setBackgroundResource(R.drawable.bg_metallic_card)
                 setPadding(24, 24, 24, 24)
 
-                val tvIcon = TextView(context).apply {
-                    text = "📦"
-                    textSize = 32f
-                    gravity = android.view.Gravity.CENTER
-                }
                 val tvTitle = TextView(context).apply {
                     text = "No Local Models Downloaded Yet"
                     setTextColor(ContextCompat.getColor(context, R.color.text_primary))
@@ -104,7 +99,6 @@ class ModelPickerBottomSheet(
                     }
                 }
 
-                addView(tvIcon)
                 addView(tvTitle)
                 addView(tvDesc)
                 addView(btnGoMarketplace)
@@ -132,7 +126,7 @@ class ModelPickerBottomSheet(
                 val tvParams: TextView = rowView.findViewById(R.id.tvModelParams)
                 val tvContext: TextView = rowView.findViewById(R.id.tvModelContext)
 
-                tvIcon.text = model.icon
+                tvIcon.visibility = View.GONE
                 tvName.text = model.name
                 tvBadge.text = model.badge
                 tvTagline.text = model.tagline
@@ -143,11 +137,11 @@ class ModelPickerBottomSheet(
                 val intelStars = "★".repeat(model.intelligenceRating) + "☆".repeat(5 - model.intelligenceRating)
                 tvIntel.text = "$intelStars Intelligence"
 
-                val speedBolts = "⚡".repeat(model.speedRating) + "☆".repeat(5 - model.speedRating)
-                tvSpeed.text = "$speedBolts Speed"
+                val speedStars = "★".repeat(model.speedRating) + "☆".repeat(5 - model.speedRating)
+                tvSpeed.text = "$speedStars Speed"
 
                 if (isSelected) {
-                    btnAction.text = "🟢 ACTIVE"
+                    btnAction.text = "ACTIVE"
                     btnAction.setBackgroundResource(R.drawable.bg_chip_selected)
                     btnAction.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#10B981"))
                     btnAction.setTextColor(Color.WHITE)

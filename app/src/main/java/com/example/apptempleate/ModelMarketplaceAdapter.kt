@@ -50,7 +50,7 @@ class ModelMarketplaceAdapter(
         val isDownloadedOnDisk = NoeonAiEngine.isModelDownloaded(context, model.id)
         val isSelectedAndDownloaded = (model.id == activeModelId) && isDownloadedOnDisk
 
-        holder.tvModelIcon.text = model.icon
+        holder.tvModelIcon.visibility = View.GONE
         holder.tvModelName.text = model.name
         holder.tvModelBadge.text = model.badge
         holder.tvModelTagline.text = model.tagline
@@ -62,9 +62,9 @@ class ModelMarketplaceAdapter(
         val intelStars = "★".repeat(model.intelligenceRating) + "☆".repeat(5 - model.intelligenceRating)
         holder.tvIntelligenceStars.text = "$intelStars Intelligence"
 
-        // Speed Star/Bolt String
-        val speedBolts = "⚡".repeat(model.speedRating) + "☆".repeat(5 - model.speedRating)
-        holder.tvSpeedStars.text = "$speedBolts Speed"
+        // Speed Star String
+        val speedStars = "★".repeat(model.speedRating) + "☆".repeat(5 - model.speedRating)
+        holder.tvSpeedStars.text = "$speedStars Speed"
 
         // Button state logic strictly tied to physical disk file presence & active background download
         val isDownloading = BackgroundModelDownloadManager.isModelDownloading(model.id)
@@ -76,7 +76,7 @@ class ModelMarketplaceAdapter(
             holder.btnSelectModelCard.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#4F46E5"))
             holder.btnSelectModelCard.setTextColor(Color.WHITE)
         } else if (isSelectedAndDownloaded) {
-            holder.btnSelectModelCard.text = "🟢 ACTIVE"
+            holder.btnSelectModelCard.text = "ACTIVE"
             holder.btnSelectModelCard.setBackgroundResource(R.drawable.bg_chip_selected)
             holder.btnSelectModelCard.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#10B981")) // Emerald Green
             holder.btnSelectModelCard.setTextColor(Color.WHITE)

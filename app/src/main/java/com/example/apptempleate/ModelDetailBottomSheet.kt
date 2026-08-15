@@ -87,7 +87,7 @@ class ModelDetailBottomSheet(
         btnDeleteModel = view.findViewById(R.id.btnDeleteModel)
 
         // Populate Metadata
-        tvDetailIcon.text = model.icon
+        tvDetailIcon.visibility = View.GONE
         tvDetailName.text = model.name
         tvDetailBadge.text = model.badge
         tvDetailTagline.text = model.tagline
@@ -195,34 +195,39 @@ class ModelDetailBottomSheet(
     }
 
     private fun updateUIState() {
-        if (!isAdded) return
-        val context = requireContext()
-
+        val context = context ?: return
+        val currentModel = NoeonAiEngine.getSelectedModel(context)
+        val isDownloaded = NoeonAiEngine.isModelDownloaded(context, model.id)
         val isDownloading = BackgroundModelDownloadManager.isModelDownloading(model.id)
         val downloadProgress = BackgroundModelDownloadManager.getDownloadProgress(model.id)
-
-        val currentIsSelected = NoeonAiEngine.getSelectedModel(context).id == model.id
-        val currentIsDownloaded = NoeonAiEngine.isModelDownloaded(context, model.id)
+        val isSelected = (model.id == currentModel.id) && isDownloaded
 
         if (isDownloading && downloadProgress != null) {
-            btnDetailAction.text = downloadProgress.statusMessage.ifEmpty { "DOWNLOADING (${downloadProgress.percentage}%)" }
+            btnDetailAction.text = "DOWNLOADING ${downloadProgress.percentage}%"
+            btnDetailAction.setBackgroundResource(R.drawable.bg_chip_selected)
             btnDetailAction.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#4F46E5"))
             btnDetailAction.setTextColor(Color.WHITE)
-            btnDeleteModel.visibility = View.GONE
-        } else if (currentIsSelected && currentIsDownloaded) {
-            btnDetailAction.text = "🟢 CURRENTLY ACTIVE MODEL"
+            btnDeleteModel.visibility = View.VISIBLE
+            btnDeleteModel.text = "Cancel Download"
+        } else if (isSelected) {
+            btnDetailAction.text = "ACTIVE"
+            btnDetailAction.setBackgroundResource(R.drawable.bg_chip_selected)
             btnDetailAction.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#10B981"))
             btnDetailAction.setTextColor(Color.WHITE)
             btnDeleteModel.visibility = View.VISIBLE
-        } else if (currentIsDownloaded) {
-            btnDetailAction.text = "SELECT & USE THIS MODEL"
-            btnDetailAction.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.app_utility_text))
+            btnDeleteModel.text = "Delete Model File"
+        } else if (isDownloaded) {
+            btnDetailAction.text = "SELECT AS ACTIVE MODEL"
+            btnDetailAction.setBackgroundResource(R.drawable.bg_button_save_pill)
+            btnDetailAction.backgroundTintList = null
             btnDetailAction.setTextColor(ContextCompat.getColor(context, R.color.app_window_background))
             btnDeleteModel.visibility = View.VISIBLE
+            btnDeleteModel.text = "Delete Model File"
         } else {
-            btnDetailAction.text = "DOWNLOAD REAL GGUF (${model.downloadSizeMb} MB)"
-            btnDetailAction.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#4F46E5"))
-            btnDetailAction.setTextColor(Color.WHITE)
+            btnDetailAction.text = "DOWNLOAD MODEL (${model.downloadSizeMb} MB)"
+            btnDetailAction.setBackgroundResource(R.drawable.bg_button_save_pill)
+            btnDetailAction.backgroundTintList = null
+            btnDetailAction.setTextColor(ContextCompat.getColor(context, R.color.app_window_background))
             btnDeleteModel.visibility = View.GONE
         }
     }

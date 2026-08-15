@@ -25,7 +25,7 @@ class ModelMarketplaceActivity : AppCompatActivity() {
     private lateinit var adapter: ModelMarketplaceAdapter
     private var selectedCategory: String = "All"
 
-    private val categories = listOf("All", "⚡ Fastest", "🧠 Smartest", "👁️ Multimodal", "📚 Long Context", "💻 Coding", "📱 Low Memory")
+    private val categories = listOf("All", "Fastest", "Smartest", "Multimodal", "Long Context", "Coding", "Low Memory")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -150,9 +150,8 @@ class ModelMarketplaceActivity : AppCompatActivity() {
         val filteredList = if (selectedCategory == "All") {
             ModelCatalog.models
         } else {
-            val filterKey = selectedCategory.replace("⚡ ", "").replace("🧠 ", "").replace("👁️ ", "").replace("📚 ", "").replace("💻 ", "").replace("📱 ", "")
             ModelCatalog.models.filter { model ->
-                model.categoryTags.any { tag -> tag.equals(filterKey, ignoreCase = true) }
+                model.categoryTags.any { tag -> tag.equals(selectedCategory, ignoreCase = true) }
             }
         }
 

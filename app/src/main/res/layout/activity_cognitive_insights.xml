@@ -7,7 +7,7 @@
     android:background="@color/app_window_background"
     tools:context=".CognitiveInsightsActivity">
 
-    <!-- Top Navigation Header -->
+    <!-- Top Navigation Header (Floating over top blur) -->
     <ImageButton
         android:id="@+id/btnBack"
         android:layout_width="44dp"
@@ -16,6 +16,7 @@
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_circle_icon_button"
         android:contentDescription="Back"
+        android:elevation="10dp"
         android:padding="10dp"
         android:src="@drawable/ic_close"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,22 +31,36 @@
         android:textColor="@color/text_primary"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:elevation="10dp"
         android:letterSpacing="-0.01"
         app:layout_constraintBottom_toBottomOf="@+id/btnBack"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btnBack" />
 
+    <!-- Floating Top Fade Gradient Overlay -->
+    <View
+        android:id="@+id/vTopFadeOverlay"
+        android:layout_width="0dp"
+        android:layout_height="90dp"
+        android:background="@drawable/bg_top_chat_gradient"
+        android:clickable="false"
+        android:elevation="6dp"
+        android:focusable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
         android:clipToPadding="false"
+        android:paddingTop="76dp"
         android:paddingBottom="36dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnBack">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"

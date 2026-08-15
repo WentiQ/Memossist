@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvGreetingPrompt: TextView
     private lateinit var llWorkspaceRemindersSection: LinearLayout
     private lateinit var rvWorkspaceReminders: RecyclerView
+    private lateinit var vWorkspaceMidGradientOverlay: View
     private lateinit var workspaceRemindersAdapter: WorkspaceRemindersAdapter
 
     private lateinit var rvChatMessages: RecyclerView
@@ -765,8 +766,14 @@ class MainActivity : AppCompatActivity() {
         activeConv.messages.add(userMsg)
         activeConv.lastUpdated = System.currentTimeMillis()
 
-        // Show active chat list & hide greeting
+        // Show active chat list & hide greeting & workspace reminders
         llGreetingContainer.visibility = View.GONE
+        if (this::llWorkspaceRemindersSection.isInitialized) {
+            llWorkspaceRemindersSection.visibility = View.GONE
+        }
+        if (this::vWorkspaceMidGradientOverlay.isInitialized) {
+            vWorkspaceMidGradientOverlay.visibility = View.GONE
+        }
         rvChatMessages.visibility = View.VISIBLE
         btnDeleteCurrentChat.visibility = View.VISIBLE
         // Perform lightweight local pre-analysis to check if user confirmation is required for low-confidence routing
@@ -964,6 +971,12 @@ class MainActivity : AppCompatActivity() {
         currentConversation = conversation
         activeConversationId = conversation.id
         llGreetingContainer.visibility = View.GONE
+        if (this::llWorkspaceRemindersSection.isInitialized) {
+            llWorkspaceRemindersSection.visibility = View.GONE
+        }
+        if (this::vWorkspaceMidGradientOverlay.isInitialized) {
+            vWorkspaceMidGradientOverlay.visibility = View.GONE
+        }
         rvChatMessages.visibility = View.VISIBLE
         btnDeleteCurrentChat.visibility = View.VISIBLE
 
@@ -990,6 +1003,7 @@ class MainActivity : AppCompatActivity() {
         activeConversationId = null
         chatListScrollState = null
         llGreetingContainer.visibility = View.VISIBLE
+        refreshWorkspaceReminders()
         rvChatMessages.visibility = View.GONE
         btnDeleteCurrentChat.visibility = View.GONE
         btnScrollToBottom.visibility = View.GONE
@@ -1161,7 +1175,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateHeaderActiveModel() {
         val activeModel = NoeonAiEngine.getSelectedModel(this)
-        tvHeaderModelIcon.text = activeModel.icon
+        tvHeaderModelIcon.visibility = View.GONE
         tvHeaderModelName.text = activeModel.name
     }
 
@@ -1177,6 +1191,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupWorkspaceReminders() {
         llWorkspaceRemindersSection = findViewById(R.id.llWorkspaceRemindersSection)
         rvWorkspaceReminders = findViewById(R.id.rvWorkspaceReminders)
+        vWorkspaceMidGradientOverlay = findViewById(R.id.vWorkspaceMidGradientOverlay)
 
         workspaceRemindersAdapter = WorkspaceRemindersAdapter { reminder ->
             val intent = Intent(this, RemindersActivity::class.java).apply {
@@ -1191,15 +1206,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refreshWorkspaceReminders() {
+        if (!isNewChatState && currentConversation != null) {
+            if (this::llWorkspaceRemindersSection.isInitialized) {
+                llWorkspaceRemindersSection.visibility = View.GONE
+            }
+            if (this::vWorkspaceMidGradientOverlay.isInitialized) {
+                vWorkspaceMidGradientOverlay.visibility = View.GONE
+            }
+            return
+        }
         val upcomingList = ReminderRepository.getRemindersInNext24Hours(this)
         val prefs = getSharedPreferences("MemossistPrefs", MODE_PRIVATE)
         val userName = prefs.getString("user_name", "Dinesh") ?: "Dinesh"
 
-        if (upcomingList.isNotEmpty()) {
-            llWorkspaceRemindersSection.visibility = View.VISIBLE
-            workspaceRemindersAdapter.setReminders(upcomingList, userName)
-        } else {
-            llWorkspaceRemindersSection.visibility = View.GONE
+        if (this::llWorkspaceRemindersSection.isInitialized) {
+            if (upcomingList.isNotEmpty()) {
+                llWorkspaceRemindersSection.visibility = View.VISIBLE
+                if (this::vWorkspaceMidGradientOverlay.isInitialized) {
+                    vWorkspaceMidGradientOverlay.visibility = View.VISIBLE
+                }
+                workspaceRemindersAdapter.setReminders(upcomingList, userName)
+            } else {
+                llWorkspaceRemindersSection.visibility = View.GONE
+                if (this::vWorkspaceMidGradientOverlay.isInitialized) {
+                    vWorkspaceMidGradientOverlay.visibility = View.GONE
+                }
+            }
         }
     }
 
