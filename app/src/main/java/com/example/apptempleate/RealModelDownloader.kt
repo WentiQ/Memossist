@@ -64,7 +64,7 @@ object RealModelDownloader {
             try {
                 var currentUrl = model.downloadUrl
                 var redirects = 0
-                val maxRedirects = 5
+                val maxRedirects = 10
 
                 // Follow redirects (Hugging Face redirects to CDN storage)
                 while (redirects < maxRedirects) {
@@ -73,7 +73,8 @@ object RealModelDownloader {
                     urlConnection.connectTimeout = 30000
                     urlConnection.readTimeout = 120000
                     urlConnection.requestMethod = "GET"
-                    urlConnection.setRequestProperty("User-Agent", "MemossistAndroidApp/1.0")
+                    urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36")
+                    urlConnection.setRequestProperty("Accept-Encoding", "identity")
                     urlConnection.instanceFollowRedirects = false
                     urlConnection.connect()
 
@@ -83,8 +84,16 @@ object RealModelDownloader {
                         status == HttpURLConnection.HTTP_SEE_OTHER ||
                         status == 307 || status == 308) {
 
-                        currentUrl = urlConnection.getHeaderField("Location")
+                        val location = urlConnection.getHeaderField("Location")
                         urlConnection.disconnect()
+                        if (location.isNullOrEmpty()) {
+                            throw Exception("Received redirect status $status with no Location header")
+                        }
+                        currentUrl = if (location.startsWith("http://") || location.startsWith("https://")) {
+                            location
+                        } else {
+                            URL(URL(currentUrl), location).toString()
+                        }
                         redirects++
                     } else if (status == HttpURLConnection.HTTP_OK) {
                         break

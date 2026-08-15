@@ -123,6 +123,9 @@ class OnboardingActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_onboarding)
 
+        // Theme Adaptive App Logo at Top Header
+        findViewById<ImageView>(R.id.ivHeaderLogo)?.setImageResource(ThemeManager.getLogoDrawable(this))
+
         prefs = getSharedPreferences("MemossistPrefs", Context.MODE_PRIVATE)
 
         // Progress Pills Bindings
@@ -286,16 +289,19 @@ class OnboardingActivity : AppCompatActivity() {
 
         // Pill 1 -> Checked
         pillStep1.setBackgroundResource(R.drawable.bg_tag_rounded)
-        pillStep1.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.transparent)
+        pillStep1.backgroundTintList = ContextCompat.getColorStateList(this, R.color.app_tag_background)
         tvStep1Num.text = "✓"
+        tvStep1Num.backgroundTintList = ContextCompat.getColorStateList(this, R.color.app_card_border)
+        tvStep1Num.setTextColor(ContextCompat.getColor(this, R.color.text_primary))
+        findViewById<TextView>(R.id.tvStep1Text).setTextColor(ContextCompat.getColor(this, R.color.text_primary))
 
         // Pill 2 -> Active
-        pillStep2.setBackgroundResource(R.drawable.bg_metallic_button)
-        pillStep2.backgroundTintList = null
+        pillStep2.setBackgroundResource(R.drawable.bg_tag_rounded)
+        pillStep2.backgroundTintList = ContextCompat.getColorStateList(this, R.color.app_card_border)
         tvStep2Num.setBackgroundResource(R.drawable.bg_circle_icon_button)
-        tvStep2Num.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.white)
-        tvStep2Num.setTextColor(ContextCompat.getColor(this, android.R.color.black))
-        tvStep2Text.setTextColor(ContextCompat.getColor(this, android.R.color.white))
+        tvStep2Num.backgroundTintList = ContextCompat.getColorStateList(this, R.color.app_tag_background)
+        tvStep2Num.setTextColor(ContextCompat.getColor(this, R.color.text_primary))
+        tvStep2Text.setTextColor(ContextCompat.getColor(this, R.color.text_primary))
     }
 
     private fun showStep3() {
@@ -303,17 +309,19 @@ class OnboardingActivity : AppCompatActivity() {
 
         // Pill 2 -> Checked
         pillStep2.setBackgroundResource(R.drawable.bg_tag_rounded)
-        pillStep2.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.transparent)
+        pillStep2.backgroundTintList = ContextCompat.getColorStateList(this, R.color.app_tag_background)
         tvStep2Num.text = "✓"
-        tvStep2Text.setTextColor(ContextCompat.getColor(this, android.R.color.black))
+        tvStep2Num.backgroundTintList = ContextCompat.getColorStateList(this, R.color.app_card_border)
+        tvStep2Num.setTextColor(ContextCompat.getColor(this, R.color.text_primary))
+        tvStep2Text.setTextColor(ContextCompat.getColor(this, R.color.text_primary))
 
         // Pill 3 -> Active
-        pillStep3.setBackgroundResource(R.drawable.bg_metallic_button)
-        pillStep3.backgroundTintList = null
+        pillStep3.setBackgroundResource(R.drawable.bg_tag_rounded)
+        pillStep3.backgroundTintList = ContextCompat.getColorStateList(this, R.color.app_card_border)
         tvStep3Num.setBackgroundResource(R.drawable.bg_circle_icon_button)
-        tvStep3Num.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.white)
-        tvStep3Num.setTextColor(ContextCompat.getColor(this, android.R.color.black))
-        tvStep3Text.setTextColor(ContextCompat.getColor(this, android.R.color.white))
+        tvStep3Num.backgroundTintList = ContextCompat.getColorStateList(this, R.color.app_tag_background)
+        tvStep3Num.setTextColor(ContextCompat.getColor(this, R.color.text_primary))
+        tvStep3Text.setTextColor(ContextCompat.getColor(this, R.color.text_primary))
     }
 
     private fun showStep4() {
@@ -321,17 +329,19 @@ class OnboardingActivity : AppCompatActivity() {
 
         // Pill 3 -> Checked
         pillStep3.setBackgroundResource(R.drawable.bg_tag_rounded)
-        pillStep3.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.transparent)
+        pillStep3.backgroundTintList = ContextCompat.getColorStateList(this, R.color.app_tag_background)
         tvStep3Num.text = "✓"
-        tvStep3Text.setTextColor(ContextCompat.getColor(this, android.R.color.black))
+        tvStep3Num.backgroundTintList = ContextCompat.getColorStateList(this, R.color.app_card_border)
+        tvStep3Num.setTextColor(ContextCompat.getColor(this, R.color.text_primary))
+        tvStep3Text.setTextColor(ContextCompat.getColor(this, R.color.text_primary))
 
         // Pill 4 -> Active
-        pillStep4.setBackgroundResource(R.drawable.bg_metallic_button)
-        pillStep4.backgroundTintList = null
+        pillStep4.setBackgroundResource(R.drawable.bg_tag_rounded)
+        pillStep4.backgroundTintList = ContextCompat.getColorStateList(this, R.color.app_card_border)
         tvStep4Num.setBackgroundResource(R.drawable.bg_circle_icon_button)
-        tvStep4Num.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.white)
-        tvStep4Num.setTextColor(ContextCompat.getColor(this, android.R.color.black))
-        tvStep4Text.setTextColor(ContextCompat.getColor(this, android.R.color.white))
+        tvStep4Num.backgroundTintList = ContextCompat.getColorStateList(this, R.color.app_tag_background)
+        tvStep4Num.setTextColor(ContextCompat.getColor(this, R.color.text_primary))
+        tvStep4Text.setTextColor(ContextCompat.getColor(this, R.color.text_primary))
     }
 
     private fun animateViewTransition(fromView: View, toView: View) {

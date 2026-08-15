@@ -119,9 +119,11 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
                 Toast.makeText(this, "Microphone Muted", Toast.LENGTH_SHORT).show()
             } else {
                 btnMuteMic.setImageResource(R.drawable.ic_mic)
-                tvVoiceStatus.text = "Listening..."
-                tvVoiceSubStatus.text = "Speak now..."
-                startListeningLoop()
+                if (!isAiResponding) {
+                    tvVoiceStatus.text = "Listening..."
+                    tvVoiceSubStatus.text = "Speak now..."
+                    startListeningLoop()
+                }
                 Toast.makeText(this, "Microphone Unmuted", Toast.LENGTH_SHORT).show()
             }
         }
@@ -155,7 +157,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
                     override fun onDone(utteranceId: String?) {
                         runOnUiThread {
                             isAiResponding = false
-                            if (!isMuted) {
+                            if (!isMuted && !isCallEnding) {
                                 tvVoiceStatus.text = "Listening..."
                                 tvVoiceSubStatus.text = "Speak now..."
                                 startListeningLoop()
@@ -166,7 +168,9 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
                     override fun onError(utteranceId: String?) {
                         runOnUiThread {
                             isAiResponding = false
-                            if (!isMuted) {
+                            if (!isMuted && !isCallEnding) {
+                                tvVoiceStatus.text = "Listening..."
+                                tvVoiceSubStatus.text = "Speak now..."
                                 startListeningLoop()
                             }
                         }
@@ -190,7 +194,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
     }
 
     private fun startListeningLoop() {
-        if (isMuted || isAiResponding) return
+        if (isCallEnding || isMuted || isAiResponding) return
 
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
             Toast.makeText(this, "Speech Recognition is not available on this device", Toast.LENGTH_SHORT).show()
@@ -201,6 +205,10 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
             speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
             speechRecognizer?.setRecognitionListener(object : RecognitionListener {
                 override fun onReadyForSpeech(params: Bundle?) {
+                    if (isAiResponding || isMuted || isCallEnding) {
+                        stopListeningLoop()
+                        return
+                    }
                     isListening = true
                     tvVoiceStatus.text = "Listening..."
                     tvVoiceSubStatus.text = "Speak to Memossist..."
@@ -213,18 +221,20 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
                 override fun onEndOfSpeech() {
                     isListening = false
                     if (isCallEnding) return
-                    tvVoiceStatus.text = "Thinking..."
-                    tvVoiceSubStatus.text = "Processing voice input..."
+                    if (!isAiResponding) {
+                        tvVoiceStatus.text = "Thinking..."
+                        tvVoiceSubStatus.text = "Processing voice input..."
+                    }
                 }
 
                 override fun onError(error: Int) {
                     isListening = false
-                    if (isCallEnding) return
-                    if (!isMuted && !isAiResponding) {
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            if (!isCallEnding) startListeningLoop()
-                        }, 1200)
-                    }
+                    if (isCallEnding || isAiResponding || isMuted) return
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        if (!isCallEnding && !isAiResponding && !isMuted) {
+                            startListeningLoop()
+                        }
+                    }, 1200)
                 }
 
                 override fun onResults(results: Bundle?) {
@@ -238,7 +248,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
                             return
                         }
                     }
-                    if (!isMuted && !isCallEnding) {
+                    if (!isMuted && !isCallEnding && !isAiResponding) {
                         startListeningLoop()
                     }
                 }
@@ -266,6 +276,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         isListening = false
         try {
             speechRecognizer?.stopListening()
+            speechRecognizer?.cancel()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -273,6 +284,10 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
 
     private fun processUserVoiceInput(userText: String) {
         if (isCallEnding || userText.isBlank()) return
+
+        // 1. Immediately stop listening and set AI responding flag to prevent speech recognizer restarts
+        stopListeningLoop()
+        isAiResponding = true
 
         tvVoiceStatus.text = "Thinking..."
         tvVoiceSubStatus.text = "\"$userText\""
@@ -290,12 +305,12 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
             msg.thinkingStatus = null
         }
 
-        // 1. Update Title dynamically from first spoken user prompt (just like standard chat)
+        // 2. Update Title dynamically from first spoken user prompt (just like standard chat)
         if (conv.title == "New Chat" || conv.messages.isEmpty() || conv.messages.size <= 1) {
             conv.title = if (userText.length > 28) userText.take(28) + "..." else userText
         }
 
-        // 2. Add User Message and Thinking Message to Chat Conversation in real-time
+        // 3. Add User Message and Thinking Message to Chat Conversation in real-time
         val userMsg = ChatMessage(
             conversationId = conv.id,
             text = userText,
@@ -303,8 +318,8 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         )
         conv.messages.add(userMsg)
 
-        val (avgSec, totalCount) = ResponseStatsRepository.getStats(this)
-        val initialTimer = ResponseStatsRepository.formatTimerString(this, 0L, avgSec, totalCount)
+        val preClass = MessageAnalyzer.analyze(this, userText)
+        val initialTimer = ResponseStatsRepository.formatTimerStringForCase(this, 0L, preClass.messageType)
 
         val aiMsg = ChatMessage(
             conversationId = conv.id,
@@ -318,7 +333,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         conv.lastUpdated = System.currentTimeMillis()
         ChatRepository.saveOrUpdateConversation(this, conv)
 
-        // 3. Launch ChatAiForegroundService so generation continues strictly in background even if user exits call
+        // 4. Launch ChatAiForegroundService so generation continues strictly in background even if user exits call
         ChatAiForegroundService.startService(
             context = this,
             conversationId = conv.id,
@@ -329,19 +344,46 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
     }
 
     private fun speakAiResponse(text: String) {
+        stopListeningLoop()
+
+        if (text.isBlank()) {
+            isAiResponding = false
+            if (!isMuted && !isCallEnding) {
+                tvVoiceStatus.text = "Listening..."
+                tvVoiceSubStatus.text = "Speak now..."
+                startListeningLoop()
+            }
+            return
+        }
+
         if (isTtsReady) {
-            stopListeningLoop()
             isAiResponding = true
             tvVoiceStatus.text = "Responding..."
             tvVoiceSubStatus.text = "Memossist Live Voice"
 
+            val utteranceId = "MEMOSSIST_LIVE_${UUID.randomUUID()}"
             val params = Bundle()
-            params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "MEMOSSIST_LIVE_UTTERANCE")
-            textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, params, "MEMOSSIST_LIVE_UTTERANCE")
+            params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
+            val result = textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, params, utteranceId)
+            if (result == TextToSpeech.ERROR) {
+                isAiResponding = false
+                if (!isMuted && !isCallEnding) {
+                    tvVoiceStatus.text = "Listening..."
+                    tvVoiceSubStatus.text = "Speak now..."
+                    startListeningLoop()
+                }
+            }
         } else {
-            Handler(Looper.getMainLooper()).postDelayed({
-                if (!isMuted) startListeningLoop()
-            }, 2000)
+            isAiResponding = false
+            if (!isMuted && !isCallEnding) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    if (!isCallEnding && !isMuted && !isAiResponding) {
+                        tvVoiceStatus.text = "Listening..."
+                        tvVoiceSubStatus.text = "Speak now..."
+                        startListeningLoop()
+                    }
+                }, 1500)
+            }
         }
     }
 

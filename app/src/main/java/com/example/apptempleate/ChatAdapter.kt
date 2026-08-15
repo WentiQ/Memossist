@@ -13,7 +13,7 @@ class ChatAdapter(
     private val onMessageLongClick: ((ChatMessage) -> Unit)? = null,
     private val onUserMessageLongClick: ((ChatMessage) -> Unit)? = null,
     private val onChangeTypeClicked: ((ChatMessage) -> Unit)? = null,
-    private val onConfirmationTypeSelected: ((ChatMessage, MessageType) -> Unit)? = null
+    private val onConfirmationRequestClicked: ((ChatMessage) -> Unit)? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -47,7 +47,7 @@ class ChatAdapter(
         }
         if (idx != -1) {
             messages[idx].text = partialText
-            notifyItemChanged(idx, "PAYLOAD_STEP_UPDATE")
+            notifyItemChanged(idx, "PAYLOAD_STREAM_UPDATE")
         }
     }
 
@@ -63,12 +63,16 @@ class ChatAdapter(
         }
     }
 
-    fun updateParamEvaluation(messageId: String, status: String?, text: String?) {
-        val idx = messages.indexOfFirst { it.id == messageId }
+    fun updateParamEvaluation(messageId: String = "", status: String?, statusText: String?) {
+        val idx = if (messageId.isNotEmpty()) {
+            messages.indexOfFirst { it.id == messageId }
+        } else {
+            messages.indexOfLast { !it.isUser }
+        }
         if (idx != -1) {
             messages[idx].paramEvaluationStatus = status
-            messages[idx].paramEvaluationText = text
-            notifyItemChanged(idx)
+            messages[idx].paramEvaluationText = statusText
+            notifyItemChanged(idx, "PAYLOAD_PARAM_UPDATE")
         }
     }
 
@@ -90,7 +94,8 @@ class ChatAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
         if (payloads.isNotEmpty() && holder is AiViewHolder) {
             val message = messages[position]
-            if (message.isThinking) {
+            val lastPayload = payloads.last()
+            if (lastPayload == "PAYLOAD_STEP_UPDATE") {
                 val statusText = message.thinkingStatus ?: "Thinking..."
                 holder.tvThinkingStep.text = statusText
                 if (statusText.startsWith("⏳ In queue")) {
@@ -104,9 +109,25 @@ class ChatAdapter(
                     holder.typingDotsView.startAnimation()
                     holder.tvThinkingStep.setTextColor(android.graphics.Color.parseColor("#4F46E5"))
                 }
-                if (message.text.isNotEmpty()) {
-                    holder.tvAiMsg.visibility = View.VISIBLE
-                    holder.tvAiMsg.text = message.text
+                return
+            } else if (lastPayload == "PAYLOAD_STREAM_UPDATE") {
+                holder.llAiMessageBubble.visibility = View.VISIBLE
+                holder.tvAiMsg.visibility = View.VISIBLE
+                holder.tvAiMsg.text = message.text
+                return
+            } else if (lastPayload == "PAYLOAD_PARAM_UPDATE") {
+                val paramText = message.paramEvaluationText
+                if (!paramText.isNullOrBlank()) {
+                    holder.llAiMessageBubble.visibility = View.VISIBLE
+                    holder.llParamProgressContainer.visibility = View.VISIBLE
+                    holder.tvParamProgressText.text = paramText
+                    if (message.paramEvaluationStatus == "DONE") {
+                        holder.pbParamProgress.visibility = View.GONE
+                    } else {
+                        holder.pbParamProgress.visibility = View.VISIBLE
+                    }
+                } else {
+                    holder.llParamProgressContainer.visibility = View.GONE
                 }
                 return
             }
@@ -116,8 +137,15 @@ class ChatAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val message = messages[position]
+
         if (holder is UserViewHolder) {
-            holder.tvUserMsg.text = message.text
+            if (message.text.isNotEmpty()) {
+                holder.tvUserMsg.visibility = View.VISIBLE
+                holder.tvUserMsg.text = message.text
+            } else {
+                holder.tvUserMsg.visibility = View.GONE
+            }
+
             if (message.attachments.isNotEmpty()) {
                 holder.rvUserAttachments.visibility = View.VISIBLE
                 holder.rvUserAttachments.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(holder.itemView.context, RecyclerView.HORIZONTAL, false)
@@ -126,7 +154,7 @@ class ChatAdapter(
                 holder.rvUserAttachments.visibility = View.GONE
             }
 
-            // Long click to edit last user message
+            // Enable Long Press on user message to Edit & Resend
             holder.itemView.setOnLongClickListener {
                 val lastUserMsg = messages.findLast { it.isUser }
                 if (message.id == lastUserMsg?.id) {
@@ -138,6 +166,7 @@ class ChatAdapter(
             }
         } else if (holder is AiViewHolder) {
             if (message.awaitingTypeConfirmation) {
+                holder.llAiMessageBubble.visibility = View.VISIBLE
                 holder.llThinkingContainer.visibility = View.GONE
                 holder.typingDotsView.stopAnimation()
                 holder.tvAiMsg.visibility = View.GONE
@@ -147,37 +176,17 @@ class ChatAdapter(
 
                 val detectedName = message.detectedMessageType?.displayName ?: "Detected Intent"
                 val confPct = (message.classificationConfidence * 100).toInt()
-                holder.tvConfirmationTitle.text = "Detected $detectedName ($confPct% confidence). Select type to proceed:"
+                holder.tvConfirmationTitle.text = "Detected $detectedName ($confPct% confidence)"
+                holder.tvConfirmationButtonText.text = "🎯 Choose Processing Intent ▾"
 
-                holder.llConfirmChipsContainer.removeAllViews()
-                val context = holder.itemView.context
-                val density = context.resources.displayMetrics.density
-
-                for (type in MessageType.values()) {
-                    val chip = TextView(context).apply {
-                        text = "${type.iconEmoji} ${type.displayName}"
-                        textSize = 12f
-                        setTypeface(typeface, android.graphics.Typeface.BOLD)
-                        setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.text_primary))
-                        setBackgroundResource(R.drawable.bg_button_cancel_pill)
-                        setPadding((12 * density).toInt(), (6 * density).toInt(), (12 * density).toInt(), (6 * density).toInt())
-                        isClickable = true
-                        isFocusable = true
-                        val lp = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                        ).apply {
-                            setMargins(0, 0, (8 * density).toInt(), 0)
-                        }
-                        layoutParams = lp
-
-                        setOnClickListener {
-                            onConfirmationTypeSelected?.invoke(message, type)
-                        }
-                    }
-                    holder.llConfirmChipsContainer.addView(chip)
+                holder.btnOpenConfirmationPopup.setOnClickListener {
+                    onConfirmationRequestClicked?.invoke(message)
+                }
+                holder.llConfirmationContainer.setOnClickListener {
+                    onConfirmationRequestClicked?.invoke(message)
                 }
             } else if (message.isThinking) {
+                holder.llAiMessageBubble.visibility = View.VISIBLE
                 holder.llConfirmationContainer.visibility = View.GONE
                 holder.llThinkingContainer.visibility = View.VISIBLE
                 val statusText = message.thinkingStatus ?: "Thinking..."
@@ -211,16 +220,15 @@ class ChatAdapter(
                 holder.llConfirmationContainer.visibility = View.GONE
                 holder.llThinkingContainer.visibility = View.GONE
                 holder.typingDotsView.stopAnimation()
-                holder.tvAiMsg.visibility = View.VISIBLE
-                holder.tvAiMsg.text = message.text
 
-                // Render attached media/files from used experiences
-                if (message.attachments.isNotEmpty()) {
-                    holder.rvAiAttachments.visibility = View.VISIBLE
-                    holder.rvAiAttachments.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(holder.itemView.context, RecyclerView.HORIZONTAL, false)
-                    holder.rvAiAttachments.adapter = MediaAttachmentAdapter(message.attachments)
+                val hasText = message.text.isNotEmpty()
+                val hasParams = !message.paramEvaluationText.isNullOrBlank()
+
+                if (hasText) {
+                    holder.tvAiMsg.visibility = View.VISIBLE
+                    holder.tvAiMsg.text = message.text
                 } else {
-                    holder.rvAiAttachments.visibility = View.GONE
+                    holder.tvAiMsg.visibility = View.GONE
                 }
 
                 // Render 2nd LLM Parameter Evaluation Progress / Completion Container
@@ -235,6 +243,22 @@ class ChatAdapter(
                     }
                 } else {
                     holder.llParamProgressContainer.visibility = View.GONE
+                }
+
+                // Show text bubble if there is text or parameter progress
+                if (hasText || hasParams) {
+                    holder.llAiMessageBubble.visibility = View.VISIBLE
+                } else {
+                    holder.llAiMessageBubble.visibility = View.GONE
+                }
+
+                // Render attached media/files from used experiences in WhatsApp-style vertical fashion
+                if (message.attachments.isNotEmpty()) {
+                    holder.rvAiAttachments.visibility = View.VISIBLE
+                    holder.rvAiAttachments.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(holder.itemView.context, RecyclerView.VERTICAL, false)
+                    holder.rvAiAttachments.adapter = AiMediaAttachmentAdapter(message.attachments)
+                } else {
+                    holder.rvAiAttachments.visibility = View.GONE
                 }
 
                 // Enable Long Press Inspection for AI response messages
@@ -254,13 +278,15 @@ class ChatAdapter(
     }
 
     class AiViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val llAiMessageBubble: LinearLayout = itemView.findViewById(R.id.llAiMessageBubble)
         val llThinkingContainer: LinearLayout = itemView.findViewById(R.id.llThinkingContainer)
         val typingDotsView: TypingDotsView = itemView.findViewById(R.id.typingDotsView)
         val tvThinkingStep: TextView = itemView.findViewById(R.id.tvThinkingStep)
         val btnChangeMessageType: TextView = itemView.findViewById(R.id.btnChangeMessageType)
         val llConfirmationContainer: LinearLayout = itemView.findViewById(R.id.llConfirmationContainer)
         val tvConfirmationTitle: TextView = itemView.findViewById(R.id.tvConfirmationTitle)
-        val llConfirmChipsContainer: LinearLayout = itemView.findViewById(R.id.llConfirmChipsContainer)
+        val btnOpenConfirmationPopup: View = itemView.findViewById(R.id.btnOpenConfirmationPopup)
+        val tvConfirmationButtonText: TextView = itemView.findViewById(R.id.tvConfirmationButtonText)
         val tvAiMsg: TextView = itemView.findViewById(R.id.tvAiMsg)
         val rvAiAttachments: RecyclerView = itemView.findViewById(R.id.rvAiAttachments)
         val llParamProgressContainer: LinearLayout = itemView.findViewById(R.id.llParamProgressContainer)

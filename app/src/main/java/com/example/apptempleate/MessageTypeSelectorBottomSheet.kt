@@ -13,6 +13,8 @@ import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class MessageTypeSelectorBottomSheet(
+    private val title: String? = null,
+    private val subtitle: String? = null,
     private val currentlySelected: MessageType? = null,
     private val onTypeSelected: (MessageType) -> Unit
 ) : BottomSheetDialogFragment() {
@@ -39,7 +41,17 @@ class MessageTypeSelectorBottomSheet(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val tvTitle: TextView = view.findViewById(R.id.tvTypeSelectorTitle)
+        val tvSubtitle: TextView = view.findViewById(R.id.tvTypeSelectorSubtitle)
         val btnClose: ImageButton = view.findViewById(R.id.btnCloseTypeSelector)
+
+        if (!title.isNullOrEmpty()) {
+            tvTitle.text = title
+        }
+        if (!subtitle.isNullOrEmpty()) {
+            tvSubtitle.text = subtitle
+        }
+
         btnClose.setOnClickListener { dismiss() }
 
         val llContainer: LinearLayout = view.findViewById(R.id.llTypesListContainer)

@@ -170,7 +170,8 @@ class ModelDetailBottomSheet(
             val currentIsDownloaded = NoeonAiEngine.isModelDownloaded(context, model.id)
 
             if (!currentIsDownloaded) {
-                // Model file is NOT downloaded on disk -> ALWAYS start download!
+                // Model file is NOT downloaded on disk -> Select target and start download
+                NoeonAiEngine.setSelectedModel(context, model.id)
                 BackgroundModelDownloadManager.startDownload(context, model)
                 Toast.makeText(context, "Started background download for ${model.name} (${model.downloadSizeMb} MB)", Toast.LENGTH_LONG).show()
                 updateUIState()

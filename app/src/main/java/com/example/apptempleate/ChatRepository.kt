@@ -105,13 +105,13 @@ object ChatRepository {
             val startTimeMs = System.currentTimeMillis()
             var currentBaseStepText = "🔍 Classifying message locally…"
             var isPipelineRunning = true
+            var currentClassificationType: MessageType? = forcedMessageType
 
             fun updateLiveStep(stepText: String) {
                 if (isCancelled()) return
                 currentBaseStepText = stepText
                 val elapsedSec = (System.currentTimeMillis() - startTimeMs) / 1000L
-                val (avgSec, totalCount) = ResponseStatsRepository.getStats(context)
-                val timerStr = ResponseStatsRepository.formatTimerString(context, elapsedSec, avgSec, totalCount)
+                val timerStr = ResponseStatsRepository.formatTimerStringForCase(context, elapsedSec, currentClassificationType)
                 callback.onStepUpdate("$currentBaseStepText ($timerStr)")
             }
 
@@ -119,14 +119,14 @@ object ChatRepository {
             val tickerFuture = tickerExecutor.scheduleAtFixedRate({
                 if (isPipelineRunning && !isCancelled()) {
                     val elapsedSec = (System.currentTimeMillis() - startTimeMs) / 1000L
-                    val (avgSec, totalCount) = ResponseStatsRepository.getStats(context)
-                    val timerStr = ResponseStatsRepository.formatTimerString(context, elapsedSec, avgSec, totalCount)
+                    val timerStr = ResponseStatsRepository.formatTimerStringForCase(context, elapsedSec, currentClassificationType)
                     callback.onStepUpdate("$currentBaseStepText ($timerStr)")
                 }
             }, 0L, 1L, java.util.concurrent.TimeUnit.SECONDS)
 
             // STEP 1: Local Message Classification & Routing
             val classification = MessageAnalyzer.analyze(context, userMessage, forcedMessageType)
+            currentClassificationType = classification.messageType
 
             if (isCancelled()) {
                 isPipelineRunning = false
@@ -389,7 +389,8 @@ object ChatRepository {
 
             // Record exact duration for online running average calculation
             val durationSec = (System.currentTimeMillis() - startTimeMs) / 1000.0f
-             if (!isCancelled()) {
+            ResponseStatsRepository.recordCaseResponseTime(context, classification.messageType, durationSec)
+            if (!isCancelled()) {
                 // Invoke completion callback directly on execution thread
                 callback.onCompleted(finalAnswer, finalDebugLog, usedExperienceAttachments, createdMemoryIds, createdReminderId, factsToEvaluate)
             }

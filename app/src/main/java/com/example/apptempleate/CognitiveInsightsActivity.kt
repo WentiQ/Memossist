@@ -31,6 +31,10 @@ class CognitiveInsightsActivity : AppCompatActivity() {
     private lateinit var tvStatParamCount: TextView
     private lateinit var tvStatAvgStrength: TextView
     private lateinit var tvStatAvgHalfLife: TextView
+    private lateinit var tvStatForgottenCount: TextView
+    private lateinit var tvStatForgottenSub: TextView
+    private lateinit var tvStatActiveRetention: TextView
+    private lateinit var tvStatActiveRetentionSub: TextView
 
     // DAG Topology Card
     private lateinit var tvTopologyStatus: TextView
@@ -44,6 +48,11 @@ class CognitiveInsightsActivity : AppCompatActivity() {
     private lateinit var tvParamLastDuration: TextView
     private lateinit var tvParamTotalFacts: TextView
     private lateinit var tvParamDecayHealth: TextView
+
+    // Case-by-case Latency Graph Card
+    private lateinit var tvCaseGraphStatus: TextView
+    private lateinit var tvCaseGraphSummary: TextView
+    private lateinit var llCaseLatencyGraphContainer: LinearLayout
 
     private data class ClusterResult(
         val clustersCount: Int,
@@ -89,6 +98,15 @@ class CognitiveInsightsActivity : AppCompatActivity() {
         tvStatParamCount = findViewById(R.id.tvStatParamCount)
         tvStatAvgStrength = findViewById(R.id.tvStatAvgStrength)
         tvStatAvgHalfLife = findViewById(R.id.tvStatAvgHalfLife)
+
+        tvStatForgottenCount = findViewById(R.id.tvStatForgottenCount)
+        tvStatForgottenSub = findViewById(R.id.tvStatForgottenSub)
+        tvStatActiveRetention = findViewById(R.id.tvStatActiveRetention)
+        tvStatActiveRetentionSub = findViewById(R.id.tvStatActiveRetentionSub)
+
+        tvCaseGraphStatus = findViewById(R.id.tvCaseGraphStatus)
+        tvCaseGraphSummary = findViewById(R.id.tvCaseGraphSummary)
+        llCaseLatencyGraphContainer = findViewById(R.id.llCaseLatencyGraphContainer)
 
         tvTopologyStatus = findViewById(R.id.tvTopologyStatus)
         tvConnectedRatio = findViewById(R.id.tvConnectedRatio)
@@ -153,6 +171,8 @@ class CognitiveInsightsActivity : AppCompatActivity() {
             0.0
         }
         val healthyMemoriesCount = allMemories.count { MemoryDecayCalculator.calculateCurrentStrength(it) >= 0.50 }
+        val forgottenCount = MemoryVaultRepository.getForgottenMemoriesCount(this)
+        val retentionPct = if (allMemories.isNotEmpty()) (healthyMemoriesCount * 100) / allMemories.size else 100
 
         // 6. Update Grid Cards
         tvStatTotalMemories.text = "$memoriesCount"
@@ -166,6 +186,11 @@ class CognitiveInsightsActivity : AppCompatActivity() {
         tvStatParamCount.text = if (totalParamCount > 0) "#$totalParamCount facts scored" else "Avg parameter scoring"
         tvStatAvgStrength.text = String.format(Locale.US, "%.2f", avgStrength)
         tvStatAvgHalfLife.text = String.format(Locale.US, "Avg half-life: %.0fd", avgHalfLife)
+
+        tvStatForgottenCount.text = "$forgottenCount"
+        tvStatForgottenSub.text = if (forgottenCount > 0) "$forgottenCount pruned via decay" else "0 memories forgotten"
+        tvStatActiveRetention.text = "$retentionPct%"
+        tvStatActiveRetentionSub.text = "$healthyMemoriesCount of $memoriesCount memories healthy"
 
         // 7. Update DAG Topology Analysis Card
         val connectedMemoriesCount = (memoriesCount - orphansCount).coerceAtLeast(0)
@@ -190,8 +215,60 @@ class CognitiveInsightsActivity : AppCompatActivity() {
         tvParamTotalFacts.text = "Total Facts Scored: $totalParamCount"
         tvParamDecayHealth.text = "Retention Health: $healthyMemoriesCount of $memoriesCount memories in high-strength state. Vault half-life average is ${String.format(Locale.US, "%.0f", avgHalfLife)} days."
 
-        // 9. Humanoid AI Insight Statement Synthesis
-        tvHumanoidAiInsightStatement.text = "Hello $userName! Your Memory Vault holds $memoriesCount memories ($formattedDataSize) with an average strength of ${String.format(Locale.US, "%.2f", avgStrength)}. Graph topology reveals $dagEdgesCount synaptic edges across $clustersCount cluster(s). 2nd LLM scores fact parameters in $formattedParamAvgSpeed on average without delaying chat responses."
+        // 9. Case-By-Case Latency Graph Rendering
+        renderCaseLatencyGraph()
+
+        // 10. Humanoid AI Insight Statement Synthesis
+        tvHumanoidAiInsightStatement.text = "Hello $userName! Your Memory Vault holds $memoriesCount memories ($formattedDataSize) with $forgottenCount forgotten/pruned and an average retention strength of ${String.format(Locale.US, "%.2f", avgStrength)}. Graph topology reveals $dagEdgesCount synaptic edges across $clustersCount cluster(s). 2nd LLM scores fact parameters in $formattedParamAvgSpeed on average without delaying chat responses."
+    }
+
+    private fun renderCaseLatencyGraph() {
+        llCaseLatencyGraphContainer.removeAllViews()
+        val caseStats = ResponseStatsRepository.getAllCaseStats(this)
+        val maxLatency = caseStats.maxOfOrNull { it.effectiveEstimatedSeconds } ?: 7.0f
+
+        val fastest = caseStats.minByOrNull { it.effectiveEstimatedSeconds }
+        val heaviest = caseStats.maxByOrNull { it.effectiveEstimatedSeconds }
+
+        if (fastest != null && heaviest != null) {
+            tvCaseGraphSummary.text = "Fastest: ${fastest.icon} ${fastest.displayName} (${String.format(Locale.US, "%.1fs", fastest.effectiveEstimatedSeconds)}) • Heaviest: ${heaviest.icon} ${heaviest.displayName} (${String.format(Locale.US, "%.1fs", heaviest.effectiveEstimatedSeconds)})"
+        }
+
+        val totalEvaluated = caseStats.sumOf { it.totalCount }
+        tvCaseGraphStatus.text = if (totalEvaluated > 0) "$totalEvaluated Queries Profiled" else "7 Cases Tracked"
+
+        val pipelineDescriptions = mapOf(
+            MessageType.REMINDER_ONLY to "Direct JSON extraction • No DAG retrieval",
+            MessageType.TELLING to "Fact extraction • Instant Vault memory sync",
+            MessageType.ASKING to "Candidate memory retrieval (top-5) + Answer synthesis",
+            MessageType.MIXED to "Fact extraction + DAG retrieval + Conversational answer",
+            MessageType.REMINDER_AND_TELLING to "Reminder JSON + Fact extraction + Vault sync",
+            MessageType.REMINDER_AND_ASKING to "Reminder extraction + DAG retrieval + Q&A synthesis",
+            MessageType.REMINDER_AND_MIXED to "Reminder + Facts + DAG retrieval + Full answer"
+        )
+
+        for (stat in caseStats) {
+            val itemView = LayoutInflater.from(this).inflate(R.layout.item_case_latency_bar, llCaseLatencyGraphContainer, false)
+
+            val tvIcon: TextView = itemView.findViewById(R.id.tvCaseIcon)
+            val tvName: TextView = itemView.findViewById(R.id.tvCaseName)
+            val tvEstTime: TextView = itemView.findViewById(R.id.tvCaseEstTime)
+            val tvCount: TextView = itemView.findViewById(R.id.tvCaseCount)
+            val pbLatencyBar: ProgressBar = itemView.findViewById(R.id.pbLatencyBar)
+            val tvPipelineDetail: TextView = itemView.findViewById(R.id.tvCasePipelineDetail)
+
+            tvIcon.text = stat.icon
+            tvName.text = stat.displayName
+            tvEstTime.text = String.format(Locale.US, "%.1fs", stat.effectiveEstimatedSeconds)
+            tvCount.text = if (stat.totalCount > 0) "#${stat.totalCount}" else "Est"
+            tvPipelineDetail.text = pipelineDescriptions[stat.messageType] ?: ""
+
+            // Calculate reliable percentage on 0 - maxLatency scale
+            val progressPct = ((stat.effectiveEstimatedSeconds / maxLatency.coerceAtLeast(1.0f)) * 100).toInt().coerceIn(10, 100)
+            pbLatencyBar.progress = progressPct
+
+            llCaseLatencyGraphContainer.addView(itemView)
+        }
     }
 
     private fun calculateDagClustersAndOrphans(

@@ -46,7 +46,7 @@ object ModelCatalog {
                 "Deep mathematical proofs",
                 "Large multi-document analysis"
             ),
-            downloadSizeMb = 398,
+            downloadSizeMb = 469,
             ramRequiredGb = 1.2f,
             minDeviceRamGb = 2,
             downloadUrl = "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf",
@@ -90,7 +90,7 @@ object ModelCatalog {
                 "Heavy full-stack software development",
                 "Complex scientific problem solving"
             ),
-            downloadSizeMb = 980,
+            downloadSizeMb = 1066,
             ramRequiredGb = 2.5f,
             minDeviceRamGb = 4,
             downloadUrl = "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf",
@@ -137,7 +137,7 @@ object ModelCatalog {
                 "Very low-end budget smartphones",
                 "Users seeking absolute minimum battery usage"
             ),
-            downloadSizeMb = 1980,
+            downloadSizeMb = 2008,
             ramRequiredGb = 4.5f,
             minDeviceRamGb = 6,
             downloadUrl = "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q4_k_m.gguf",
@@ -222,10 +222,10 @@ object ModelCatalog {
             notIdealFor = listOf(
                 "Devices with less than 6 GB RAM"
             ),
-            downloadSizeMb = 1630,
+            downloadSizeMb = 2052,
             ramRequiredGb = 5.0f,
             minDeviceRamGb = 8,
-            downloadUrl = "https://huggingface.co/google/gemma-2-2b-it-GGUF/resolve/main/2b_it_v2.gguf",
+            downloadUrl = "https://huggingface.co/bartowski/gemma-2-2b-it-GGUF/resolve/main/gemma-2-2b-it-Q6_K.gguf",
             fileName = "gemma_3n_e4b.gguf"
         ),
         AiModel(
@@ -267,7 +267,7 @@ object ModelCatalog {
                 "Casual light conversation",
                 "Low-RAM phones (< 6 GB)"
             ),
-            downloadSizeMb = 2390,
+            downloadSizeMb = 2283,
             ramRequiredGb = 4.2f,
             minDeviceRamGb = 6,
             downloadUrl = "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-q4.gguf",
@@ -309,7 +309,7 @@ object ModelCatalog {
             notIdealFor = listOf(
                 "Short 1-liner voice commands"
             ),
-            downloadSizeMb = 1060,
+            downloadSizeMb = 1007,
             ramRequiredGb = 3.8f,
             minDeviceRamGb = 6,
             downloadUrl = "https://huggingface.co/HuggingFaceTB/SmolLM2-1.7B-Instruct-GGUF/resolve/main/smollm2-1.7b-instruct-q4_k_m.gguf",
@@ -352,10 +352,10 @@ object ModelCatalog {
                 "Large document synthesis",
                 "Advanced mathematical proofs"
             ),
-            downloadSizeMb = 950,
+            downloadSizeMb = 771,
             ramRequiredGb = 1.8f,
             minDeviceRamGb = 3,
-            downloadUrl = "https://huggingface.co/LiquidAI/LFM-1B-GGUF/resolve/main/lfm-1b-q4_k_m.gguf",
+            downloadUrl = "https://huggingface.co/bartowski/Llama-3.2-1B-Instruct-GGUF/resolve/main/Llama-3.2-1B-Instruct-Q4_K_M.gguf",
             fileName = "lfm2.gguf"
         )
     )

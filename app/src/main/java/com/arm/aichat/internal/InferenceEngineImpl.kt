@@ -50,7 +50,6 @@ class InferenceEngineImpl(context: Context) {
         if (nativeHandle == 0L) {
             nativeHandle = createHandle()
         }
-
         val needsFullInit = !modelLoaded || currentModelPath != modelPath || currentContextSize != contextSize
 
         if (needsFullInit) {
@@ -63,6 +62,7 @@ class InferenceEngineImpl(context: Context) {
             modelLoaded = true
             currentModelPath = modelPath
             currentContextSize = contextSize
+            reset(nativeHandle)
         } else {
             reset(nativeHandle)
         }

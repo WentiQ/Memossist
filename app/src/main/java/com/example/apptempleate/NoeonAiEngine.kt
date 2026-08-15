@@ -32,15 +32,41 @@ object NoeonAiEngine {
     private var paramEngine: InferenceEngineImpl? = null
 
     fun getSelectedModel(context: Context): AiModel {
-        if (cachedActiveModel != null) return cachedActiveModel!!
-        val selectedId = getPrefs(context).getString(KEY_SELECTED_MODEL_ID, DEFAULT_MODEL_ID) ?: DEFAULT_MODEL_ID
-        return ModelCatalog.getModelById(selectedId).also { cachedActiveModel = it }
+        val selectedId = getPrefs(context).getString(KEY_SELECTED_MODEL_ID, null)
+        if (!selectedId.isNullOrEmpty()) {
+            val candidate = ModelCatalog.getModelById(selectedId)
+            if (isModelDownloaded(context, candidate.id)) {
+                return candidate
+            }
+        }
+
+        // If explicitly selected model is not downloaded or not set, find ANY downloaded model
+        val anyDownloaded = ModelCatalog.models.firstOrNull { isModelDownloaded(context, it.id) }
+        if (anyDownloaded != null) {
+            getPrefs(context).edit().putString(KEY_SELECTED_MODEL_ID, anyDownloaded.id).apply()
+            return anyDownloaded
+        }
+
+        // Fallback to selected preference or default if no models are downloaded yet
+        val fallbackId = selectedId ?: DEFAULT_MODEL_ID
+        return ModelCatalog.getModelById(fallbackId)
     }
 
     fun setSelectedModel(context: Context, modelId: String) {
         cachedActiveModel = ModelCatalog.getModelById(modelId)
         getPrefs(context).edit().putString(KEY_SELECTED_MODEL_ID, modelId).apply()
         markModelAsDownloaded(context, modelId)
+        
+        // Reset cached native engines so the new model's weights and context are loaded seamlessly
+        try {
+            chatEngine?.release()
+        } catch (e: Exception) {}
+        chatEngine = null
+
+        try {
+            paramEngine?.release()
+        } catch (e: Exception) {}
+        paramEngine = null
     }
 
     fun isModelDownloaded(context: Context, modelId: String) =

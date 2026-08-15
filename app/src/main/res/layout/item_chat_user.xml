@@ -26,12 +26,14 @@
             android:textColor="#FFFFFF"
             android:textSize="15sp" />
 
-        <!-- Attached Media & Files -->
+        <!-- Attached Media & Files (Horizontal scrollable) -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvUserAttachments"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:clipToPadding="false"
+            android:nestedScrollingEnabled="false"
             android:orientation="horizontal"
             android:visibility="gone"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />

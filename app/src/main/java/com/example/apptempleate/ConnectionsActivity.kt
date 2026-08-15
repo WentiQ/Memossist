@@ -67,9 +67,13 @@ class ConnectionsActivity : AppCompatActivity() {
 
     private fun render2DGraphPlane() {
         val memories = MemoryVaultRepository.loadAllMemories(this)
-        val allEdges = ExperienceDagRepository.ensureGraphEdges(this, memories)
+        val allEdges = ExperienceDagRepository.loadAllEdges(this)
 
-        tvConnectionsCount.text = "${allEdges.size} Connections in 2D Plane"
+        if (allEdges.isEmpty()) {
+            tvConnectionsCount.text = "0 Connections • Formed when memories are co-used in answers"
+        } else {
+            tvConnectionsCount.text = "${allEdges.size} Active Connection(s) in 2D Plane"
+        }
 
         dagGraph2DView.setData(memories, allEdges)
     }

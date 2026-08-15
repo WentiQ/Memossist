@@ -65,8 +65,13 @@ class ModelMarketplaceActivity : AppCompatActivity() {
                 val isDownloaded = NoeonAiEngine.isModelDownloaded(this, model.id)
                 val isDownloading = BackgroundModelDownloadManager.isModelDownloading(model.id)
                 if (!isDownloaded && !isDownloading) {
+                    NoeonAiEngine.setSelectedModel(this, model.id)
                     BackgroundModelDownloadManager.startDownload(this, model)
                     Toast.makeText(this, "Started background download for ${model.name} (${model.downloadSizeMb} MB)", Toast.LENGTH_LONG).show()
+                    refreshCatalogList()
+                } else if (isDownloaded) {
+                    NoeonAiEngine.setSelectedModel(this, model.id)
+                    Toast.makeText(this, "Switched AI Engine to ${model.name}", Toast.LENGTH_SHORT).show()
                     refreshCatalogList()
                 } else {
                     showModelDetailSheet(model)

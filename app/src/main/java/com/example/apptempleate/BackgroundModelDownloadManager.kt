@@ -96,6 +96,7 @@ object BackgroundModelDownloadManager {
 
             override fun onSuccess(file: File) {
                 NoeonAiEngine.markModelAsDownloaded(context, model.id)
+                NoeonAiEngine.setSelectedModel(context, model.id)
                 val progress = ModelDownloadProgress(
                     modelId = model.id,
                     isDownloading = false,
@@ -106,7 +107,7 @@ object BackgroundModelDownloadManager {
                 notifyProgress(progress)
 
                 mainHandler.post {
-                    Toast.makeText(context, "Completed download of ${model.name} (${file.name})", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "${model.name} downloaded & set as active AI engine!", Toast.LENGTH_LONG).show()
                 }
             }
 

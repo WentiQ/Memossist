@@ -160,18 +160,16 @@ object ExperienceDagRepository {
         
         // Compute N_i for each candidate experience
         val expTermSets = mutableMapOf<String, Set<String>>()
-        var unionSetN = mutableSetOf<String>()
 
         for (exp in activeExperiences) {
             val nSet = getSemanticTermSet("${exp.title} ${exp.snippet} ${exp.message}")
             expTermSets[exp.id] = nSet
-            unionSetN.addAll(nSet)
         }
 
         val edges = loadAllEdges(context)
         val edgeUpdates = mutableListOf<EdgeUpdateInfo>()
 
-        // Take every pair of LLM-used experiences only.
+        // Calculate and form connections ONLY between pairs of actually used experiences
         for (i in 0 until activeExperiences.size) {
             for (j in i + 1 until activeExperiences.size) {
                 val exp1 = activeExperiences[i]
@@ -184,10 +182,8 @@ object ExperienceDagRepository {
                 val commonTerms = qSet.intersect(n1Set).intersect(n2Set)
                 val C = commonTerms.size
 
-                // Determine if both experiences were actually used in answering
-                val t1Used = usedExperienceIds.contains(exp1.id)
-                val t2Used = usedExperienceIds.contains(exp2.id)
-                val t = if (t1Used && t2Used) 1 else 0
+                // Both experiences are verified used (t = 1)
+                val t = 1
 
                 // Calculate delta S = (C * t) / N
                 val deltaS = (C.toDouble() * t.toDouble()) / N.toDouble()
@@ -201,35 +197,45 @@ object ExperienceDagRepository {
 
                 if (edge != null) {
                     edge.strength = newS
-                    if (t == 1) edge.usageCount += 1
+                    edge.usageCount += 1
                     edge.lastUpdated = System.currentTimeMillis()
-                } else {
+                    val mergedShared = (edge.sharedTerms + commonTerms).distinct()
+                    if (mergedShared.isNotEmpty()) {
+                        val idx = edges.indexOfFirst { getEdgeKey(it.experienceId1, it.experienceId2) == pairKey }
+                        if (idx != -1) {
+                            edges[idx] = edge.copy(sharedTerms = mergedShared)
+                        }
+                    }
+                } else if (newS > 0.0) {
+                    // Only form a new connection if mathematical calculation produces non-zero strength
                     edge = DagEdge(
                         experienceId1 = exp1.id,
                         experienceId2 = exp2.id,
                         title1 = exp1.title,
                         title2 = exp2.title,
                         strength = newS,
-                        usageCount = if (t == 1) 1 else 0,
+                        usageCount = 1,
                         lastUpdated = System.currentTimeMillis(),
                         sharedTerms = commonTerms.toList()
                     )
                     edges.add(edge)
                 }
 
-                edgeUpdates.add(
-                    EdgeUpdateInfo(
-                        exp1Id = exp1.id,
-                        exp1Title = exp1.title,
-                        exp2Id = exp2.id,
-                        exp2Title = exp2.title,
-                        commonCountC = C,
-                        usedT = t,
-                        deltaS = deltaS,
-                        newStrengthS = newS,
-                        commonTerms = commonTerms.toList()
+                if (deltaS > 0.0 || edge != null) {
+                    edgeUpdates.add(
+                        EdgeUpdateInfo(
+                            exp1Id = exp1.id,
+                            exp1Title = exp1.title,
+                            exp2Id = exp2.id,
+                            exp2Title = exp2.title,
+                            commonCountC = C,
+                            usedT = t,
+                            deltaS = deltaS,
+                            newStrengthS = newS,
+                            commonTerms = commonTerms.toList()
+                        )
                     )
-                )
+                }
             }
         }
 
@@ -288,7 +294,9 @@ object ExperienceDagRepository {
                 }
             }
         }
-        saveAllEdges(context, edges)
+        // Filter out edges that decayed or reverted to 0.0 strength
+        val nonZeroEdges = edges.filter { it.strength > 0.0 }
+        saveAllEdges(context, nonZeroEdges)
     }
 
     private fun getEdgeKey(id1: String, id2: String): String {
@@ -298,9 +306,7 @@ object ExperienceDagRepository {
     fun loadAllEdges(context: Context): MutableList<DagEdge> {
         val file = File(context.filesDir, FILE_NAME)
         if (!file.exists()) {
-            val initialEdges = createInitialDagEdges(context)
-            saveAllEdges(context, initialEdges)
-            return initialEdges
+            return mutableListOf()
         }
 
         return try {
@@ -326,37 +332,22 @@ object ExperienceDagRepository {
                     }
                 }
 
-                list.add(DagEdge(id1, id2, title1, title2, strength, usageCount, lastUpdated, sharedTermsList))
+                if (strength > 0.0) {
+                    list.add(DagEdge(id1, id2, title1, title2, strength, usageCount, lastUpdated, sharedTermsList))
+                }
             }
             list.sortByDescending { it.strength }
             list
         } catch (e: Exception) {
-            val initialEdges = createInitialDagEdges(context)
-            saveAllEdges(context, initialEdges)
-            initialEdges
+            mutableListOf()
         }
-    }
-
-    /**
-     * Guarantees that a vault with at least two memories has a drawable graph.
-     * This also recovers older installs whose edge file was created empty before
-     * the initial graph was seeded.
-     */
-    fun ensureGraphEdges(context: Context, memories: List<MemoryItem>): MutableList<DagEdge> {
-        val existingEdges = loadAllEdges(context)
-        if (existingEdges.isNotEmpty() || memories.size < 2) return existingEdges
-
-        val seededEdges = createInitialDagEdges(context)
-        if (seededEdges.isNotEmpty()) {
-            saveAllEdges(context, seededEdges)
-        }
-        return seededEdges
     }
 
     fun saveAllEdges(context: Context, edges: List<DagEdge>) {
         try {
             val array = JSONArray()
             for (edge in edges) {
+                if (edge.strength <= 0.0) continue
                 val obj = JSONObject().apply {
                     put("experienceId1", edge.experienceId1)
                     put("experienceId2", edge.experienceId2)
@@ -382,52 +373,5 @@ object ExperienceDagRepository {
 
     fun clearAllEdges(context: Context) {
         saveAllEdges(context, emptyList())
-    }
-
-    private fun createInitialDagEdges(context: Context): MutableList<DagEdge> {
-        val memories = MemoryVaultRepository.loadAllMemories(context)
-        if (memories.size < 2) return mutableListOf()
-
-        val exp1 = memories[0]
-        val exp2 = memories[1]
-        val exp3 = if (memories.size > 2) memories[2] else null
-
-        val list = mutableListOf<DagEdge>()
-        
-        val set1 = getSemanticTermSet("${exp1.title} ${exp1.snippet} ${exp1.message}")
-        val set2 = getSemanticTermSet("${exp2.title} ${exp2.snippet} ${exp2.message}")
-        val shared12 = set1.intersect(set2).toList()
-
-        list.add(
-            DagEdge(
-                experienceId1 = exp1.id,
-                experienceId2 = exp2.id,
-                title1 = exp1.title,
-                title2 = exp2.title,
-                strength = 0.425,
-                usageCount = 3,
-                lastUpdated = System.currentTimeMillis() - 1800000,
-                sharedTerms = if (shared12.isNotEmpty()) shared12 else listOf("strategy", "neural", "architecture")
-            )
-        )
-
-        if (exp3 != null) {
-            val set3 = getSemanticTermSet("${exp3.title} ${exp3.snippet} ${exp3.message}")
-            val shared13 = set1.intersect(set3).toList()
-            list.add(
-                DagEdge(
-                    experienceId1 = exp1.id,
-                    experienceId2 = exp3.id,
-                    title1 = exp1.title,
-                    title2 = exp3.title,
-                    strength = 0.280,
-                    usageCount = 2,
-                    lastUpdated = System.currentTimeMillis() - 3600000,
-                    sharedTerms = if (shared13.isNotEmpty()) shared13 else listOf("ui", "polish", "notes")
-                )
-            )
-        }
-
-        return list
     }
 }

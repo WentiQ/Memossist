@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="6dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardBackgroundColor="@color/app_card_background"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="0dp"
+    app:cardMaxElevation="0dp"
+    app:cardUseCompatPadding="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="10dp">
+
+        <!-- File Type Badge Container -->
+        <FrameLayout
+            android:id="@+id/flAiDocBadgeContainer"
+            android:layout_width="44dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_pill_tag"
+            android:backgroundTint="#FEE2E2">
+
+            <ImageView
+                android:id="@+id/ivAiDocIcon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_marginTop="6dp"
+                android:contentDescription="Document"
+                android:src="@drawable/ic_file_document"
+                app:tint="#DC2626" />
+
+            <TextView
+                android:id="@+id/tvAiDocExtensionBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="4dp"
+                android:text="PDF"
+                android:textColor="#DC2626"
+                android:textSize="9sp"
+                android:textStyle="bold" />
+
+        </FrameLayout>
+
+        <!-- Document Details -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvAiDocFileName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="middle"
+                android:maxLines="2"
+                android:text="Invoice_Document.pdf"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvAiDocFileSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="1.4 MB • PDF • Tap to open"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+        <!-- Open / View Action Icon -->
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginStart="8dp"
+            android:contentDescription="Open document"
+            android:src="@drawable/ic_arrow_down"
+            android:rotation="225"
+            app:tint="#4F46E5" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

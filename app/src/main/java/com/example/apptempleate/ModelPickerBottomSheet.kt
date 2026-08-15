@@ -84,12 +84,11 @@ class ModelPickerBottomSheet(
                 }
                 val btnGoMarketplace = TextView(context).apply {
                     text = "Explore Model Marketplace →"
-                    setTextColor(Color.WHITE)
+                    setTextColor(ContextCompat.getColor(context, R.color.app_window_background))
                     textSize = 13f
                     setTypeface(null, android.graphics.Typeface.BOLD)
                     gravity = android.view.Gravity.CENTER
-                    setBackgroundResource(R.drawable.bg_chip_selected)
-                    backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.app_utility_text))
+                    setBackgroundResource(R.drawable.bg_button_save_pill)
                     setPadding(24, 16, 24, 16)
                     val lp = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -154,9 +153,9 @@ class ModelPickerBottomSheet(
                     btnAction.setTextColor(Color.WHITE)
                 } else {
                     btnAction.text = "SELECT"
-                    btnAction.setBackgroundResource(R.drawable.bg_chip_selected)
-                    btnAction.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.app_utility_text))
-                    btnAction.setTextColor(Color.WHITE)
+                    btnAction.setBackgroundResource(R.drawable.bg_button_save_pill)
+                    btnAction.backgroundTintList = null
+                    btnAction.setTextColor(ContextCompat.getColor(context, R.color.app_window_background))
                 }
 
                 rowView.setOnClickListener {

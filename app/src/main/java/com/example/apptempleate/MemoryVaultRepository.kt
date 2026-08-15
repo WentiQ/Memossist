@@ -302,9 +302,25 @@ object MemoryVaultRepository {
             }
         }
 
+        if (prunedCount > 0) {
+            incrementForgottenMemoriesCount(context, prunedCount)
+        }
+
         saveAllMemories(context, keptMemories)
         android.util.Log.i("MemoryVaultRepository", "Decay cycle finished: ${keptMemories.size} kept, $prunedCount forgotten/pruned.")
         return keptMemories
+    }
+
+    fun getForgottenMemoriesCount(context: Context): Int {
+        val prefs = context.getSharedPreferences("MemossistPrefs", Context.MODE_PRIVATE)
+        return prefs.getInt("forgotten_memories_count", 0)
+    }
+
+    fun incrementForgottenMemoriesCount(context: Context, delta: Int) {
+        if (delta <= 0) return
+        val prefs = context.getSharedPreferences("MemossistPrefs", Context.MODE_PRIVATE)
+        val current = prefs.getInt("forgotten_memories_count", 0)
+        prefs.edit().putInt("forgotten_memories_count", current + delta).apply()
     }
 
     fun getMemoryById(context: Context, memoryId: String): MemoryItem? {

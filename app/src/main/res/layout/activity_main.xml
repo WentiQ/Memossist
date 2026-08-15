@@ -244,7 +244,9 @@
                 android:id="@+id/rvAttachmentPreviews"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clipToPadding="false"
                 android:orientation="horizontal"
+                android:overScrollMode="ifContentScrolls"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         </LinearLayout>

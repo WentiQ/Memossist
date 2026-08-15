@@ -225,8 +225,8 @@ class MainActivity : AppCompatActivity() {
             onChangeTypeClicked = { aiMessage ->
                 showInFlightTypeCorrectionBottomSheet(aiMessage)
             },
-            onConfirmationTypeSelected = { aiMessage, selectedType ->
-                startPipelineWithConfirmedType(aiMessage, selectedType)
+            onConfirmationRequestClicked = { aiMessage ->
+                showLowConfidenceSelectorBottomSheet(aiMessage)
             }
         )
         rvChatMessages.layoutManager = LinearLayoutManager(this)
@@ -257,23 +257,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // Swipe Left or Right to remove chat message
-        val chatSwipeHandler = object : androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(0, androidx.recyclerview.widget.ItemTouchHelper.LEFT or androidx.recyclerview.widget.ItemTouchHelper.RIGHT) {
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean = false
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.adapterPosition
-                val conv = currentConversation ?: return
-                if (position in 0 until conv.messages.size) {
-                    conv.messages.removeAt(position)
-                    conv.lastUpdated = System.currentTimeMillis()
-                    ChatRepository.saveOrUpdateConversation(this@MainActivity, conv)
-                    chatAdapter.setMessages(conv.messages)
-                    Toast.makeText(this@MainActivity, "Message removed", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-        androidx.recyclerview.widget.ItemTouchHelper(chatSwipeHandler).attachToRecyclerView(rvChatMessages)
 
         // Initialize Attachment Preview Views
         llAttachmentPreviewContainer = findViewById(R.id.llAttachmentPreviewContainer)
@@ -788,8 +771,7 @@ class MainActivity : AppCompatActivity() {
         btnDeleteCurrentChat.visibility = View.VISIBLE
         // Perform lightweight local pre-analysis to check if user confirmation is required for low-confidence routing
         val preClassification = MessageAnalyzer.analyze(this@MainActivity, userText)
-        val (avgSec, totalCount) = ResponseStatsRepository.getStats(this@MainActivity)
-        val initialTimer = ResponseStatsRepository.formatTimerString(this@MainActivity, 0L, avgSec, totalCount)
+        val initialTimer = ResponseStatsRepository.formatTimerStringForCase(this@MainActivity, 0L, preClassification.messageType)
 
         if (preClassification.requiresConfirmation) {
             val aiMsg = ChatMessage(
@@ -812,6 +794,9 @@ class MainActivity : AppCompatActivity() {
 
             ChatRepository.saveOrUpdateConversation(this@MainActivity, activeConv)
             refreshSidebarHistory()
+
+            // Directly show intent selection popup bottom-sheet for effortless selection
+            showLowConfidenceSelectorBottomSheet(aiMsg, preClassification)
         } else {
             // Check if there are already messages in progress globally or in this chat to display queue status
             val globalPending = ChatAiForegroundService.getGlobalPendingCount()
@@ -856,12 +841,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun showLowConfidenceSelectorBottomSheet(aiMessage: ChatMessage, preClassification: ClassificationResult? = null) {
+        val detectedType = preClassification?.messageType ?: aiMessage.detectedMessageType ?: MessageType.TELLING
+        val confPct = ((preClassification?.confidence ?: aiMessage.classificationConfidence) * 100).toInt()
+
+        val sheet = MessageTypeSelectorBottomSheet(
+            title = "Confirm Message Intent",
+            subtitle = "Detected ${detectedType.displayName} ($confPct% confidence). Select the desired processing mode:",
+            currentlySelected = detectedType,
+            onTypeSelected = { selectedType ->
+                startPipelineWithConfirmedType(aiMessage, selectedType)
+            }
+        )
+        sheet.show(supportFragmentManager, "LowConfidenceSelectorBottomSheet")
+    }
+
     private fun startPipelineWithConfirmedType(aiMessage: ChatMessage, selectedType: MessageType) {
         val activeConv = currentConversation ?: return
         val userMsg = activeConv.messages.findLast { it.isUser } ?: return
 
-        val (avgSec, totalCount) = ResponseStatsRepository.getStats(this@MainActivity)
-        val initialTimer = ResponseStatsRepository.formatTimerString(this@MainActivity, 0L, avgSec, totalCount)
+        val initialTimer = ResponseStatsRepository.formatTimerStringForCase(this@MainActivity, 0L, selectedType)
 
         aiMessage.awaitingTypeConfirmation = false
         aiMessage.isThinking = true
@@ -892,8 +891,7 @@ class MainActivity : AppCompatActivity() {
                 // 1. Cancel in-flight pipeline execution
                 ChatAiForegroundService.cancelActiveChat(this@MainActivity, activeConv.id)
 
-                val (avgSec, totalCount) = ResponseStatsRepository.getStats(this@MainActivity)
-                val initialTimer = ResponseStatsRepository.formatTimerString(this@MainActivity, 0L, avgSec, totalCount)
+                val initialTimer = ResponseStatsRepository.formatTimerStringForCase(this@MainActivity, 0L, selectedType)
 
                 // 2. Reset AI message state
                 aiMessage.isThinking = true

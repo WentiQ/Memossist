@@ -8,163 +8,171 @@
     android:paddingHorizontal="16dp"
     android:paddingVertical="6dp">
 
-    <!-- Memossist AI Avatar Badge -->
-    <TextView
-        android:id="@+id/tvAiAvatar"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginEnd="10dp"
-        android:background="@drawable/bg_profile_avatar_rounded"
-        android:gravity="center"
-        android:text="M"
-        android:textColor="@color/text_primary"
-        android:textSize="14sp"
-        android:textStyle="bold" />
-
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="48dp"
-        android:background="@drawable/bg_metallic_card"
-        android:orientation="vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-        <!-- Realtime Live Thinking / Processing Steps Stream with WhatsApp Typing Dots -->
+        <!-- AI Text Message Bubble -->
         <LinearLayout
-            android:id="@+id/llThinkingContainer"
+            android:id="@+id/llAiMessageBubble"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/bg_metallic_card"
             android:orientation="vertical"
-            android:paddingVertical="2dp"
-            android:visibility="gone">
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp">
 
+            <!-- Realtime Live Thinking / Processing Steps Stream with WhatsApp Typing Dots -->
             <LinearLayout
+                android:id="@+id/llThinkingContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:paddingVertical="2dp"
+                android:visibility="gone">
 
-                <com.example.apptempleate.TypingDotsView
-                    android:id="@+id/typingDotsView"
-                    android:layout_width="38dp"
-                    android:layout_height="22dp"
-                    android:layout_marginEnd="6dp" />
-
-                <TextView
-                    android:id="@+id/tvThinkingStep"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Step 1/6: Retrieving memories..."
-                    android:textColor="#4F46E5"
-                    android:textSize="13sp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.example.apptempleate.TypingDotsView
+                        android:id="@+id/typingDotsView"
+                        android:layout_width="38dp"
+                        android:layout_height="22dp"
+                        android:layout_marginEnd="6dp" />
+
+                    <TextView
+                        android:id="@+id/tvThinkingStep"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Step 1/6: Retrieving memories..."
+                        android:textColor="#4F46E5"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <!-- Minimalist In-Flight Reclassification Button -->
+                <TextView
+                    android:id="@+id/btnChangeMessageType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/bg_button_cancel_pill"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:text="✎ Change Type"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
 
             </LinearLayout>
 
-            <!-- Minimalist In-Flight Reclassification Button -->
-            <TextView
-                android:id="@+id/btnChangeMessageType"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:background="@drawable/bg_button_cancel_pill"
-                android:clickable="true"
-                android:focusable="true"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
-                android:text="✎ Change Type"
-                android:textColor="@color/text_secondary"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <!-- Low-Confidence Interactive Confirmation Selector -->
-        <LinearLayout
-            android:id="@+id/llConfirmationContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingVertical="4dp"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/tvConfirmationTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Confirm message intent:"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <HorizontalScrollView
+            <!-- Low-Confidence Interactive Confirmation Selector -->
+            <LinearLayout
+                android:id="@+id/llConfirmationContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:overScrollMode="never"
-                android:scrollbars="none">
+                android:orientation="vertical"
+                android:paddingVertical="4dp"
+                android:visibility="gone">
 
-                <LinearLayout
-                    android:id="@+id/llConfirmChipsContainer"
+                <TextView
+                    android:id="@+id/tvConfirmationTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" />
+                    android:text="Confirm message intent:"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
 
-            </HorizontalScrollView>
+                <LinearLayout
+                    android:id="@+id/btnOpenConfirmationPopup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_button_save_pill"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:id="@+id/tvConfirmationButtonText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🎯 Choose Intent ▾"
+                        android:textColor="@color/white"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Final Clean Humanoid Answer Text -->
+            <TextView
+                android:id="@+id/tvAiMsg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="3dp"
+                android:text="Memossist response"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+
+            <!-- 2nd LLM Parameter Evaluation Progress / Status Container -->
+            <LinearLayout
+                android:id="@+id/llParamProgressContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_circle_icon_button"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                android:visibility="gone">
+
+                <ProgressBar
+                    android:id="@+id/pbParamProgress"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:layout_marginEnd="6dp"
+                    android:indeterminate="true" />
+
+                <TextView
+                    android:id="@+id/tvParamProgressText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Scoring parameters for extracted facts..."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
-        <!-- Final Clean Humanoid Answer Text -->
-        <TextView
-            android:id="@+id/tvAiMsg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:lineSpacingExtra="3dp"
-            android:text="Memossist response"
-            android:textColor="@color/text_primary"
-            android:textSize="15sp" />
-
-        <!-- Attached Media & Files from Used Experiences -->
+        <!-- Attached Media & Files from Used Experiences - WhatsApp-style vertical and separated -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvAiAttachments"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
+            android:layout_marginTop="4dp"
+            android:clipToPadding="false"
+            android:nestedScrollingEnabled="false"
+            android:orientation="vertical"
             android:visibility="gone"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
-        <!-- 2nd LLM Parameter Evaluation Progress / Status Container -->
-        <LinearLayout
-            android:id="@+id/llParamProgressContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_circle_icon_button"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="5dp"
-            android:visibility="gone">
-
-            <ProgressBar
-                android:id="@+id/pbParamProgress"
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:layout_marginEnd="6dp"
-                android:indeterminate="true" />
-
-            <TextView
-                android:id="@+id/tvParamProgressText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Scoring parameters for extracted facts..."
-                android:textColor="@color/text_secondary"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
 
     </LinearLayout>
 

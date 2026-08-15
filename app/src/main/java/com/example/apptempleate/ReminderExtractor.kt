@@ -179,12 +179,13 @@ object ReminderExtractor {
             val jsonObj = if (cleanTag.startsWith("{")) JSONObject(cleanTag) else JSONObject("{ $cleanTag }")
             val title = jsonObj.optString("title", "").ifBlank { jsonObj.optString("event", "") }
             val desc = jsonObj.optString("description", userMessage)
-            val timeStr = jsonObj.optString("time", "").ifBlank { jsonObj.optString("date", "") }
+            val dateStr = jsonObj.optString("date", "")
+            val timeStr = jsonObj.optString("time", "")
             val imp = jsonObj.optString("importance", "MEDIUM").uppercase()
             val cat = jsonObj.optString("category", inferCategory(title + " " + desc)).uppercase()
 
             if (title.isNotBlank() && !isQuestionText(title)) {
-                val timeMillis = parseNaturalLanguageDateTime(timeStr.ifBlank { userMessage })
+                val timeMillis = parseTargetDateTime(dateStr, timeStr, userMessage)
                 if (timeMillis > System.currentTimeMillis()) {
                     ExtractedReminderData(title, desc, timeMillis, cat, imp)
                 } else null
@@ -238,27 +239,177 @@ object ReminderExtractor {
         return clean
     }
 
+    /**
+     * Parses explicit date (DD/MM/YYYY) and time (HH:MM) from LLM output, with fallback to natural language.
+     */
+    fun parseTargetDateTime(dateStr: String?, timeStr: String?, userMessage: String): Long {
+        val cleanDate = (dateStr ?: "").trim()
+        val cleanTime = (timeStr ?: "").trim()
+
+        // 1. Try parsing explicit DD/MM/YYYY or DD-MM-YYYY date
+        val dmyRegex = Regex("^(\\d{1,2})[/.-](\\d{1,2})[/.-](\\d{4})$")
+        val dmyMatch = dmyRegex.find(cleanDate)
+
+        // 2. Try parsing YYYY-MM-DD date
+        val ymdRegex = Regex("^(\\d{4})[/.-](\\d{1,2})[/.-](\\d{1,2})$")
+        val ymdMatch = ymdRegex.find(cleanDate)
+
+        // 3. Try parsing DD/MM date (without year)
+        val dmRegex = Regex("^(\\d{1,2})[/.-](\\d{1,2})$")
+        val dmMatch = dmRegex.find(cleanDate)
+
+        val cal = Calendar.getInstance()
+        var dateParsed = false
+
+        if (dmyMatch != null) {
+            val day = dmyMatch.groupValues[1].toIntOrNull() ?: 1
+            val month = (dmyMatch.groupValues[2].toIntOrNull() ?: 1) - 1
+            val year = dmyMatch.groupValues[3].toIntOrNull() ?: cal.get(Calendar.YEAR)
+            cal.set(Calendar.YEAR, year)
+            cal.set(Calendar.MONTH, month)
+            cal.set(Calendar.DAY_OF_MONTH, day)
+            dateParsed = true
+        } else if (ymdMatch != null) {
+            val year = ymdMatch.groupValues[1].toIntOrNull() ?: cal.get(Calendar.YEAR)
+            val month = (ymdMatch.groupValues[2].toIntOrNull() ?: 1) - 1
+            val day = ymdMatch.groupValues[3].toIntOrNull() ?: 1
+            cal.set(Calendar.YEAR, year)
+            cal.set(Calendar.MONTH, month)
+            cal.set(Calendar.DAY_OF_MONTH, day)
+            dateParsed = true
+        } else if (dmMatch != null) {
+            val day = dmMatch.groupValues[1].toIntOrNull() ?: 1
+            val month = (dmMatch.groupValues[2].toIntOrNull() ?: 1) - 1
+            var year = cal.get(Calendar.YEAR)
+            val testCal = Calendar.getInstance().apply {
+                set(Calendar.YEAR, year)
+                set(Calendar.MONTH, month)
+                set(Calendar.DAY_OF_MONTH, day)
+            }
+            if (testCal.timeInMillis < System.currentTimeMillis()) {
+                year += 1
+            }
+            cal.set(Calendar.YEAR, year)
+            cal.set(Calendar.MONTH, month)
+            cal.set(Calendar.DAY_OF_MONTH, day)
+            dateParsed = true
+        }
+
+        // 4. Try parsing time (HH:MM or 12-hour AM/PM)
+        var hour = -1
+        var minute = 0
+
+        val timeRegex = Regex("(\\d{1,2})(?::(\\d{2}))?\\s*(am|pm)?", RegexOption.IGNORE_CASE)
+        val timeMatch = timeRegex.find(cleanTime)
+
+        if (timeMatch != null) {
+            val num = timeMatch.groupValues[1].toIntOrNull() ?: -1
+            val min = timeMatch.groupValues[2].toIntOrNull() ?: 0
+            val ampm = timeMatch.groupValues[3].lowercase()
+
+            if (num in 0..24) {
+                hour = when {
+                    ampm == "pm" && num < 12 -> num + 12
+                    ampm == "am" && num == 12 -> 0
+                    else -> num
+                }
+                minute = min
+            }
+        }
+
+        // If explicit date was parsed
+        if (dateParsed) {
+            if (hour == -1) {
+                // Default to 9:00 AM on the specified date
+                hour = 9
+                minute = 0
+            }
+            cal.set(Calendar.HOUR_OF_DAY, hour)
+            cal.set(Calendar.MINUTE, minute)
+            cal.set(Calendar.SECOND, 0)
+            cal.set(Calendar.MILLISECOND, 0)
+            return cal.timeInMillis
+        }
+
+        // Fallback: parse combined natural language text
+        val combinedText = buildString {
+            if (cleanDate.isNotBlank()) append("$cleanDate ")
+            if (cleanTime.isNotBlank()) append("$cleanTime ")
+            append(userMessage)
+        }
+        return parseNaturalLanguageDateTime(combinedText)
+    }
+
     fun parseNaturalLanguageDateTime(text: String): Long {
         val lower = text.lowercase(Locale.getDefault())
 
-        // Check if there is ANY explicit date or time expression in the text
-        val hasTimeExpression = Regex("\\b\\d{1,2}(?::\\d{2})?\\s*(?:am|pm)\\b", RegexOption.IGNORE_CASE).containsMatchIn(lower) ||
-                Regex("\\bat\\s+\\d{1,2}(?::\\d{2})?\\b", RegexOption.IGNORE_CASE).containsMatchIn(lower) ||
-                lower.contains("morning") || lower.contains("afternoon") || lower.contains("evening") || lower.contains("night")
+        // 1. Check for calendar date formats in raw text: DD/MM/YYYY, DD-MM-YYYY, YYYY-MM-DD
+        val fullDateRegex = Regex("\\b(\\d{1,2})[/.-](\\d{1,2})[/.-](\\d{4})\\b")
+        val fullDateMatch = fullDateRegex.find(lower)
 
-        val hasDateExpression = lower.contains("tomorrow") || lower.contains("today") || lower.contains("next ") ||
-                Regex("\\b(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\\b").containsMatchIn(lower) ||
-                Regex("\\bin \\d+\\s*(?:hour|hr|min|day)\\b").containsMatchIn(lower)
-
-        // If no explicit time AND no explicit date expression exists, DO NOT parse a time (return 0)
-        if (!hasTimeExpression && !hasDateExpression) {
-            return 0L
-        }
+        // 2. Check for named month dates e.g. "25 december 2026", "august 15", "15th august"
+        val monthNames = mapOf(
+            "january" to 0, "jan" to 0,
+            "february" to 1, "feb" to 1,
+            "march" to 2, "mar" to 2,
+            "april" to 3, "apr" to 3,
+            "may" to 4,
+            "june" to 5, "jun" to 5,
+            "july" to 6, "jul" to 6,
+            "august" to 7, "aug" to 7,
+            "september" to 8, "sep" to 8, "sept" to 8,
+            "october" to 9, "oct" to 9,
+            "november" to 10, "nov" to 10,
+            "december" to 11, "dec" to 11
+        )
 
         val cal = Calendar.getInstance()
         val now = System.currentTimeMillis()
+        var dateSpecified = false
 
-        // 1. Time Extraction (e.g. 2pm, 2:30pm, 14:00, 10 am, 6:30 pm)
+        if (fullDateMatch != null) {
+            val d = fullDateMatch.groupValues[1].toIntOrNull() ?: 1
+            val m = (fullDateMatch.groupValues[2].toIntOrNull() ?: 1) - 1
+            val y = fullDateMatch.groupValues[3].toIntOrNull() ?: cal.get(Calendar.YEAR)
+            cal.set(Calendar.YEAR, y)
+            cal.set(Calendar.MONTH, m)
+            cal.set(Calendar.DAY_OF_MONTH, d)
+            dateSpecified = true
+        } else {
+            // Check Month Name + Day + optional Year
+            for ((mName, mIdx) in monthNames) {
+                val pattern1 = Regex("\\b$mName\\s+(\\d{1,2})(?:st|nd|rd|th)?(?:\\s+(\\d{4}))?\\b", RegexOption.IGNORE_CASE)
+                val pattern2 = Regex("\\b(\\d{1,2})(?:st|nd|rd|th)?\\s+(?:of\\s+)?$mName(?:\\s+(\\d{4}))?\\b", RegexOption.IGNORE_CASE)
+
+                val match1 = pattern1.find(lower)
+                val match2 = pattern2.find(lower)
+                val chosenMatch = match1 ?: match2
+
+                if (chosenMatch != null) {
+                    val dayStr = if (match1 != null) chosenMatch.groupValues[1] else chosenMatch.groupValues[1]
+                    val yearStr = if (chosenMatch.groupValues.size > 2) chosenMatch.groupValues[2] else ""
+                    val day = dayStr.toIntOrNull() ?: 1
+                    var year = yearStr.toIntOrNull() ?: cal.get(Calendar.YEAR)
+
+                    val testCal = Calendar.getInstance().apply {
+                        set(Calendar.YEAR, year)
+                        set(Calendar.MONTH, mIdx)
+                        set(Calendar.DAY_OF_MONTH, day)
+                    }
+                    if (yearStr.isBlank() && testCal.timeInMillis < now) {
+                        year += 1
+                    }
+
+                    cal.set(Calendar.YEAR, year)
+                    cal.set(Calendar.MONTH, mIdx)
+                    cal.set(Calendar.DAY_OF_MONTH, day)
+                    dateSpecified = true
+                    break
+                }
+            }
+        }
+
+        // 3. Time Extraction (e.g. 2pm, 2:30pm, 14:00, 10 am, 6:30 pm)
         var hour = -1
         var minute = 0
 
@@ -296,13 +447,21 @@ object ReminderExtractor {
                 lower.contains("afternoon") -> 14
                 lower.contains("evening") -> 18
                 lower.contains("night") -> 20
-                else -> 14 // Default to 2 PM ONLY if a date expression like 'tomorrow' exists
+                dateSpecified -> 9 // Default to 9 AM on explicit future date
+                else -> 14 // Default to 2 PM
             }
         }
 
-        // 2. Day / Date Extraction
-        var targetDayOffset = -1
+        // If an explicit calendar date was found, apply time and return
+        if (dateSpecified) {
+            cal.set(Calendar.HOUR_OF_DAY, hour)
+            cal.set(Calendar.MINUTE, minute)
+            cal.set(Calendar.SECOND, 0)
+            cal.set(Calendar.MILLISECOND, 0)
+            return cal.timeInMillis
+        }
 
+        // 4. Relative Day / Weekday Extraction
         val daysOfWeek = mapOf(
             "sunday" to Calendar.SUNDAY,
             "monday" to Calendar.MONDAY,
@@ -313,6 +472,7 @@ object ReminderExtractor {
             "saturday" to Calendar.SATURDAY
         )
 
+        var weekdayFound = false
         for ((dayName, dayConst) in daysOfWeek) {
             if (lower.contains(dayName)) {
                 val currentDayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
@@ -321,21 +481,23 @@ object ReminderExtractor {
                     daysDiff += 7
                 }
                 cal.add(Calendar.DAY_OF_YEAR, daysDiff)
-                targetDayOffset = daysDiff
+                weekdayFound = true
                 break
             }
         }
 
-        if (targetDayOffset == -1) {
-            if (lower.contains("tomorrow")) {
+        if (!weekdayFound) {
+            if (lower.contains("day after tomorrow")) {
+                cal.add(Calendar.DAY_OF_YEAR, 2)
+            } else if (lower.contains("tomorrow")) {
                 cal.add(Calendar.DAY_OF_YEAR, 1)
             } else if (lower.contains("next week")) {
                 cal.add(Calendar.DAY_OF_YEAR, 7)
             } else if (lower.contains("today")) {
                 // Keep current day
             } else {
-                // Check if user specified a relative hour offset e.g. "in 2 hours"
-                val relativeRegex = Regex("in (\\d+)\\s*(hour|hr|min|minute|day)", RegexOption.IGNORE_CASE)
+                // Check relative offset e.g. "in 2 hours", "in 3 days"
+                val relativeRegex = Regex("in (\\d+)\\s*(hour|hr|min|minute|day|week|month)", RegexOption.IGNORE_CASE)
                 val relMatch = relativeRegex.find(lower)
                 if (relMatch != null) {
                     val amount = relMatch.groupValues[1].toIntOrNull() ?: 1
@@ -345,12 +507,16 @@ object ReminderExtractor {
                         relCal.add(Calendar.MINUTE, amount)
                     } else if (unit.startsWith("day")) {
                         relCal.add(Calendar.DAY_OF_YEAR, amount)
+                    } else if (unit.startsWith("week")) {
+                        relCal.add(Calendar.DAY_OF_YEAR, amount * 7)
+                    } else if (unit.startsWith("month")) {
+                        relCal.add(Calendar.MONTH, amount)
                     } else {
                         relCal.add(Calendar.HOUR_OF_DAY, amount)
                     }
                     return relCal.timeInMillis
                 }
-                
+
                 // If the hour today has already passed, assume user means tomorrow at that time
                 val checkCal = Calendar.getInstance().apply {
                     set(Calendar.HOUR_OF_DAY, hour)
@@ -371,7 +537,6 @@ object ReminderExtractor {
 
         var resultMillis = cal.timeInMillis
         if (resultMillis < now) {
-            // Ensure target time is in the future
             cal.add(Calendar.DAY_OF_YEAR, 1)
             resultMillis = cal.timeInMillis
         }
