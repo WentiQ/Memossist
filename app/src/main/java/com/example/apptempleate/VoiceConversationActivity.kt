@@ -302,12 +302,15 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         )
         conv.messages.add(userMsg)
 
+        val (avgSec, totalCount) = ResponseStatsRepository.getStats(this)
+        val initialTimer = ResponseStatsRepository.formatTimerString(this, 0L, avgSec, totalCount)
+
         val aiMsg = ChatMessage(
             conversationId = conv.id,
             text = "",
             isUser = false,
             isThinking = true,
-            thinkingStatus = "🔍 Step 1/6: Retrieving candidate memories…"
+            thinkingStatus = "🔍 Processing message… ($initialTimer)"
         )
         conv.messages.add(aiMsg)
 

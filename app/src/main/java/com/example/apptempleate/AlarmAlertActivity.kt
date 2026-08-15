@@ -14,6 +14,7 @@ import android.os.VibratorManager
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -72,6 +73,8 @@ class AlarmAlertActivity : AppCompatActivity() {
         btnAlarmGotIt = findViewById(R.id.btnAlarmGotIt)
         btnAlarmSnooze = findViewById(R.id.btnAlarmSnooze)
         btnAlarmDismiss = findViewById(R.id.btnAlarmDismiss)
+
+        findViewById<ImageView>(R.id.ivAlarmLogo).setImageResource(ThemeManager.getLogoDrawable(this))
 
         val tvLiveTimeBadge: TextView = findViewById(R.id.tvLiveTimeBadge)
         val tvAlarmBadge: TextView = findViewById(R.id.tvAlarmBadge)

@@ -2576,6 +2576,8 @@ drawable abc_textfield_search_default_mtrl_alpha
 drawable abc_textfield_search_material
 drawable abc_vector_test
 drawable app_logo
+drawable app_logo_dark
+drawable app_logo_light
 drawable avd_hide_password
 drawable avd_show_password
 drawable bg_bottom_chat_gradient
@@ -2637,7 +2639,9 @@ drawable ic_import
 drawable ic_insights
 drawable ic_keyboard_black_24dp
 drawable ic_launcher_foreground
+drawable ic_launcher_foreground_dark_inset
 drawable ic_launcher_foreground_inset
+drawable ic_launcher_foreground_light_inset
 drawable ic_live_voice
 drawable ic_m3_chip_check
 drawable ic_m3_chip_checked_circle
@@ -2833,11 +2837,15 @@ id btnAlarmGotIt
 id btnAlarmSnooze
 id btnBack
 id btnBackMarketplace
+id btnCancelEditMessage
 id btnChangeAvatar
+id btnChangeMessageType
 id btnCloseDetail
 id btnCloseLogs
 id btnClosePicker
+id btnCloseTypeSelector
 id btnCompleteReminder
+id btnConfirmResendMessage
 id btnCopyLog
 id btnDagDone
 id btnDeleteCurrentChat
@@ -2852,6 +2860,7 @@ id btnDialogCancel
 id btnDialogSave
 id btnEditExpCancel
 id btnEditExpSave
+id btnEditInChatBar
 id btnEditName
 id btnEditReminder
 id btnEndCall
@@ -2895,6 +2904,7 @@ id btnSelectModelCard
 id btnSidebarHelp
 id btnSidebarNewChat
 id btnSpeakerToggle
+id btnSplashUnlock
 id btnStep1Next
 id btnStep2Next
 id btnStep3Next
@@ -2994,6 +3004,7 @@ id etDialogReminderDesc
 id etDialogReminderTitle
 id etDialogUserName
 id etEditExpMessage
+id etEditMessageText
 id etSearchReminders
 id etSearchVault
 id etUserName
@@ -3019,6 +3030,7 @@ id fitXY
 id fixed
 id flHeaderNotifications
 id flLogoContainer
+id flSplashOverlay
 id flip
 id floating
 id forever
@@ -3067,6 +3079,9 @@ id ivHistoryIcon
 id ivOptPinIcon
 id ivPreviewThumbnail
 id ivProfilePic
+id ivSidebarLogo
+id ivSplashLogo
+id ivTypeSelectedCheck
 id jumpToEnd
 id jumpToStart
 id labeled
@@ -3085,6 +3100,8 @@ id llAttachmentPreviewContainer
 id llBestForContainer
 id llBottomControls
 id llChatInputBar
+id llConfirmChipsContainer
+id llConfirmationContainer
 id llDagConnectionsContainer
 id llEmptyNotifications
 id llEmptyState
@@ -3104,6 +3121,8 @@ id llSearchContainer
 id llStatsBanner
 id llThinkingContainer
 id llTriggersContainer
+id llTypeRowRoot
+id llTypesListContainer
 id llWorkspaceRemindersSection
 id mainContentContainer
 id marquee
@@ -3379,6 +3398,7 @@ id tvCatalogCountHeader
 id tvCategoryIcon
 id tvClusterSummary
 id tvCodingScore
+id tvConfirmationTitle
 id tvConnectedRatio
 id tvConnectionsCount
 id tvConnectionsTitle
@@ -3476,6 +3496,11 @@ id tvThinkingStep
 id tvTimeStatus
 id tvTitle
 id tvTopologyStatus
+id tvTypeDescription
+id tvTypeEmoji
+id tvTypeName
+id tvTypeSelectorSubtitle
+id tvTypeSelectorTitle
 id tvUserMsg
 id tvUserName
 id tvVaultTitle
@@ -3669,8 +3694,10 @@ layout dialog_chat_model_picker
 layout dialog_chat_options
 layout dialog_dag_connections
 layout dialog_edit_experience
+layout dialog_edit_message
 layout dialog_edit_username
 layout dialog_memory_detail
+layout dialog_message_type_selector
 layout dialog_model_detail
 layout dialog_notifications_sheet
 layout dialog_word_synonyms
@@ -3680,6 +3707,7 @@ layout item_chat_ai
 layout item_chat_attachment
 layout item_chat_user
 layout item_memory_vault
+layout item_message_type_choice
 layout item_model_card
 layout item_notification_card
 layout item_reminder_card
@@ -3747,7 +3775,11 @@ layout select_dialog_singlechoice_material
 layout support_simple_spinner_dropdown_item
 menu side_navigation_menu
 mipmap ic_launcher
+mipmap ic_launcher_dark
+mipmap ic_launcher_light
 mipmap ic_launcher_round
+mipmap ic_launcher_round_dark
+mipmap ic_launcher_round_light
 plurals mtrl_badge_content_description
 string abc_action_bar_home_description
 string abc_action_bar_up_description

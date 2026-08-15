@@ -9,7 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ChatAdapter(
     private val messages: MutableList<ChatMessage> = mutableListOf(),
-    private val onMessageLongClick: ((ChatMessage) -> Unit)? = null
+    private val onMessageLongClick: ((ChatMessage) -> Unit)? = null,
+    private val onUserMessageLongClick: ((ChatMessage) -> Unit)? = null,
+    private val onChangeTypeClicked: ((ChatMessage) -> Unit)? = null,
+    private val onConfirmationTypeSelected: ((ChatMessage, MessageType) -> Unit)? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -18,15 +21,24 @@ class ChatAdapter(
     }
 
     fun setMessages(newMessages: List<ChatMessage>) {
-        if (messages.size == newMessages.size && messages.isNotEmpty()) {
-            val lastIdx = messages.lastIndex
-            messages.clear()
-            messages.addAll(newMessages)
+        messages.clear()
+        messages.addAll(newMessages)
+        notifyDataSetChanged()
+    }
+
+    fun updateThinkingStep(stepText: String) {
+        val lastIdx = messages.indexOfLast { it.isThinking }
+        if (lastIdx != -1) {
+            messages[lastIdx].thinkingStatus = stepText
             notifyItemChanged(lastIdx, "PAYLOAD_STEP_UPDATE")
-        } else {
-            messages.clear()
-            messages.addAll(newMessages)
-            notifyDataSetChanged()
+        }
+    }
+
+    fun updateStreamingText(partialText: String) {
+        val lastIdx = messages.indexOfLast { it.isThinking }
+        if (lastIdx != -1) {
+            messages[lastIdx].text = partialText
+            notifyItemChanged(lastIdx, "PAYLOAD_STEP_UPDATE")
         }
     }
 
@@ -83,8 +95,59 @@ class ChatAdapter(
             } else {
                 holder.rvUserAttachments.visibility = View.GONE
             }
+
+            // Long click to edit last user message
+            holder.itemView.setOnLongClickListener {
+                val lastUserMsg = messages.findLast { it.isUser }
+                if (message.id == lastUserMsg?.id) {
+                    onUserMessageLongClick?.invoke(message)
+                    true
+                } else {
+                    false
+                }
+            }
         } else if (holder is AiViewHolder) {
-            if (message.isThinking) {
+            if (message.awaitingTypeConfirmation) {
+                holder.llThinkingContainer.visibility = View.GONE
+                holder.typingDotsView.stopAnimation()
+                holder.tvAiMsg.visibility = View.GONE
+                holder.rvAiAttachments.visibility = View.GONE
+                holder.llConfirmationContainer.visibility = View.VISIBLE
+
+                val detectedName = message.detectedMessageType?.displayName ?: "Detected Intent"
+                val confPct = (message.classificationConfidence * 100).toInt()
+                holder.tvConfirmationTitle.text = "Detected $detectedName ($confPct% confidence). Select type to proceed:"
+
+                holder.llConfirmChipsContainer.removeAllViews()
+                val context = holder.itemView.context
+                val density = context.resources.displayMetrics.density
+
+                for (type in MessageType.values()) {
+                    val chip = TextView(context).apply {
+                        text = "${type.iconEmoji} ${type.displayName}"
+                        textSize = 12f
+                        setTypeface(typeface, android.graphics.Typeface.BOLD)
+                        setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.text_primary))
+                        setBackgroundResource(R.drawable.bg_button_cancel_pill)
+                        setPadding((12 * density).toInt(), (6 * density).toInt(), (12 * density).toInt(), (6 * density).toInt())
+                        isClickable = true
+                        isFocusable = true
+                        val lp = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            setMargins(0, 0, (8 * density).toInt(), 0)
+                        }
+                        layoutParams = lp
+
+                        setOnClickListener {
+                            onConfirmationTypeSelected?.invoke(message, type)
+                        }
+                    }
+                    holder.llConfirmChipsContainer.addView(chip)
+                }
+            } else if (message.isThinking) {
+                holder.llConfirmationContainer.visibility = View.GONE
                 holder.llThinkingContainer.visibility = View.VISIBLE
                 holder.typingDotsView.startAnimation()
                 holder.tvThinkingStep.text = message.thinkingStatus ?: "Thinking..."
@@ -95,7 +158,12 @@ class ChatAdapter(
                     holder.tvAiMsg.visibility = View.GONE
                 }
                 holder.rvAiAttachments.visibility = View.GONE
+
+                holder.btnChangeMessageType.setOnClickListener {
+                    onChangeTypeClicked?.invoke(message)
+                }
             } else {
+                holder.llConfirmationContainer.visibility = View.GONE
                 holder.llThinkingContainer.visibility = View.GONE
                 holder.typingDotsView.stopAnimation()
                 holder.tvAiMsg.visibility = View.VISIBLE
@@ -130,6 +198,10 @@ class ChatAdapter(
         val llThinkingContainer: LinearLayout = itemView.findViewById(R.id.llThinkingContainer)
         val typingDotsView: TypingDotsView = itemView.findViewById(R.id.typingDotsView)
         val tvThinkingStep: TextView = itemView.findViewById(R.id.tvThinkingStep)
+        val btnChangeMessageType: TextView = itemView.findViewById(R.id.btnChangeMessageType)
+        val llConfirmationContainer: LinearLayout = itemView.findViewById(R.id.llConfirmationContainer)
+        val tvConfirmationTitle: TextView = itemView.findViewById(R.id.tvConfirmationTitle)
+        val llConfirmChipsContainer: LinearLayout = itemView.findViewById(R.id.llConfirmChipsContainer)
         val tvAiMsg: TextView = itemView.findViewById(R.id.tvAiMsg)
         val rvAiAttachments: RecyclerView = itemView.findViewById(R.id.rvAiAttachments)
     }

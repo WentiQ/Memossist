@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.apptempleate.MemossistPromptBuilderTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-08-15T03:56:04" hostname="DINESH" time="0.029">
+  <properties/>
+  <testcase name="testPrompt_ReminderAndAsking" classname="com.example.apptempleate.MemossistPromptBuilderTest" time="0.02"/>
+  <testcase name="testPrompt_ReminderAndTelling" classname="com.example.apptempleate.MemossistPromptBuilderTest" time="0.0"/>
+  <testcase name="testTokenReduction_SpecializedPromptsVsFallback" classname="com.example.apptempleate.MemossistPromptBuilderTest" time="0.004"/>
+  <testcase name="testPrompt_ReminderAndMixed" classname="com.example.apptempleate.MemossistPromptBuilderTest" time="0.0"/>
+  <testcase name="testPrompt_Asking" classname="com.example.apptempleate.MemossistPromptBuilderTest" time="0.0"/>
+  <testcase name="testPrompt_Mixed" classname="com.example.apptempleate.MemossistPromptBuilderTest" time="0.001"/>
+  <testcase name="testPrompt_Telling" classname="com.example.apptempleate.MemossistPromptBuilderTest" time="0.0"/>
+  <testcase name="testPrompt_FallbackSafety" classname="com.example.apptempleate.MemossistPromptBuilderTest" time="0.001"/>
+  <testcase name="testPrompt_ReminderOnly" classname="com.example.apptempleate.MemossistPromptBuilderTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

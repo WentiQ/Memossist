@@ -24,7 +24,13 @@ object ChatRepository {
     interface ChatPipelineCallback {
         fun onStepUpdate(stepText: String)
         fun onTokenStream(partialText: String)
-        fun onCompleted(cleanHumanoidAnswer: String, debugLogText: String, usedAttachments: List<MediaAttachment>)
+        fun onCompleted(
+            cleanHumanoidAnswer: String,
+            debugLogText: String,
+            usedAttachments: List<MediaAttachment>,
+            createdMemoryIds: List<String> = emptyList(),
+            createdReminderId: String? = null
+        )
     }
 
     private fun buildLlmSystemPrompt(userPrompt: String, candidateExperiences: List<MemoryItem>): String {
@@ -55,31 +61,61 @@ object ChatRepository {
         return sb.toString()
     }
 
+    private val activeCancellations = java.util.concurrent.ConcurrentHashMap<String, java.util.concurrent.atomic.AtomicBoolean>()
+
+    fun cancelActivePipeline(conversationId: String) {
+        activeCancellations[conversationId]?.set(true)
+    }
+
+    fun registerPipeline(conversationId: String): java.util.concurrent.atomic.AtomicBoolean {
+        val flag = java.util.concurrent.atomic.AtomicBoolean(false)
+        activeCancellations[conversationId] = flag
+        return flag
+    }
+
+    fun isPipelineCancelled(conversationId: String): Boolean {
+        return activeCancellations[conversationId]?.get() == true
+    }
+
     /**
-     * Executes the 6-step workflow:
-     * Step 1: Send user message & top 5 candidate experiences to LLM.
-     * Step 2: LLM intent understanding (asking vs telling) & selective fact extraction into Memory Vault.
-     * Step 3: LLM returns humanoid answer, relevant experience IDs (if used), & extracted fact.
-     * Step 4: Extract relevant experience IDs & user message.
+     * Executes the complete Memossist Real-time Pipeline synchronously on the calling thread:
+     * Step 1: Local Message Classification & Routing (Model 1 & Model 2)
+     * Step 2: Retrieve Top-5 Candidate Memories (Only if ASKING or MIXED)
+     * Step 3: Stream live step progress strings & elapsed timer to UI
+     * Step 4: Run GGUF Native Inference with tailored System Prompt
      * Step 5: Calculate DAG connection strengths using ONLY the relevant IDs returned.
      * Step 6: Show ONLY the clean humanoid answer in chat bubble (Long press opens full debug log).
      */
     fun processChatMessageWithPipeline(
         context: Context,
+        conversationId: String = "",
         userMessage: String,
         userAttachments: List<MediaAttachment> = emptyList(),
+        forcedMessageType: MessageType? = null,
         callback: ChatPipelineCallback
     ) {
+            val cancelFlag = if (conversationId.isNotEmpty()) registerPipeline(conversationId) else java.util.concurrent.atomic.AtomicBoolean(false)
+            fun isCancelled(): Boolean = cancelFlag.get()
+
             // The caller is the chat foreground service's single worker.  Do not
             // create a detached executor here: doing so lets the service lose
             // ownership of an in-flight inference when the activity goes away.
             val startTimeMs = System.currentTimeMillis()
-            var currentBaseStepText = "Step 1/6: Retrieving candidate memories…"
+            var currentBaseStepText = "🔍 Classifying message locally…"
             var isPipelineRunning = true
+
+            fun updateLiveStep(stepText: String) {
+                if (isCancelled()) return
+                currentBaseStepText = stepText
+                val elapsedSec = (System.currentTimeMillis() - startTimeMs) / 1000L
+                val (avgSec, totalCount) = ResponseStatsRepository.getStats(context)
+                val timerStr = ResponseStatsRepository.formatTimerString(context, elapsedSec, avgSec, totalCount)
+                callback.onStepUpdate("$currentBaseStepText ($timerStr)")
+            }
 
             val tickerExecutor = java.util.concurrent.Executors.newSingleThreadScheduledExecutor()
             val tickerFuture = tickerExecutor.scheduleAtFixedRate({
-                if (isPipelineRunning) {
+                if (isPipelineRunning && !isCancelled()) {
                     val elapsedSec = (System.currentTimeMillis() - startTimeMs) / 1000L
                     val (avgSec, totalCount) = ResponseStatsRepository.getStats(context)
                     val timerStr = ResponseStatsRepository.formatTimerString(context, elapsedSec, avgSec, totalCount)
@@ -87,67 +123,152 @@ object ChatRepository {
                 }
             }, 0L, 1L, java.util.concurrent.TimeUnit.SECONDS)
 
-            // STEP 1: Retrieve Candidate Memories from Memory Vault
-            currentBaseStepText = "Step 1/6: Retrieving candidate memories…"
-            val topCandidates = ExperienceDagRepository.retrieveTopMatchingExperiences(context, userMessage, topK = 5)
-            val systemPromptStr = NoeonAiEngine.buildSystemPrompt(topCandidates)
+            // STEP 1: Local Message Classification & Routing
+            val classification = MessageAnalyzer.analyze(context, userMessage, forcedMessageType)
 
-            // STEP 2: LLM Intent Understanding, Fact Filtering & Humanoid Answer Synthesis
-            currentBaseStepText = "Step 2/6: LLM generating response…"
+            if (isCancelled()) {
+                isPipelineRunning = false
+                try { tickerFuture.cancel(true) } catch (e: Exception) {}
+                try { tickerExecutor.shutdownNow() } catch (e: Exception) {}
+                return
+            }
+
+            val totalSteps = when (classification.messageType) {
+                MessageType.REMINDER_ONLY -> 4
+                MessageType.TELLING -> 4
+                MessageType.ASKING -> 5
+                MessageType.MIXED -> 6
+                MessageType.REMINDER_AND_ASKING -> 6
+                MessageType.REMINDER_AND_TELLING -> 5
+                MessageType.REMINDER_AND_MIXED -> 7
+            }
+
+            var currentStep = 1
+            updateLiveStep("Step $currentStep/$totalSteps: Classifying message locally…")
+
+            val needsMemoryCandidates = when (classification.messageType) {
+                MessageType.ASKING,
+                MessageType.MIXED,
+                MessageType.REMINDER_AND_ASKING,
+                MessageType.REMINDER_AND_MIXED -> true
+                MessageType.REMINDER_ONLY,
+                MessageType.TELLING,
+                MessageType.REMINDER_AND_TELLING -> false
+            }
+
+            if (isCancelled()) {
+                isPipelineRunning = false
+                try { tickerFuture.cancel(true) } catch (e: Exception) {}
+                try { tickerExecutor.shutdownNow() } catch (e: Exception) {}
+                return
+            }
+
+            // Retrieve candidate experiences ONLY if asking or mixed intent is involved
+            val topCandidates = if (needsMemoryCandidates) {
+                currentStep++
+                updateLiveStep("Step $currentStep/$totalSteps: Retrieving candidate memories…")
+                ExperienceDagRepository.retrieveTopMatchingExperiences(context, userMessage, topK = 5)
+            } else {
+                emptyList()
+            }
+
+            if (isCancelled()) {
+                isPipelineRunning = false
+                try { tickerFuture.cancel(true) } catch (e: Exception) {}
+                try { tickerExecutor.shutdownNow() } catch (e: Exception) {}
+                return
+            }
+
+            // LLM Response Generation Step
+            currentStep++
+            val llmStepDescription = when (classification.messageType) {
+                MessageType.REMINDER_ONLY -> "Extracting reminder with LLM…"
+                MessageType.TELLING -> "Extracting facts with LLM…"
+                MessageType.ASKING -> "Synthesizing answer with LLM…"
+                MessageType.MIXED -> "Extracting facts & answering with LLM…"
+                MessageType.REMINDER_AND_ASKING -> "Extracting reminder & answering with LLM…"
+                MessageType.REMINDER_AND_TELLING -> "Extracting reminder & facts with LLM…"
+                MessageType.REMINDER_AND_MIXED -> "Extracting reminder, facts & answering with LLM…"
+            }
+            updateLiveStep("Step $currentStep/$totalSteps: $llmStepDescription")
 
             val tokenBuffer = StringBuilder()
             val llmResult = NoeonAiEngine.processMessagePipeline(
                 context = context,
                 userMessage = userMessage,
                 candidateExperiences = topCandidates,
+                classificationResult = classification,
                 onTokenGenerated = { token ->
-                    tokenBuffer.append(token)
-                    val currentStreamText = tokenBuffer.toString()
-                    callback.onTokenStream(currentStreamText)
+                    if (!isCancelled()) {
+                        tokenBuffer.append(token)
+                        val currentStreamText = tokenBuffer.toString()
+                        callback.onTokenStream(currentStreamText)
+                    }
                 }
             )
 
-            // STEP 3: Save Facts Extracted Strictly by LLM into Memory Vault (with user attachments)
-            currentBaseStepText = "Step 3/6: Reading LLM extracted facts & reminders…"
-            if (llmResult.extractedInformativeFacts.isNotEmpty()) {
-                for (fact in llmResult.extractedInformativeFacts) {
-                    val expId = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}"
-                    val memoryItem = MemoryItem(
-                        id = expId,
-                        title = if (fact.length > 32) fact.take(32) + "..." else fact,
-                        snippet = if (fact.length > 70) fact.take(70) + "..." else fact,
-                        message = fact,
-                        timestamp = MemoryVaultRepository.formatCurrentTime(),
-                        location = MemoryVaultRepository.getCurrentLocation(),
-                        tag = "Chat Fact",
-                        timeAgo = "Just now",
-                        attachments = userAttachments
-                    )
-                    MemoryVaultRepository.saveMemory(context, memoryItem)
+            if (isCancelled()) {
+                isPipelineRunning = false
+                try { tickerFuture.cancel(true) } catch (e: Exception) {}
+                try { tickerExecutor.shutdownNow() } catch (e: Exception) {}
+                return
+            }
+
+            // Save Facts Extracted Strictly by LLM into Memory Vault (with user attachments)
+            val createdMemoryIds = mutableListOf<String>()
+            if (llmResult.extractedInformativeFacts.isNotEmpty() || classification.messageType in listOf(MessageType.TELLING, MessageType.MIXED, MessageType.REMINDER_AND_TELLING, MessageType.REMINDER_AND_MIXED)) {
+                currentStep++
+                updateLiveStep("Step $currentStep/$totalSteps: Saving facts to Memory Vault…")
+                if (llmResult.extractedInformativeFacts.isNotEmpty()) {
+                    for (fact in llmResult.extractedInformativeFacts) {
+                        val expId = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}"
+                        createdMemoryIds.add(expId)
+                        val memoryItem = MemoryItem(
+                            id = expId,
+                            title = if (fact.length > 32) fact.take(32) + "..." else fact,
+                            snippet = if (fact.length > 70) fact.take(70) + "..." else fact,
+                            message = fact,
+                            timestamp = MemoryVaultRepository.formatCurrentTime(),
+                            location = MemoryVaultRepository.getCurrentLocation(),
+                            tag = "Chat Fact",
+                            timeAgo = "Just now",
+                            attachments = userAttachments
+                        )
+                        MemoryVaultRepository.saveMemory(context, memoryItem)
+                    }
                 }
             }
 
             // Extract and set Smart Reminders if present in user message
             val extractedReminder = ReminderExtractor.extractAndCreateReminder(context, userMessage, llmResult.extractedReminderTag)
+            var createdReminderId: String? = null
             var reminderConfirmationBanner = ""
-            if (extractedReminder != null) {
-                ReminderRepository.addOrUpdateReminder(context, extractedReminder)
-                reminderConfirmationBanner = "\n\n⏰ **Reminder Set!** ${extractedReminder.getCategoryIconText()} `${extractedReminder.title}` on ${extractedReminder.getFormattedEventDateTime()} (${extractedReminder.triggers.size} scheduled alerts)."
+            if (classification.messageType in listOf(MessageType.REMINDER_ONLY, MessageType.REMINDER_AND_ASKING, MessageType.REMINDER_AND_TELLING, MessageType.REMINDER_AND_MIXED) || extractedReminder != null) {
+                currentStep++
+                updateLiveStep("Step $currentStep/$totalSteps: Scheduling smart reminder alerts…")
+                if (extractedReminder != null) {
+                    createdReminderId = extractedReminder.id
+                    ReminderRepository.addOrUpdateReminder(context, extractedReminder)
+                    reminderConfirmationBanner = "\n\n⏰ **Reminder Set!** ${extractedReminder.getCategoryIconText()} `${extractedReminder.title}` on ${extractedReminder.getFormattedEventDateTime()} (${extractedReminder.triggers.size} scheduled alerts)."
+                }
             }
 
-            currentBaseStepText = "Step 4/6: Updating memory vault records…"
-
-            // Step 4 & 5: Calculate DAG connection strengths using ONLY the relevant IDs returned from LLM
-            currentBaseStepText = "Step 5/6: Updating used-memory connections…"
-
+            // Calculate DAG connection strengths using ONLY the relevant IDs returned from LLM
             val returnedUsedIdsSet = llmResult.relevantExperienceIds.toSet()
+            val dagSummary = if (needsMemoryCandidates) {
+                currentStep++
+                updateLiveStep("Step $currentStep/$totalSteps: Updating memory connection strengths…")
+                ExperienceDagRepository.updateDagConnections(
+                    context = context,
+                    userQuestion = userMessage,
+                    candidateExperiences = topCandidates,
+                    usedExperienceIds = returnedUsedIdsSet
+                )
+            } else {
+                DagUpdateSummary(userMessage, emptyList(), emptyList(), 0, emptyList())
+            }
 
-            val dagSummary = ExperienceDagRepository.updateDagConnections(
-                context = context,
-                userQuestion = userMessage,
-                candidateExperiences = topCandidates,
-                usedExperienceIds = returnedUsedIdsSet
-            )
+            updateLiveStep("Step $totalSteps/$totalSteps: Preparing answer…")
 
             // Gather any media attachments linked to the used experiences
             val usedExperienceAttachments = mutableListOf<MediaAttachment>()
@@ -167,8 +288,37 @@ object ChatRepository {
             debugLogBuilder.append("Model: ${llmResult.modelName}\n")
             debugLogBuilder.append("Engine Path: ${NoeonAiEngine.getActiveModelFilePath(context)}\n\n")
 
-            debugLogBuilder.append("=== 💬 FULL SYSTEM PROMPT SENT TO LLM ===\n")
-            debugLogBuilder.append(systemPromptStr)
+            debugLogBuilder.append("=== ⚡ LOCAL CLASSIFICATION & ROUTING ===\n")
+            val classResult = llmResult.classificationResult
+            if (classResult != null) {
+                debugLogBuilder.append("Message Type: ${classResult.messageType}\n")
+                debugLogBuilder.append("Fallback Invoked: ${classResult.isFallback}\n")
+                debugLogBuilder.append("Sentences (${classResult.sentences.size}): ${classResult.sentences}\n")
+                debugLogBuilder.append("Sentence Reminder Labels: ${classResult.sentenceLabels} (1=Rem, 0=Non-Rem)\n")
+                debugLogBuilder.append("Reminder Sentences: ${classResult.reminderSentences.ifEmpty { listOf("None") }}\n")
+                debugLogBuilder.append("Non-Reminder Sentences: ${classResult.nonReminderSentences.ifEmpty { listOf("None") }}\n")
+                debugLogBuilder.append("Classified Intent: ${classResult.intent} (Confidence: ${String.format("%.2f", classResult.confidence)})\n")
+                debugLogBuilder.append("Latency Breakdown:\n")
+                debugLogBuilder.append("  • Sentence Segmentation: ${classResult.segmentationTimeMs} ms\n")
+                debugLogBuilder.append("  • Model 1 (Reminder Classifier): ${classResult.reminderClassifyTimeMs} ms\n")
+                debugLogBuilder.append("  • Model 2 (Intent Classifier): ${classResult.intentClassifyTimeMs} ms\n")
+                debugLogBuilder.append("  • Total Local Classification: ${classResult.totalClassificationTimeMs} ms\n\n")
+            } else {
+                debugLogBuilder.append("Message Type: ${llmResult.messageType}\n\n")
+            }
+
+            debugLogBuilder.append("=== 📊 PROMPT TOKEN OPTIMIZATION & LATENCY ===\n")
+            val tokenDiff = llmResult.legacyTokenCount - llmResult.promptTokenCount
+            val pctReduction = if (llmResult.legacyTokenCount > 0) (tokenDiff * 100.0 / llmResult.legacyTokenCount) else 0.0
+            debugLogBuilder.append("Prompt Tokens Used: ~${llmResult.promptTokenCount} tokens\n")
+            debugLogBuilder.append("Legacy Prompt Tokens: ~${llmResult.legacyTokenCount} tokens\n")
+            debugLogBuilder.append("Token Reduction: ${String.format("%.1f", pctReduction)}% (${if (tokenDiff >= 0) "-$tokenDiff" else "+${-tokenDiff}"} tokens saved)\n")
+            debugLogBuilder.append("Prompt Construction Time: ${llmResult.promptBuildTimeMs} ms\n")
+            debugLogBuilder.append("LLM Inference Duration: ${llmResult.inferenceTimeMs} ms\n")
+            debugLogBuilder.append("Total Pipeline Duration: ${llmResult.totalPipelineTimeMs} ms\n\n")
+
+            debugLogBuilder.append("=== 💬 SYSTEM PROMPT SENT TO LLM ===\n")
+            debugLogBuilder.append(llmResult.systemPromptUsed)
             debugLogBuilder.append("\n\n")
 
             debugLogBuilder.append("=== 📤 RAW LLM OUTPUT ===\n")
@@ -207,8 +357,6 @@ object ChatRepository {
 
             val finalAnswer = llmResult.cleanHumanoidAnswer + reminderConfirmationBanner
 
-            currentBaseStepText = "Step 6/6: Preparing the answer…"
-
             // Stop 1-second ticker loop
             isPipelineRunning = false
             try { tickerFuture.cancel(true) } catch (e: Exception) {}
@@ -218,8 +366,10 @@ object ChatRepository {
             val durationSec = (System.currentTimeMillis() - startTimeMs) / 1000.0f
             ResponseStatsRepository.recordNewResponseTime(context, durationSec)
 
-            // Invoke completion callback directly on execution thread
-            callback.onCompleted(finalAnswer, finalDebugLog, usedExperienceAttachments)
+            if (!isCancelled()) {
+                // Invoke completion callback directly on execution thread
+                callback.onCompleted(finalAnswer, finalDebugLog, usedExperienceAttachments, createdMemoryIds, createdReminderId)
+            }
     }
 
     fun sendChatAnswerNotification(context: Context, userQuery: String, cleanAnswerText: String, conversationId: String? = null) {
@@ -315,6 +465,7 @@ object ChatRepository {
         }
     }
 
+    @Synchronized
     fun loadAllConversations(context: Context): MutableList<Conversation> {
         val file = File(context.filesDir, FILE_NAME)
         val backupFile = File(context.filesDir, BACKUP_FILE_NAME)
@@ -356,7 +507,16 @@ object ChatRepository {
                             val rawAttJson = msgObj.optString("attachmentsJson", null)
                             val msgAtts = MemoryVaultRepository.parseAttachments(rawAttJson)
 
-                            messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, isThinking, thinkingStatus, debugLog, msgAtts))
+                            val memIdsArray = msgObj.optJSONArray("createdMemoryIds")
+                            val createdMemIds = mutableListOf<String>()
+                            if (memIdsArray != null) {
+                                for (k in 0 until memIdsArray.length()) {
+                                    createdMemIds.add(memIdsArray.getString(k))
+                                }
+                            }
+                            val createdReminderId = msgObj.optString("createdReminderId", null).takeIf { !it.isNullOrEmpty() && it != "null" }
+
+                            messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, isThinking, thinkingStatus, debugLog, msgAtts, createdMemIds, createdReminderId))
                         } catch (me: Exception) {
                             me.printStackTrace()
                         }
@@ -396,7 +556,16 @@ object ChatRepository {
                             val rawAttJson = msgObj.optString("attachmentsJson", null)
                             val msgAtts = MemoryVaultRepository.parseAttachments(rawAttJson)
 
-                            messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, isThinking, thinkingStatus, debugLog, msgAtts))
+                            val memIdsArray = msgObj.optJSONArray("createdMemoryIds")
+                            val createdMemIds = mutableListOf<String>()
+                            if (memIdsArray != null) {
+                                for (k in 0 until memIdsArray.length()) {
+                                    createdMemIds.add(memIdsArray.getString(k))
+                                }
+                            }
+                            val createdReminderId = msgObj.optString("createdReminderId", null).takeIf { !it.isNullOrEmpty() && it != "null" }
+
+                            messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, isThinking, thinkingStatus, debugLog, msgAtts, createdMemIds, createdReminderId))
                         }
 
                         conversations.add(Conversation(id, title, lastUpdated, isPinned, messagesList))
@@ -411,6 +580,7 @@ object ChatRepository {
         return conversations
     }
 
+    @Synchronized
     fun saveAllConversations(context: Context, conversations: List<Conversation>) {
         try {
             val conversationsArray = JSONArray()
@@ -433,6 +603,8 @@ object ChatRepository {
                             put("thinkingStatus", msg.thinkingStatus)
                             put("debugLog", msg.debugLog)
                             put("attachmentsJson", MemoryVaultRepository.serializeAttachments(msg.attachments))
+                            put("createdMemoryIds", JSONArray(msg.createdMemoryIds))
+                            put("createdReminderId", msg.createdReminderId)
                         }
                         msgArray.put(msgObj)
                     }
@@ -457,6 +629,52 @@ object ChatRepository {
         }
     }
 
+    /**
+     * Reverts the actions of the most recent user interaction in a chat (saved facts, reminders, DAG edges, and messages)
+     * and returns the user message to allow editing and resending.
+     */
+    @Synchronized
+    fun revertLastUserMessage(context: Context, conversationId: String): ChatMessage? {
+        val conversations = loadAllConversations(context)
+        val conv = conversations.find { it.id == conversationId } ?: return null
+
+        val lastUserMsgIdx = conv.messages.indexOfLast { it.isUser }
+        if (lastUserMsgIdx == -1) return null
+        val lastUserMsg = conv.messages[lastUserMsgIdx]
+
+        val subsequentMessages = conv.messages.subList(lastUserMsgIdx, conv.messages.size).toList()
+        for (msg in subsequentMessages) {
+            for (memId in msg.createdMemoryIds) {
+                MemoryVaultRepository.deleteMemory(context, memId)
+            }
+            if (!msg.createdReminderId.isNullOrEmpty()) {
+                ReminderRepository.deleteReminder(context, msg.createdReminderId!!)
+            }
+        }
+
+        // Revert DAG connection increments if candidate memories were used
+        val aiResponseMsg = subsequentMessages.find { !it.isUser }
+        if (aiResponseMsg != null) {
+            val usedIds = aiResponseMsg.debugLog?.let { log ->
+                val usedMatch = Regex("\\[USED_EXPERIENCES:\\s*(.*?)\\]").find(log)
+                usedMatch?.groupValues?.get(1)?.split(",")?.map { it.trim() }?.filter { it.startsWith("EXP-", ignoreCase = true) }?.toSet()
+            } ?: emptySet()
+            if (usedIds.isNotEmpty()) {
+                val candidates = ExperienceDagRepository.retrieveTopMatchingExperiences(context, lastUserMsg.text, topK = 5)
+                ExperienceDagRepository.revertDagConnections(context, lastUserMsg.text, candidates, usedIds)
+            }
+        }
+
+        while (conv.messages.size > lastUserMsgIdx) {
+            conv.messages.removeAt(conv.messages.size - 1)
+        }
+        conv.lastUpdated = System.currentTimeMillis()
+        saveOrUpdateConversation(context, conv)
+
+        return lastUserMsg
+    }
+
+    @Synchronized
     fun togglePinConversation(context: Context, conversationId: String) {
         val conversations = loadAllConversations(context)
         val conv = conversations.find { it.id == conversationId }
@@ -466,6 +684,7 @@ object ChatRepository {
         }
     }
 
+    @Synchronized
     fun renameConversation(context: Context, conversationId: String, newTitle: String) {
         val conversations = loadAllConversations(context)
         val conv = conversations.find { it.id == conversationId }
@@ -475,12 +694,14 @@ object ChatRepository {
         }
     }
 
+    @Synchronized
     fun deleteConversation(context: Context, conversationId: String) {
         val conversations = loadAllConversations(context)
         conversations.removeAll { it.id == conversationId }
         saveAllConversations(context, conversations)
     }
 
+    @Synchronized
     fun saveOrUpdateConversation(context: Context, conversation: Conversation) {
         val conversations = loadAllConversations(context)
         val index = conversations.indexOfFirst { it.id == conversation.id }
@@ -493,8 +714,29 @@ object ChatRepository {
     }
 
     fun generateAiResponse(context: Context, userPrompt: String): String {
-        val topCandidates = ExperienceDagRepository.retrieveTopMatchingExperiences(context, userPrompt, topK = 5)
-        val llmResult = NoeonAiEngine.processMessagePipeline(context, userPrompt, topCandidates)
+        val classification = MessageAnalyzer.analyze(context, userPrompt)
+        val needsMemoryCandidates = when (classification.messageType) {
+            MessageType.ASKING,
+            MessageType.MIXED,
+            MessageType.REMINDER_AND_ASKING,
+            MessageType.REMINDER_AND_MIXED -> true
+            MessageType.REMINDER_ONLY,
+            MessageType.TELLING,
+            MessageType.REMINDER_AND_TELLING -> false
+        }
+
+        val topCandidates = if (needsMemoryCandidates || classification.isFallback) {
+            ExperienceDagRepository.retrieveTopMatchingExperiences(context, userPrompt, topK = 5)
+        } else {
+            emptyList()
+        }
+
+        val llmResult = NoeonAiEngine.processMessagePipeline(
+            context = context,
+            userMessage = userPrompt,
+            candidateExperiences = topCandidates,
+            classificationResult = classification
+        )
 
         llmResult.extractedInformativeFacts.forEach { fact ->
             MemoryVaultRepository.saveMemory(context, MemoryItem(
@@ -509,12 +751,14 @@ object ChatRepository {
             ))
         }
 
-        ExperienceDagRepository.updateDagConnections(
-            context = context,
-            userQuestion = userPrompt,
-            candidateExperiences = topCandidates,
-            usedExperienceIds = llmResult.relevantExperienceIds.toSet()
-        )
+        if (topCandidates.isNotEmpty() && llmResult.relevantExperienceIds.isNotEmpty()) {
+            ExperienceDagRepository.updateDagConnections(
+                context = context,
+                userQuestion = userPrompt,
+                candidateExperiences = topCandidates,
+                usedExperienceIds = llmResult.relevantExperienceIds.toSet()
+            )
+        }
 
         return llmResult.cleanHumanoidAnswer
     }

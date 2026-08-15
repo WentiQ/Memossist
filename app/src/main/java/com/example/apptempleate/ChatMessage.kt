@@ -11,5 +11,10 @@ data class ChatMessage(
     var isThinking: Boolean = false,
     var thinkingStatus: String? = null,
     var debugLog: String? = null,
-    var attachments: List<MediaAttachment> = emptyList()
+    var attachments: List<MediaAttachment> = emptyList(),
+    var createdMemoryIds: List<String> = emptyList(),
+    var createdReminderId: String? = null,
+    var awaitingTypeConfirmation: Boolean = false,
+    var detectedMessageType: MessageType? = null,
+    var classificationConfidence: Float = 1.0f
 )

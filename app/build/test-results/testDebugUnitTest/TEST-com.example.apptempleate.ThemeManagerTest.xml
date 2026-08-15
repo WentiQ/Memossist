@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.example.apptempleate.ThemeManagerTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-08-11T12:35:05" hostname="DINESH" time="0.005">
+<testsuite name="com.example.apptempleate.ThemeManagerTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-08-15T05:23:50" hostname="DINESH" time="0.001">
   <properties/>
-  <testcase name="displayName_isFriendly" classname="com.example.apptempleate.ThemeManagerTest" time="0.004"/>
+  <testcase name="displayName_isFriendly" classname="com.example.apptempleate.ThemeManagerTest" time="0.001"/>
   <testcase name="themeModeMapping_isCorrect" classname="com.example.apptempleate.ThemeManagerTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

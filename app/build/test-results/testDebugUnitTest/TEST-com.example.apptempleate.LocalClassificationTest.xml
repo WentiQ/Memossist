@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.apptempleate.LocalClassificationTest" tests="16" skipped="0" failures="0" errors="0" timestamp="2026-08-15T05:23:50" hostname="DINESH" time="0.217">
+  <properties/>
+  <testcase name="testRouting_Example4_Mixed" classname="com.example.apptempleate.LocalClassificationTest" time="0.13"/>
+  <testcase name="testForcedMessageTypeOverride" classname="com.example.apptempleate.LocalClassificationTest" time="0.004"/>
+  <testcase name="testPromptBuilder_TellingOnly_ILikeIcecreams" classname="com.example.apptempleate.LocalClassificationTest" time="0.004"/>
+  <testcase name="testRouting_Example1_ReminderOnly" classname="com.example.apptempleate.LocalClassificationTest" time="0.001"/>
+  <testcase name="testRouting_Example3_Telling" classname="com.example.apptempleate.LocalClassificationTest" time="0.001"/>
+  <testcase name="testPromptBuilder_AllSevenTypes" classname="com.example.apptempleate.LocalClassificationTest" time="0.065"/>
+  <testcase name="testPreserveOriginalUserMessage" classname="com.example.apptempleate.LocalClassificationTest" time="0.002"/>
+  <testcase name="testNonReminderIntentClassifier" classname="com.example.apptempleate.LocalClassificationTest" time="0.001"/>
+  <testcase name="testReminderSentenceClassifier" classname="com.example.apptempleate.LocalClassificationTest" time="0.001"/>
+  <testcase name="testRouting_Example2_Asking" classname="com.example.apptempleate.LocalClassificationTest" time="0.001"/>
+  <testcase name="testSentenceSegmenter_multipleSentences" classname="com.example.apptempleate.LocalClassificationTest" time="0.0"/>
+  <testcase name="testSentenceSegmenter_singleSentence" classname="com.example.apptempleate.LocalClassificationTest" time="0.0"/>
+  <testcase name="testRouting_Example7_ReminderAndMixed" classname="com.example.apptempleate.LocalClassificationTest" time="0.002"/>
+  <testcase name="testRouting_Example6_ReminderAndTelling" classname="com.example.apptempleate.LocalClassificationTest" time="0.001"/>
+  <testcase name="testConfirmationThresholdProperty" classname="com.example.apptempleate.LocalClassificationTest" time="0.0"/>
+  <testcase name="testRouting_Example5_ReminderAndAsking" classname="com.example.apptempleate.LocalClassificationTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

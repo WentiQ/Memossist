@@ -22,6 +22,7 @@ import android.view.View
 import android.view.Window
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -68,13 +69,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnMic: ImageButton
     private lateinit var btnLiveVoice: ImageButton
 
+    // Splash / Logo Loading Screen & Dynamic Logo Views
+    private lateinit var flSplashOverlay: FrameLayout
+    private lateinit var ivSplashLogo: ImageView
+    private lateinit var ivSidebarLogo: ImageView
+    private lateinit var btnSplashUnlock: TextView
+
     // Sidebar Views
-    private lateinit var btnSidebarNewChat: View
-    private lateinit var btnNavHome: View
-    private lateinit var btnNavReminders: View
-    private lateinit var btnNavVault: View
-    private lateinit var btnNavInsights: View
-    private lateinit var btnNavConnections: View
+    private lateinit var btnSidebarNewChat: LinearLayout
+    private lateinit var btnNavHome: LinearLayout
+    private lateinit var btnNavReminders: LinearLayout
+    private lateinit var btnNavVault: LinearLayout
+    private lateinit var btnNavInsights: LinearLayout
+    private lateinit var btnNavConnections: LinearLayout
     private lateinit var rvSidebarHistory: RecyclerView
     private lateinit var sidebarHistoryAdapter: SidebarHistoryAdapter
     private lateinit var llPinnedSettings: LinearLayout
@@ -147,7 +154,6 @@ class MainActivity : AppCompatActivity() {
         }
         
         AppLifecycleTracker.init(application)
-        checkAndPromptAppLockIfRequired()
 
         // Remove window title & hide action bar completely
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -169,6 +175,17 @@ class MainActivity : AppCompatActivity() {
         btnDeleteCurrentChat = findViewById(R.id.btnDeleteCurrentChat)
         mainContentContainer = findViewById(R.id.mainContentContainer)
 
+        // Initialize Splash Overlay & Logo Views
+        flSplashOverlay = findViewById<FrameLayout>(R.id.flSplashOverlay)
+        ivSplashLogo = findViewById(R.id.ivSplashLogo)
+        ivSidebarLogo = findViewById(R.id.ivSidebarLogo)
+        btnSplashUnlock = findViewById(R.id.btnSplashUnlock)
+        updateAppLogos()
+
+        btnSplashUnlock.setOnClickListener {
+            checkAndPromptAppLockIfRequired()
+        }
+
         // Initialize Sidebar Views
         btnSidebarNewChat = findViewById(R.id.btnSidebarNewChat)
         btnNavHome = findViewById(R.id.btnNavHome)
@@ -189,7 +206,7 @@ class MainActivity : AppCompatActivity() {
         rvChatMessages = findViewById(R.id.rvChatMessages)
         chatAdapter = ChatAdapter(
             onMessageLongClick = { message ->
-                if (!message.isUser && !message.isThinking) {
+                if (!message.isUser && !message.isThinking && !message.awaitingTypeConfirmation) {
                     val logText = message.debugLog ?: "=== 🧠 MEMOSSIST AI DIAGNOSTIC LOGS ===\n" +
                             "Model Engine: ${NoeonAiEngine.getSelectedModel(this).name}\n\n" +
                             "=== CLEAN HUMANOID ANSWER ===\n${message.text}\n\n" +
@@ -200,6 +217,15 @@ class MainActivity : AppCompatActivity() {
                     val logsSheet = AiMessageLogsBottomSheet(logText)
                     logsSheet.show(supportFragmentManager, "AiMessageLogsBottomSheet")
                 }
+            },
+            onUserMessageLongClick = { userMessage ->
+                showEditLastMessageDialog(userMessage)
+            },
+            onChangeTypeClicked = { aiMessage ->
+                showInFlightTypeCorrectionBottomSheet(aiMessage)
+            },
+            onConfirmationTypeSelected = { aiMessage, selectedType ->
+                startPipelineWithConfirmedType(aiMessage, selectedType)
             }
         )
         rvChatMessages.layoutManager = LinearLayoutManager(this)
@@ -411,6 +437,11 @@ class MainActivity : AppCompatActivity() {
         btnLiveVoice.setOnClickListener {
             openVoiceConversationSmoothly()
         }
+
+        // Show App Lock authentication after initial UI/logo load screen has been displayed
+        window.decorView.post {
+            checkAndPromptAppLockIfRequired()
+        }
     }
 
     private fun updateAttachmentPreviewUI() {
@@ -430,16 +461,39 @@ class MainActivity : AppCompatActivity() {
             chatBroadcastReceiver = object : android.content.BroadcastReceiver() {
                 override fun onReceive(context: Context?, intent: Intent?) {
                     val convId = intent?.getStringExtra(ChatAiForegroundService.EXTRA_CONVERSATION_ID) ?: return
+                    val action = intent.action
 
                     runOnUiThread {
                         if (currentConversation?.id == convId) {
-                            val updated = ChatRepository.loadAllConversations(this@MainActivity).find { it.id == convId }
-                            if (updated != null) {
-                                currentConversation = updated
-                                chatAdapter.setMessages(updated.messages)
+                            when (action) {
+                                ChatAiForegroundService.ACTION_CHAT_STEP_UPDATE -> {
+                                    val stepText = intent.getStringExtra(ChatAiForegroundService.EXTRA_STEP_TEXT) ?: ""
+                                    val aiMsg = currentConversation?.messages?.findLast { it.isThinking }
+                                    if (aiMsg != null) {
+                                        aiMsg.thinkingStatus = stepText
+                                        chatAdapter.updateThinkingStep(stepText)
+                                    }
+                                }
+                                ChatAiForegroundService.ACTION_CHAT_TOKEN_STREAM -> {
+                                    val partialText = intent.getStringExtra(ChatAiForegroundService.EXTRA_PARTIAL_TEXT) ?: ""
+                                    val aiMsg = currentConversation?.messages?.findLast { it.isThinking }
+                                    if (aiMsg != null) {
+                                        aiMsg.text = partialText
+                                        chatAdapter.updateStreamingText(partialText)
+                                    }
+                                }
+                                ChatAiForegroundService.ACTION_CHAT_COMPLETED -> {
+                                    val updated = ChatRepository.loadAllConversations(this@MainActivity).find { it.id == convId }
+                                    if (updated != null) {
+                                        currentConversation = updated
+                                        chatAdapter.setMessages(updated.messages)
+                                    }
+                                    refreshSidebarHistory()
+                                }
                             }
+                        } else if (action == ChatAiForegroundService.ACTION_CHAT_COMPLETED) {
+                            refreshSidebarHistory()
                         }
-                        refreshSidebarHistory()
                     }
                 }
             }
@@ -473,7 +527,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        ThemeManager.applySavedTheme(this)
         registerChatBroadcastReceiver()
+        updateAppLogos()
         updateGreetingText()
         refreshSidebarHistory()
         updateHeaderActiveModel()
@@ -692,37 +748,127 @@ class MainActivity : AppCompatActivity() {
         llGreetingContainer.visibility = View.GONE
         rvChatMessages.visibility = View.VISIBLE
         btnDeleteCurrentChat.visibility = View.VISIBLE
+        // Perform lightweight local pre-analysis to check if user confirmation is required for low-confidence routing
+        val preClassification = MessageAnalyzer.analyze(this@MainActivity, userText)
+        val (avgSec, totalCount) = ResponseStatsRepository.getStats(this@MainActivity)
+        val initialTimer = ResponseStatsRepository.formatTimerString(this@MainActivity, 0L, avgSec, totalCount)
 
-        // Add temporary thinking message for live step progress animation
-        val aiMsg = ChatMessage(
-            conversationId = activeConv.id,
-            text = "",
-            isUser = false,
-            isThinking = true,
-            thinkingStatus = "🔍 Step 1/6: Retrieving candidate experiences..."
-        )
-        activeConv.messages.add(aiMsg)
+        if (preClassification.requiresConfirmation) {
+            val aiMsg = ChatMessage(
+                conversationId = activeConv.id,
+                text = "",
+                isUser = false,
+                isThinking = false,
+                awaitingTypeConfirmation = true,
+                detectedMessageType = preClassification.messageType,
+                classificationConfidence = preClassification.confidence
+            )
+            activeConv.messages.add(aiMsg)
+
+            chatAdapter.setMessages(activeConv.messages)
+            rvChatMessages.post {
+                if (chatAdapter.itemCount > 0) {
+                    rvChatMessages.smoothScrollToPosition(chatAdapter.itemCount - 1)
+                }
+            }
+
+            ChatRepository.saveOrUpdateConversation(this@MainActivity, activeConv)
+            refreshSidebarHistory()
+        } else {
+            // Add temporary thinking message for live step progress animation
+            val aiMsg = ChatMessage(
+                conversationId = activeConv.id,
+                text = "",
+                isUser = false,
+                isThinking = true,
+                thinkingStatus = "🔍 Processing message… ($initialTimer)"
+            )
+            activeConv.messages.add(aiMsg)
+
+            chatAdapter.setMessages(activeConv.messages)
+            rvChatMessages.post {
+                if (chatAdapter.itemCount > 0) {
+                    rvChatMessages.smoothScrollToPosition(chatAdapter.itemCount - 1)
+                }
+            }
+
+            // Save conversation state immediately to disk
+            ChatRepository.saveOrUpdateConversation(this@MainActivity, activeConv)
+            refreshSidebarHistory()
+
+            // Launch Foreground Service with WakeLock to guarantee 100% background LLM execution
+            BatteryOptimizationHelper.requestExemptionIfNeeded(this@MainActivity)
+            ChatAiForegroundService.startService(
+                context = this@MainActivity,
+                conversationId = activeConv.id,
+                userMessage = userText,
+                userAttachments = currentAttachments,
+                targetMessageId = aiMsg.id
+            )
+        }
+    }
+
+    private fun startPipelineWithConfirmedType(aiMessage: ChatMessage, selectedType: MessageType) {
+        val activeConv = currentConversation ?: return
+        val userMsg = activeConv.messages.findLast { it.isUser } ?: return
+
+        val (avgSec, totalCount) = ResponseStatsRepository.getStats(this@MainActivity)
+        val initialTimer = ResponseStatsRepository.formatTimerString(this@MainActivity, 0L, avgSec, totalCount)
+
+        aiMessage.awaitingTypeConfirmation = false
+        aiMessage.isThinking = true
+        aiMessage.thinkingStatus = "🔍 Classifying as ${selectedType.displayName}… ($initialTimer)"
+        aiMessage.text = ""
 
         chatAdapter.setMessages(activeConv.messages)
-        rvChatMessages.post {
-            if (chatAdapter.itemCount > 0) {
-                rvChatMessages.smoothScrollToPosition(chatAdapter.itemCount - 1)
-            }
-        }
-
-        // Save conversation state immediately to disk
         ChatRepository.saveOrUpdateConversation(this@MainActivity, activeConv)
-        refreshSidebarHistory()
 
-        // Launch Foreground Service with WakeLock to guarantee 100% background LLM execution
         BatteryOptimizationHelper.requestExemptionIfNeeded(this@MainActivity)
         ChatAiForegroundService.startService(
             context = this@MainActivity,
             conversationId = activeConv.id,
-            userMessage = userText,
-            userAttachments = currentAttachments,
-            targetMessageId = aiMsg.id
+            userMessage = userMsg.text,
+            userAttachments = userMsg.attachments,
+            targetMessageId = aiMessage.id,
+            forcedMessageType = selectedType
         )
+    }
+
+    private fun showInFlightTypeCorrectionBottomSheet(aiMessage: ChatMessage) {
+        val activeConv = currentConversation ?: return
+        val userMsg = activeConv.messages.findLast { it.isUser } ?: return
+
+        val sheet = MessageTypeSelectorBottomSheet(
+            currentlySelected = null,
+            onTypeSelected = { selectedType ->
+                // 1. Cancel in-flight pipeline execution
+                ChatAiForegroundService.cancelActiveChat(this@MainActivity, activeConv.id)
+
+                val (avgSec, totalCount) = ResponseStatsRepository.getStats(this@MainActivity)
+                val initialTimer = ResponseStatsRepository.formatTimerString(this@MainActivity, 0L, avgSec, totalCount)
+
+                // 2. Reset AI message state
+                aiMessage.isThinking = true
+                aiMessage.awaitingTypeConfirmation = false
+                aiMessage.text = ""
+                aiMessage.thinkingStatus = "⚡ Restarting with ${selectedType.displayName}… ($initialTimer)"
+
+                chatAdapter.setMessages(activeConv.messages)
+                ChatRepository.saveOrUpdateConversation(this@MainActivity, activeConv)
+
+                // 3. Restart pipeline with user-chosen type
+                BatteryOptimizationHelper.requestExemptionIfNeeded(this@MainActivity)
+                ChatAiForegroundService.startService(
+                    context = this@MainActivity,
+                    conversationId = activeConv.id,
+                    userMessage = userMsg.text,
+                    userAttachments = userMsg.attachments,
+                    targetMessageId = aiMessage.id,
+                    forcedMessageType = selectedType
+                )
+            }
+        )
+        sheet.show(supportFragmentManager, "MessageTypeSelectorBottomSheet")
     }
 
     private fun loadConversationIntoView(conversation: Conversation, restoreScroll: Boolean = false) {
@@ -964,21 +1110,143 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateAppLogos() {
+        val logoRes = ThemeManager.getLogoDrawable(this)
+        if (this::ivSplashLogo.isInitialized) {
+            ivSplashLogo.setImageResource(logoRes)
+        }
+        if (this::ivSidebarLogo.isInitialized) {
+            ivSidebarLogo.setImageResource(logoRes)
+        }
+    }
+
     private fun checkAndPromptAppLockIfRequired() {
+        updateAppLogos()
         if (AppLockManager.isAppLockEnabled(this) && !AppLockManager.isSessionAuthenticated) {
+            if (this::flSplashOverlay.isInitialized) {
+                flSplashOverlay.visibility = View.VISIBLE
+                flSplashOverlay.alpha = 1.0f
+            }
+            if (this::btnSplashUnlock.isInitialized) {
+                btnSplashUnlock.visibility = View.GONE
+            }
+
             AppLockManager.showBiometricPrompt(
                 activity = this,
                 title = "Unlock Memossist",
                 subtitle = "Authenticate to access your Vault and chats",
                 onSuccess = {
                     AppLockManager.isSessionAuthenticated = true
+                    dismissSplashOverlaySmoothly()
                 },
                 onFailure = {
-                    Toast.makeText(this, "App Lock authentication required", Toast.LENGTH_SHORT).show()
-                    finish()
+                    if (this::btnSplashUnlock.isInitialized) {
+                        btnSplashUnlock.visibility = View.VISIBLE
+                    }
+                    Toast.makeText(this, "Authentication required to unlock Memossist", Toast.LENGTH_SHORT).show()
                 }
             )
+        } else {
+            dismissSplashOverlaySmoothly()
         }
+    }
+
+    private fun dismissSplashOverlaySmoothly() {
+        if (this::flSplashOverlay.isInitialized && flSplashOverlay.visibility == View.VISIBLE) {
+            flSplashOverlay.postDelayed({
+                flSplashOverlay.animate()
+                    .alpha(0f)
+                    .setDuration(350L)
+                    .withEndAction {
+                        flSplashOverlay.visibility = View.GONE
+                    }
+                    .start()
+            }, 300L)
+        }
+    }
+
+    private fun showEditLastMessageDialog(userMessage: ChatMessage) {
+        val conv = currentConversation ?: return
+        val lastUserMsg = conv.messages.findLast { it.isUser }
+        if (lastUserMsg == null || lastUserMsg.id != userMessage.id) return
+
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_message, null, false)
+        val etEditMessageText = dialogView.findViewById<EditText>(R.id.etEditMessageText)
+        val btnCancel = dialogView.findViewById<TextView>(R.id.btnCancelEditMessage)
+        val btnEditInChatBar = dialogView.findViewById<TextView>(R.id.btnEditInChatBar)
+        val btnConfirmResend = dialogView.findViewById<TextView>(R.id.btnConfirmResendMessage)
+
+        etEditMessageText.setText(userMessage.text)
+        etEditMessageText.setSelection(userMessage.text.length)
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnEditInChatBar.setOnClickListener {
+            dialog.dismiss()
+            val newText = etEditMessageText.text.toString().trim()
+
+            // Revert previous exchange actions from disk
+            val reverted = ChatRepository.revertLastUserMessage(this@MainActivity, conv.id)
+            if (reverted != null) {
+                val updated = ChatRepository.loadAllConversations(this@MainActivity).find { it.id == conv.id }
+                if (updated != null) {
+                    currentConversation = updated
+                    chatAdapter.setMessages(updated.messages)
+                }
+
+                // Place edited text & attachments in chat bar for user to edit further
+                etChatInput.setText(newText)
+                etChatInput.setSelection(newText.length)
+                pendingAttachments.clear()
+                pendingAttachments.addAll(reverted.attachments)
+                updateAttachmentPreviewUI()
+                updateMicOrSendButtonState()
+
+                etChatInput.requestFocus()
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager
+                imm?.showSoftInput(etChatInput, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+
+                Toast.makeText(this@MainActivity, "Previous response reverted. You can now edit and send.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        btnConfirmResend.setOnClickListener {
+            dialog.dismiss()
+            val newText = etEditMessageText.text.toString().trim()
+            if (newText.isEmpty() && userMessage.attachments.isEmpty()) {
+                Toast.makeText(this@MainActivity, "Message cannot be empty", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Revert previous exchange actions from disk
+            val reverted = ChatRepository.revertLastUserMessage(this@MainActivity, conv.id)
+            if (reverted != null) {
+                val updated = ChatRepository.loadAllConversations(this@MainActivity).find { it.id == conv.id }
+                if (updated != null) {
+                    currentConversation = updated
+                    chatAdapter.setMessages(updated.messages)
+                }
+
+                // Put text into input and trigger sendMessage
+                etChatInput.setText(newText)
+                pendingAttachments.clear()
+                pendingAttachments.addAll(reverted.attachments)
+                updateAttachmentPreviewUI()
+                updateMicOrSendButtonState()
+
+                sendMessage()
+            }
+        }
+
+        dialog.show()
     }
 
     override fun onNewIntent(intent: Intent?) {

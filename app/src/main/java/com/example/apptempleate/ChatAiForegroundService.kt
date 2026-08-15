@@ -74,11 +74,22 @@ class ChatAiForegroundService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val action = intent?.action
         val conversationId = intent?.getStringExtra(EXTRA_CONVERSATION_ID) ?: ""
+
+        if (action == ACTION_CANCEL_PIPELINE) {
+            if (conversationId.isNotEmpty()) {
+                ChatRepository.cancelActivePipeline(conversationId)
+            }
+            return START_NOT_STICKY
+        }
+
         val userMessage = intent?.getStringExtra(EXTRA_USER_MESSAGE) ?: ""
         val targetMessageId = intent?.getStringExtra(EXTRA_TARGET_MESSAGE_ID)
         val attachmentsJson = intent?.getStringExtra(EXTRA_ATTACHMENTS_JSON)
         val userAttachments = MemoryVaultRepository.parseAttachments(attachmentsJson)
+        val forcedTypeName = intent?.getStringExtra(EXTRA_FORCED_MESSAGE_TYPE)
+        val forcedMessageType = forcedTypeName?.let { runCatching { MessageType.valueOf(it) }.getOrNull() }
 
         if (userMessage.isEmpty() && userAttachments.isEmpty()) {
             stopSelf()
@@ -95,30 +106,38 @@ class ChatAiForegroundService : Service() {
             try {
                 ChatRepository.processChatMessageWithPipeline(
                 context = this@ChatAiForegroundService,
+                conversationId = conversationId,
                 userMessage = userMessage,
                 userAttachments = userAttachments,
+                forcedMessageType = forcedMessageType,
                 callback = object : ChatRepository.ChatPipelineCallback {
+                    var lastStepDiskSyncMs = 0L
+
                     override fun onStepUpdate(stepText: String) {
                         updateNotification(stepText)
 
-                        // Synchronize step status on disk
-                        try {
-                            val conversations = ChatRepository.loadAllConversations(this@ChatAiForegroundService)
-                            val conv = conversations.find { it.id == conversationId }
-                            if (conv != null) {
-                                val aiMsg = (if (!targetMessageId.isNullOrEmpty()) conv.messages.find { it.id == targetMessageId } else null)
-                                    ?: conv.messages.findLast { it.isThinking }
-                                    ?: conv.messages.findLast { !it.isUser }
-                                if (aiMsg != null) {
-                                    aiMsg.thinkingStatus = stepText
-                                    ChatRepository.saveOrUpdateConversation(this@ChatAiForegroundService, conv)
+                        // Throttle step status disk synchronization to avoid blocking I/O on every 1s tick
+                        val now = System.currentTimeMillis()
+                        if (now - lastStepDiskSyncMs > 3000L) {
+                            lastStepDiskSyncMs = now
+                            try {
+                                val conversations = ChatRepository.loadAllConversations(this@ChatAiForegroundService)
+                                val conv = conversations.find { it.id == conversationId }
+                                if (conv != null) {
+                                    val aiMsg = (if (!targetMessageId.isNullOrEmpty()) conv.messages.find { it.id == targetMessageId } else null)
+                                        ?: conv.messages.findLast { it.isThinking }
+                                        ?: conv.messages.findLast { !it.isUser }
+                                    if (aiMsg != null) {
+                                        aiMsg.thinkingStatus = stepText
+                                        ChatRepository.saveOrUpdateConversation(this@ChatAiForegroundService, conv)
+                                    }
                                 }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
                         }
 
-                        // Broadcast step update to MainActivity if visible
+                        // Broadcast step update to UI immediately
                         val updateIntent = Intent(ACTION_CHAT_STEP_UPDATE).apply {
                             putExtra(EXTRA_CONVERSATION_ID, conversationId)
                             putExtra(EXTRA_STEP_TEXT, stepText)
@@ -126,21 +145,27 @@ class ChatAiForegroundService : Service() {
                         sendBroadcast(updateIntent)
                     }
 
+                    var lastStreamDiskSyncMs = 0L
+
                     override fun onTokenStream(partialText: String) {
-                        try {
-                            val conversations = ChatRepository.loadAllConversations(this@ChatAiForegroundService)
-                            val conv = conversations.find { it.id == conversationId }
-                            if (conv != null) {
-                                val aiMsg = (if (!targetMessageId.isNullOrEmpty()) conv.messages.find { it.id == targetMessageId } else null)
-                                    ?: conv.messages.findLast { it.isThinking }
-                                    ?: conv.messages.findLast { !it.isUser }
-                                if (aiMsg != null) {
-                                    aiMsg.text = partialText
-                                    ChatRepository.saveOrUpdateConversation(this@ChatAiForegroundService, conv)
+                        val now = System.currentTimeMillis()
+                        if (now - lastStreamDiskSyncMs > 1500L) {
+                            lastStreamDiskSyncMs = now
+                            try {
+                                val conversations = ChatRepository.loadAllConversations(this@ChatAiForegroundService)
+                                val conv = conversations.find { it.id == conversationId }
+                                if (conv != null) {
+                                    val aiMsg = (if (!targetMessageId.isNullOrEmpty()) conv.messages.find { it.id == targetMessageId } else null)
+                                        ?: conv.messages.findLast { it.isThinking }
+                                        ?: conv.messages.findLast { !it.isUser }
+                                    if (aiMsg != null) {
+                                        aiMsg.text = partialText
+                                        ChatRepository.saveOrUpdateConversation(this@ChatAiForegroundService, conv)
+                                    }
                                 }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
                         }
 
                         val streamIntent = Intent(ACTION_CHAT_TOKEN_STREAM).apply {
@@ -150,7 +175,13 @@ class ChatAiForegroundService : Service() {
                         sendBroadcast(streamIntent)
                     }
 
-                    override fun onCompleted(cleanHumanoidAnswer: String, debugLogText: String, usedAttachments: List<MediaAttachment>) {
+                    override fun onCompleted(
+                        cleanHumanoidAnswer: String,
+                        debugLogText: String,
+                        usedAttachments: List<MediaAttachment>,
+                        createdMemoryIds: List<String>,
+                        createdReminderId: String?
+                    ) {
                         try {
                             val conversations = ChatRepository.loadAllConversations(this@ChatAiForegroundService)
                             val conv = conversations.find { it.id == conversationId }
@@ -175,6 +206,8 @@ class ChatAiForegroundService : Service() {
                                 aiMsg.text = cleanHumanoidAnswer
                                 aiMsg.debugLog = debugLogText
                                 aiMsg.attachments = usedAttachments
+                                aiMsg.createdMemoryIds = createdMemoryIds
+                                aiMsg.createdReminderId = createdReminderId
 
                                 // Reset any other stray thinking messages in list to false
                                 conv.messages.forEach { msg ->
@@ -348,10 +381,12 @@ class ChatAiForegroundService : Service() {
         const val EXTRA_USER_MESSAGE = "EXTRA_USER_MESSAGE"
         const val EXTRA_TARGET_MESSAGE_ID = "EXTRA_TARGET_MESSAGE_ID"
         const val EXTRA_ATTACHMENTS_JSON = "EXTRA_ATTACHMENTS_JSON"
+        const val EXTRA_FORCED_MESSAGE_TYPE = "EXTRA_FORCED_MESSAGE_TYPE"
 
         const val ACTION_CHAT_STEP_UPDATE = "com.example.apptempleate.ACTION_CHAT_STEP_UPDATE"
         const val ACTION_CHAT_TOKEN_STREAM = "com.example.apptempleate.ACTION_CHAT_TOKEN_STREAM"
         const val ACTION_CHAT_COMPLETED = "com.example.apptempleate.ACTION_CHAT_COMPLETED"
+        const val ACTION_CANCEL_PIPELINE = "com.example.apptempleate.ACTION_CANCEL_PIPELINE"
         
         const val EXTRA_STEP_TEXT = "EXTRA_STEP_TEXT"
         const val EXTRA_PARTIAL_TEXT = "EXTRA_PARTIAL_TEXT"
@@ -363,7 +398,8 @@ class ChatAiForegroundService : Service() {
             conversationId: String,
             userMessage: String,
             userAttachments: List<MediaAttachment> = emptyList(),
-            targetMessageId: String? = null
+            targetMessageId: String? = null,
+            forcedMessageType: MessageType? = null
         ) {
             try {
                 val intent = Intent(context, ChatAiForegroundService::class.java).apply {
@@ -372,6 +408,9 @@ class ChatAiForegroundService : Service() {
                     if (!targetMessageId.isNullOrEmpty()) {
                         putExtra(EXTRA_TARGET_MESSAGE_ID, targetMessageId)
                     }
+                    if (forcedMessageType != null) {
+                        putExtra(EXTRA_FORCED_MESSAGE_TYPE, forcedMessageType.name)
+                    }
                     putExtra(EXTRA_ATTACHMENTS_JSON, MemoryVaultRepository.serializeAttachments(userAttachments))
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -379,6 +418,19 @@ class ChatAiForegroundService : Service() {
                 } else {
                     context.startService(intent)
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        fun cancelActiveChat(context: Context, conversationId: String) {
+            try {
+                ChatRepository.cancelActivePipeline(conversationId)
+                val intent = Intent(context, ChatAiForegroundService::class.java).apply {
+                    action = ACTION_CANCEL_PIPELINE
+                    putExtra(EXTRA_CONVERSATION_ID, conversationId)
+                }
+                context.startService(intent)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

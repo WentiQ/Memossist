@@ -35,25 +35,83 @@
             android:id="@+id/llThinkingContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:paddingVertical="2dp"
             android:visibility="gone">
 
-            <com.example.apptempleate.TypingDotsView
-                android:id="@+id/typingDotsView"
-                android:layout_width="38dp"
-                android:layout_height="22dp"
-                android:layout_marginEnd="6dp" />
-
-            <TextView
-                android:id="@+id/tvThinkingStep"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Step 1/6: Retrieving memories..."
-                android:textColor="#4F46E5"
-                android:textSize="13sp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.example.apptempleate.TypingDotsView
+                    android:id="@+id/typingDotsView"
+                    android:layout_width="38dp"
+                    android:layout_height="22dp"
+                    android:layout_marginEnd="6dp" />
+
+                <TextView
+                    android:id="@+id/tvThinkingStep"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Step 1/6: Retrieving memories..."
+                    android:textColor="#4F46E5"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Minimalist In-Flight Reclassification Button -->
+            <TextView
+                android:id="@+id/btnChangeMessageType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_button_cancel_pill"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:text="✎ Change Type"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp"
                 android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- Low-Confidence Interactive Confirmation Selector -->
+        <LinearLayout
+            android:id="@+id/llConfirmationContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingVertical="4dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvConfirmationTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirm message intent:"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:overScrollMode="never"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/llConfirmChipsContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+
+            </HorizontalScrollView>
 
         </LinearLayout>
 

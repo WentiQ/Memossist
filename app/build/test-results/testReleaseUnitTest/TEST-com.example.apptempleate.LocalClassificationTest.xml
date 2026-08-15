@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.apptempleate.LocalClassificationTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-08-15T03:56:03" hostname="DINESH" time="0.238">
+  <properties/>
+  <testcase name="testRouting_Example4_Mixed" classname="com.example.apptempleate.LocalClassificationTest" time="0.153"/>
+  <testcase name="testRouting_Example1_ReminderOnly" classname="com.example.apptempleate.LocalClassificationTest" time="0.001"/>
+  <testcase name="testRouting_Example3_Telling" classname="com.example.apptempleate.LocalClassificationTest" time="0.005"/>
+  <testcase name="testPreserveOriginalUserMessage" classname="com.example.apptempleate.LocalClassificationTest" time="0.001"/>
+  <testcase name="testNonReminderIntentClassifier" classname="com.example.apptempleate.LocalClassificationTest" time="0.068"/>
+  <testcase name="testReminderSentenceClassifier" classname="com.example.apptempleate.LocalClassificationTest" time="0.001"/>
+  <testcase name="testRouting_Example2_Asking" classname="com.example.apptempleate.LocalClassificationTest" time="0.002"/>
+  <testcase name="testSentenceSegmenter_multipleSentences" classname="com.example.apptempleate.LocalClassificationTest" time="0.001"/>
+  <testcase name="testSentenceSegmenter_singleSentence" classname="com.example.apptempleate.LocalClassificationTest" time="0.001"/>
+  <testcase name="testRouting_Example7_ReminderAndMixed" classname="com.example.apptempleate.LocalClassificationTest" time="0.001"/>
+  <testcase name="testRouting_Example6_ReminderAndTelling" classname="com.example.apptempleate.LocalClassificationTest" time="0.001"/>
+  <testcase name="testRouting_Example5_ReminderAndAsking" classname="com.example.apptempleate.LocalClassificationTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

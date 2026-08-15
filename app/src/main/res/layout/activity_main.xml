@@ -321,6 +321,70 @@
 
         </LinearLayout>
 
+        <!-- Initial Logo Loading / Splash Screen Overlay -->
+        <FrameLayout
+            android:id="@+id/flSplashOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/app_window_background"
+            android:clickable="true"
+            android:focusable="true"
+            android:elevation="100dp"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/ivSplashLogo"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:src="@drawable/app_logo"
+                    android:contentDescription="Memossist Logo" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Memossist"
+                    android:textColor="@color/text_primary"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.04" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Cognitive Workspace"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+
+                <!-- Unlock button if biometric prompt was dismissed -->
+                <TextView
+                    android:id="@+id/btnSplashUnlock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="32dp"
+                    android:background="@drawable/bg_button_save_pill"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingHorizontal="24dp"
+                    android:text="Unlock Memossist"
+                    android:textColor="@color/app_window_background"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Side Navigation Drawer Container -->
@@ -351,6 +415,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/ivSidebarLogo"
                     android:layout_width="42dp"
                     android:layout_height="42dp"
                     android:src="@drawable/app_logo"

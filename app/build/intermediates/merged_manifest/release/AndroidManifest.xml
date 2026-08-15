@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.apptempleate"
+    android:versionCode="5"
+    android:versionName="1.0.4-background" >
+
+    <uses-sdk
+        android:minSdkVersion="28"
+        android:targetSdkVersion="33" />
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" /> <!-- suppress DeprecatedClassUsageInspection -->
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+
+    <application
+        android:name="com.example.apptempleate.MemossistApp"
+        android:allowBackup="true"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:extractNativeLibs="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Memossist"
+        android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppTempeLate" >
+        <activity
+            android:name="com.example.apptempleate.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppTempeLate"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity-alias
+            android:name="com.example.apptempleate.MainActivityDark"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_dark"
+            android:label="Memossist"
+            android:roundIcon="@mipmap/ic_launcher_round_dark"
+            android:targetActivity="com.example.apptempleate.MainActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="com.example.apptempleate.MainActivityLight"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_light"
+            android:label="Memossist"
+            android:roundIcon="@mipmap/ic_launcher_round_light"
+            android:targetActivity="com.example.apptempleate.MainActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity
+            android:name="com.example.apptempleate.VoiceConversationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+        <activity
+            android:name="com.example.apptempleate.OnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+        <activity
+            android:name="com.example.apptempleate.RemindersActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+        <activity
+            android:name="com.example.apptempleate.AlarmAlertActivity"
+            android:exported="false"
+            android:showWhenLocked="true"
+            android:theme="@style/Theme.AppTempeLate"
+            android:turnScreenOn="true" />
+        <activity
+            android:name="com.example.apptempleate.MemoryVaultActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+        <activity
+            android:name="com.example.apptempleate.CognitiveInsightsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+        <activity
+            android:name="com.example.apptempleate.ConnectionsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+        <activity
+            android:name="com.example.apptempleate.SettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+        <activity
+            android:name="com.example.apptempleate.ModelMarketplaceActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+        <activity
+            android:name="com.example.apptempleate.DeviceHelpActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTempeLate" />
+
+        <receiver
+            android:name="com.example.apptempleate.ReminderReceiver"
+            android:exported="false" />
+
+        <service
+            android:name="com.example.apptempleate.VoiceForegroundService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+        <service
+            android:name="com.example.apptempleate.ChatAiForegroundService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync"
+            android:process=":chat_inference"
+            android:stopWithTask="false" />
+        <service
+            android:name="com.example.apptempleate.ModelDownloadForegroundService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.apptempleate.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="com.example.apptempleate.androidx-startup"
+            android:exported="false" >
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+        </provider>
+    </application>
+
+</manifest>

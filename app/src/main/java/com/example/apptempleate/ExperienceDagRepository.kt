@@ -244,6 +244,53 @@ object ExperienceDagRepository {
         )
     }
 
+    /**
+     * Reverts DAG edge increments made by a previous interaction when the user edits their message.
+     */
+    fun revertDagConnections(
+        context: Context,
+        userQuestion: String,
+        candidateExperiences: List<MemoryItem>,
+        usedExperienceIds: Set<String>
+    ) {
+        if (usedExperienceIds.size < 2) return
+        val qSet = getSemanticTermSet(userQuestion)
+        val candidateTermSetN = mutableSetOf<String>()
+        for (cand in candidateExperiences) {
+            candidateTermSetN.addAll(getSemanticTermSet("${cand.title} ${cand.snippet} ${cand.message}"))
+        }
+        val N = candidateTermSetN.size.coerceAtLeast(1)
+
+        val activeExperiences = candidateExperiences.filter { it.id in usedExperienceIds }
+        if (activeExperiences.size < 2) return
+
+        val expTermSets = mutableMapOf<String, Set<String>>()
+        for (exp in activeExperiences) {
+            expTermSets[exp.id] = getSemanticTermSet("${exp.title} ${exp.snippet} ${exp.message}")
+        }
+
+        val edges = loadAllEdges(context)
+        for (i in 0 until activeExperiences.size) {
+            for (j in i + 1 until activeExperiences.size) {
+                val exp1 = activeExperiences[i]
+                val exp2 = activeExperiences[j]
+                val n1Set = expTermSets[exp1.id] ?: emptySet()
+                val n2Set = expTermSets[exp2.id] ?: emptySet()
+                val commonTerms = qSet.intersect(n1Set).intersect(n2Set)
+                val C = commonTerms.size
+                val deltaS = (C.toDouble() * 1.0) / N.toDouble()
+                val pairKey = getEdgeKey(exp1.id, exp2.id)
+                val edge = edges.find { getEdgeKey(it.experienceId1, it.experienceId2) == pairKey }
+                if (edge != null) {
+                    edge.strength = (edge.strength - deltaS).coerceAtLeast(0.0)
+                    edge.usageCount = (edge.usageCount - 1).coerceAtLeast(0)
+                    edge.lastUpdated = System.currentTimeMillis()
+                }
+            }
+        }
+        saveAllEdges(context, edges)
+    }
+
     private fun getEdgeKey(id1: String, id2: String): String {
         return if (id1 < id2) "${id1}__${id2}" else "${id2}__${id1}"
     }

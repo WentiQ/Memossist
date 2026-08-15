@@ -26,6 +26,7 @@
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
 
     <application
+        android:name="com.example.apptempleate.MemossistApp"
         android:allowBackup="true"
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
@@ -41,13 +42,37 @@
             android:name="com.example.apptempleate.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.AppTempeLate"
-            android:windowSoftInputMode="adjustResize" >
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity-alias
+            android:name="com.example.apptempleate.MainActivityDark"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_dark"
+            android:label="Memossist"
+            android:roundIcon="@mipmap/ic_launcher_round_dark"
+            android:targetActivity="com.example.apptempleate.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+        <activity-alias
+            android:name="com.example.apptempleate.MainActivityLight"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_light"
+            android:label="Memossist"
+            android:roundIcon="@mipmap/ic_launcher_round_light"
+            android:targetActivity="com.example.apptempleate.MainActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
         <activity
             android:name="com.example.apptempleate.VoiceConversationActivity"
             android:exported="false"
