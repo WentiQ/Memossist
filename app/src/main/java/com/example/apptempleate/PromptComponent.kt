@@ -14,8 +14,9 @@ object PromptComponent {
         "Do not invent dates or times. Use the user's actual information. If none exist, output NONE."
 
     const val FACT_EXTRACTION =
-        "FACTS: Extract only informative statements explicitly declared by the user as a JSON array of strings [\"fact1\", \"fact2\"].\n" +
-        "- Facts are nothing but personal information, preferences, events, or details which the user may ask to remember in the future.\n" +
+        "FACTS: Extract informative statements explicitly declared by the user as a JSON array of complete, standalone full sentences.\n" +
+        "- FULL STANDALONE SENTENCE RULE: Every extracted fact MUST be a complete, grammatically standalone full sentence capturing what the user stated. NEVER extract fragmented keywords or dangling phrases.\n" +
+        "- Facts are strictly meaningful personal details, preferences, events, or state which the user may ask to remember in the future.\n" +
         "- Never extract questions as facts.\n" +
         "- Never extract general/world knowledge or AI-generated information.\n" +
         "- Do not duplicate facts already represented by relevant memory candidates.\n" +

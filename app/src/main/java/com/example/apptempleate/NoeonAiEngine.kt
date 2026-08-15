@@ -28,7 +28,8 @@ object NoeonAiEngine {
     private const val KEY_DOWNLOADED_MODELS = "downloaded_models"
     const val DEFAULT_MODEL_ID = "qwen3.5_4b"
     private var cachedActiveModel: AiModel? = null
-    private var offlineEngine: InferenceEngineImpl? = null
+    private var chatEngine: InferenceEngineImpl? = null
+    private var paramEngine: InferenceEngineImpl? = null
 
     fun getSelectedModel(context: Context): AiModel {
         if (cachedActiveModel != null) return cachedActiveModel!!
@@ -113,7 +114,7 @@ object NoeonAiEngine {
 
         val inferenceStartTime = System.currentTimeMillis()
         val raw = try {
-            val engine = offlineEngine ?: InferenceEngineImpl(context.applicationContext).also { offlineEngine = it }
+            val engine = chatEngine ?: InferenceEngineImpl(context.applicationContext).also { chatEngine = it }
             engine.generate(
                 modelPath = modelFile.absolutePath,
                 systemPrompt = systemPromptStr,
@@ -300,7 +301,8 @@ object NoeonAiEngine {
         if (factWords.isEmpty()) return false
 
         val stopWords = setOf(
-            "a", "an", "the", "is", "are", "was", "were", "be", "been", "being",
+            "a", "an", "the", "is", "are", "was", "were", "be", "been", "being", "am",
+            "i", "me", "my", "myself", "we", "our", "ours", "you", "your", "yours", "he", "him", "his", "she", "her", "they", "them", "their", "user", "im",
             "to", "of", "for", "in", "on", "at", "by", "with", "about", "against",
             "between", "into", "through", "during", "before", "after", "above", "below",
             "from", "up", "down", "out", "off", "over", "under", "again", "further",
@@ -384,6 +386,56 @@ object NoeonAiEngine {
                 if (!isUserDeclaredFact(fact, userMessage)) return@filter false // MUST be declared by user in userMessage!
                 !isDuplicateExperience(fact, candidateExperiences)
             }.distinct()
+    }
+
+    fun evaluateFactBatchParameters(context: Context, facts: List<FactForEvaluation>): String {
+        val model = getSelectedModel(context)
+        val modelFile = RealModelDownloader.getModelFile(context, model)
+        if (!modelFile.exists() || modelFile.length() < 10 * 1024 * 1024) {
+            return ""
+        }
+        val systemPrompt = MemoryParameterEvaluator.buildBatchSystemPrompt()
+        val userPrompt = MemoryParameterEvaluator.buildBatchUserPrompt(facts)
+        return try {
+            val engine = paramEngine ?: InferenceEngineImpl(context.applicationContext).also { paramEngine = it }
+            engine.generate(
+                modelPath = modelFile.absolutePath,
+                systemPrompt = systemPrompt,
+                userMessage = userPrompt,
+                maxTokens = (facts.size * 65).coerceIn(80, 512),
+                contextSize = 512,
+                stopCondition = { text ->
+                    text.contains("]") && text.count { it == '}' } >= facts.size
+                }
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("NoeonAiEngine", "Memory batch parameter inference failed", e)
+            ""
+        }
+    }
+
+    fun evaluateFactParameters(context: Context, fact: String): String {
+        val model = getSelectedModel(context)
+        val modelFile = RealModelDownloader.getModelFile(context, model)
+        if (!modelFile.exists() || modelFile.length() < 10 * 1024 * 1024) {
+            return ""
+        }
+        val systemPrompt = MemoryParameterEvaluator.buildSystemPrompt()
+        val userPrompt = MemoryParameterEvaluator.buildUserPrompt(fact)
+        return try {
+            val engine = paramEngine ?: InferenceEngineImpl(context.applicationContext).also { paramEngine = it }
+            engine.generate(
+                modelPath = modelFile.absolutePath,
+                systemPrompt = systemPrompt,
+                userMessage = userPrompt,
+                maxTokens = 40,
+                contextSize = 512,
+                stopPattern = Regex("\\}")
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("NoeonAiEngine", "Memory parameter inference failed", e)
+            ""
+        }
     }
 
     private fun getPrefs(context: Context): SharedPreferences =

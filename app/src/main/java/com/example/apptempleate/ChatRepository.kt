@@ -20,6 +20,7 @@ object ChatRepository {
     private const val FILE_NAME = "memossist_conversations.json"
     private const val BACKUP_FILE_NAME = "memossist_conversations_backup.json"
     private val mainHandler = Handler(Looper.getMainLooper())
+    private val memoryEvaluatorExecutor = java.util.concurrent.Executors.newSingleThreadExecutor()
 
     interface ChatPipelineCallback {
         fun onStepUpdate(stepText: String)
@@ -29,7 +30,8 @@ object ChatRepository {
             debugLogText: String,
             usedAttachments: List<MediaAttachment>,
             createdMemoryIds: List<String> = emptyList(),
-            createdReminderId: String? = null
+            createdReminderId: String? = null,
+            factsToEvaluate: List<Pair<String, String>> = emptyList()
         )
     }
 
@@ -216,13 +218,20 @@ object ChatRepository {
 
             // Save Facts Extracted Strictly by LLM into Memory Vault (with user attachments)
             val createdMemoryIds = mutableListOf<String>()
+            val factsToEvaluate = mutableListOf<Pair<String, String>>()
             if (llmResult.extractedInformativeFacts.isNotEmpty() || classification.messageType in listOf(MessageType.TELLING, MessageType.MIXED, MessageType.REMINDER_AND_TELLING, MessageType.REMINDER_AND_MIXED)) {
                 currentStep++
                 updateLiveStep("Step $currentStep/$totalSteps: Saving facts to Memory Vault…")
                 if (llmResult.extractedInformativeFacts.isNotEmpty()) {
+                    val now = System.currentTimeMillis()
                     for (fact in llmResult.extractedInformativeFacts) {
                         val expId = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}"
                         createdMemoryIds.add(expId)
+                        val initialStrength = MemoryDecayCalculator.calculateInitialStrength(
+                            importance = MemoryDecayConfig.DEFAULT_MIGRATION_IMPORTANCE,
+                            confidence = MemoryDecayConfig.DEFAULT_MIGRATION_CONFIDENCE,
+                            stability = MemoryDecayConfig.DEFAULT_MIGRATION_STABILITY
+                        )
                         val memoryItem = MemoryItem(
                             id = expId,
                             title = if (fact.length > 32) fact.take(32) + "..." else fact,
@@ -232,9 +241,20 @@ object ChatRepository {
                             location = MemoryVaultRepository.getCurrentLocation(),
                             tag = "Chat Fact",
                             timeAgo = "Just now",
-                            attachments = userAttachments
+                            attachments = userAttachments,
+                            importance = MemoryDecayConfig.DEFAULT_MIGRATION_IMPORTANCE,
+                            confidence = MemoryDecayConfig.DEFAULT_MIGRATION_CONFIDENCE,
+                            stability = MemoryDecayConfig.DEFAULT_MIGRATION_STABILITY,
+                            createdAt = now,
+                            lastAccessedAt = now,
+                            accessCount = 0,
+                            reinforcementCount = 0,
+                            lastReinforcedAt = now,
+                            baseStrength = initialStrength,
+                            strength = initialStrength
                         )
                         MemoryVaultRepository.saveMemory(context, memoryItem)
+                        factsToEvaluate.add(Pair(expId, fact))
                     }
                 }
             }
@@ -253,8 +273,12 @@ object ChatRepository {
                 }
             }
 
-            // Calculate DAG connection strengths using ONLY the relevant IDs returned from LLM
+            // Calculate DAG connection strengths & apply Used Experience updates using ONLY the relevant IDs returned from LLM
             val returnedUsedIdsSet = llmResult.relevantExperienceIds.toSet()
+            if (returnedUsedIdsSet.isNotEmpty()) {
+                MemoryVaultRepository.applyUsedExperiences(context, returnedUsedIdsSet)
+            }
+
             val dagSummary = if (needsMemoryCandidates) {
                 currentStep++
                 updateLiveStep("Step $currentStep/$totalSteps: Updating memory connection strengths…")
@@ -267,6 +291,7 @@ object ChatRepository {
             } else {
                 DagUpdateSummary(userMessage, emptyList(), emptyList(), 0, emptyList())
             }
+
 
             updateLiveStep("Step $totalSteps/$totalSteps: Preparing answer…")
 
@@ -364,11 +389,9 @@ object ChatRepository {
 
             // Record exact duration for online running average calculation
             val durationSec = (System.currentTimeMillis() - startTimeMs) / 1000.0f
-            ResponseStatsRepository.recordNewResponseTime(context, durationSec)
-
-            if (!isCancelled()) {
+             if (!isCancelled()) {
                 // Invoke completion callback directly on execution thread
-                callback.onCompleted(finalAnswer, finalDebugLog, usedExperienceAttachments, createdMemoryIds, createdReminderId)
+                callback.onCompleted(finalAnswer, finalDebugLog, usedExperienceAttachments, createdMemoryIds, createdReminderId, factsToEvaluate)
             }
     }
 
@@ -383,14 +406,6 @@ object ChatRepository {
             }?.id
         }
 
-        // Do not post status bar alert or record in Notification Center if user is currently inside that particular chat
-        if (AppLifecycleTracker.isAppInForeground && targetConvId != null) {
-            val activeConvId = MainActivity.activeConversationId
-            if (activeConvId == targetConvId) {
-                return
-            }
-        }
-
         try {
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -403,63 +418,55 @@ object ChatRepository {
                         "Chat AI Answers",
                         NotificationManager.IMPORTANCE_HIGH
                     ).apply {
-                        description = "Notifications when Memossist AI completes generating your chat response"
-                        enableVibration(true)
-                        vibrationPattern = longArrayOf(0, 400, 200, 400)
-                        enableLights(true)
-                        lightColor = android.graphics.Color.BLUE
-                        lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
+                        description = "Notifications for AI responses generated in background"
                     }
                     notificationManager.createNotificationChannel(channel)
                 }
             }
 
-            // Save to 30-day Notification Center History
+            val openIntent = Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                if (targetConvId != null) {
+                    putExtra("OPEN_CONVERSATION_ID", targetConvId)
+                }
+            }
+            val pendingIntent = PendingIntent.getActivity(
+                context,
+                System.currentTimeMillis().toInt(),
+                openIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            val displayQuery = if (userQuery.length > 50) userQuery.take(50) + "…" else userQuery
+            val displayAnswer = if (cleanAnswerText.length > 120) cleanAnswerText.take(120) + "…" else cleanAnswerText
+
+            val notification = NotificationCompat.Builder(context, channelId)
+                .setSmallIcon(R.drawable.ic_sparkles)
+                .setContentTitle(if (displayQuery.isNotBlank()) "Re: $displayQuery" else "Memossist AI Response")
+                .setContentText(displayAnswer)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(cleanAnswerText))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .build()
+
+            val notificationId = (System.currentTimeMillis() % 100000).toInt() + 1000
+            notificationManager.notify(notificationId, notification)
+
+            // Save to Notification Center
             NotificationHistoryRepository.addNotification(
                 context = context,
                 notification = NotificationItem(
                     id = UUID.randomUUID().toString(),
                     reminderId = null,
                     conversationId = targetConvId,
-                    title = "Memossist Answer Ready 💬",
+                    title = if (displayQuery.isNotBlank()) "Re: $displayQuery" else "Memossist AI Response",
                     message = if (cleanAnswerText.length > 120) cleanAnswerText.take(120) + "..." else cleanAnswerText,
                     timestamp = System.currentTimeMillis(),
                     type = "CHAT_ANSWER",
                     isRead = false
                 )
             )
-
-            // Intent to open MainActivity directly into target conversation
-            val intent = Intent(context, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                if (!targetConvId.isNullOrEmpty()) {
-                    putExtra("OPEN_CONVERSATION_ID", targetConvId)
-                }
-            }
-            val pendingIntent = PendingIntent.getActivity(
-                context,
-                (userQuery + (targetConvId ?: "")).hashCode(),
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-
-            val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-
-            val builder = NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_sparkles)
-                .setContentTitle("Memossist Answer Ready 💬")
-                .setContentText(cleanAnswerText)
-                .setStyle(NotificationCompat.BigTextStyle().bigText(cleanAnswerText))
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setSound(soundUri)
-                .setVibrate(longArrayOf(0, 400, 200, 400))
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-
-            notificationManager.notify((userQuery.hashCode()), builder.build())
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -467,25 +474,16 @@ object ChatRepository {
 
     @Synchronized
     fun loadAllConversations(context: Context): MutableList<Conversation> {
-        val file = File(context.filesDir, FILE_NAME)
+        val conversations = mutableListOf<Conversation>()
+        val primaryFile = File(context.filesDir, FILE_NAME)
         val backupFile = File(context.filesDir, BACKUP_FILE_NAME)
 
-        if (!file.exists() && backupFile.exists()) {
-            try { backupFile.copyTo(file, overwrite = true) } catch (e: Exception) {}
-        }
-
-        if (!file.exists()) {
-            return mutableListOf()
-        }
-
-        val conversations = mutableListOf<Conversation>()
         try {
-            val jsonStr = file.readText()
-            val conversationsArray = JSONArray(jsonStr)
-
-            for (i in 0 until conversationsArray.length()) {
-                try {
-                    val convObj = conversationsArray.getJSONObject(i)
+            if (primaryFile.exists()) {
+                val jsonStr = primaryFile.readText()
+                val array = JSONArray(jsonStr)
+                for (i in 0 until array.length()) {
+                    val convObj = array.getJSONObject(i)
                     val id = convObj.getString("id")
                     val title = convObj.getString("title")
                     val lastUpdated = convObj.optLong("lastUpdated", System.currentTimeMillis())
@@ -515,16 +513,18 @@ object ChatRepository {
                                 }
                             }
                             val createdReminderId = msgObj.optString("createdReminderId", null).takeIf { !it.isNullOrEmpty() && it != "null" }
+                            val paramEvaluationStatus = msgObj.optString("paramEvaluationStatus", null).takeIf { !it.isNullOrEmpty() && it != "null" }
+                            val paramEvaluationText = msgObj.optString("paramEvaluationText", null).takeIf { !it.isNullOrEmpty() && it != "null" }
 
-                            messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, isThinking, thinkingStatus, debugLog, msgAtts, createdMemIds, createdReminderId))
+                            messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, isThinking, thinkingStatus, debugLog, msgAtts, createdMemIds, createdReminderId, false, null, 1.0f, paramEvaluationStatus, paramEvaluationText))
                         } catch (me: Exception) {
                             me.printStackTrace()
                         }
                     }
 
-                    conversations.add(Conversation(id, title, lastUpdated, isPinned, messagesList))
-                } catch (ce: Exception) {
-                    ce.printStackTrace()
+                    if (messagesList.isNotEmpty()) {
+                        conversations.add(Conversation(id, title, lastUpdated, isPinned, messagesList))
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -564,11 +564,15 @@ object ChatRepository {
                                 }
                             }
                             val createdReminderId = msgObj.optString("createdReminderId", null).takeIf { !it.isNullOrEmpty() && it != "null" }
+                            val paramEvaluationStatus = msgObj.optString("paramEvaluationStatus", null).takeIf { !it.isNullOrEmpty() && it != "null" }
+                            val paramEvaluationText = msgObj.optString("paramEvaluationText", null).takeIf { !it.isNullOrEmpty() && it != "null" }
 
-                            messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, isThinking, thinkingStatus, debugLog, msgAtts, createdMemIds, createdReminderId))
+                            messagesList.add(ChatMessage(msgId, msgConvId, text, isUser, timestamp, isThinking, thinkingStatus, debugLog, msgAtts, createdMemIds, createdReminderId, false, null, 1.0f, paramEvaluationStatus, paramEvaluationText))
                         }
 
-                        conversations.add(Conversation(id, title, lastUpdated, isPinned, messagesList))
+                        if (messagesList.isNotEmpty()) {
+                            conversations.add(Conversation(id, title, lastUpdated, isPinned, messagesList))
+                        }
                     }
                 } catch (be: Exception) {
                     be.printStackTrace()
@@ -585,6 +589,7 @@ object ChatRepository {
         try {
             val conversationsArray = JSONArray()
             for (conv in conversations) {
+                if (conv.messages.isEmpty()) continue
                 val convObj = JSONObject().apply {
                     put("id", conv.id)
                     put("title", conv.title)
@@ -605,6 +610,8 @@ object ChatRepository {
                             put("attachmentsJson", MemoryVaultRepository.serializeAttachments(msg.attachments))
                             put("createdMemoryIds", JSONArray(msg.createdMemoryIds))
                             put("createdReminderId", msg.createdReminderId)
+                            put("paramEvaluationStatus", msg.paramEvaluationStatus)
+                            put("paramEvaluationText", msg.paramEvaluationText)
                         }
                         msgArray.put(msgObj)
                     }
@@ -694,7 +701,6 @@ object ChatRepository {
         }
     }
 
-    @Synchronized
     fun deleteConversation(context: Context, conversationId: String) {
         val conversations = loadAllConversations(context)
         conversations.removeAll { it.id == conversationId }
@@ -705,6 +711,13 @@ object ChatRepository {
     fun saveOrUpdateConversation(context: Context, conversation: Conversation) {
         val conversations = loadAllConversations(context)
         val index = conversations.indexOfFirst { it.id == conversation.id }
+        if (conversation.messages.isEmpty()) {
+            if (index != -1) {
+                conversations.removeAt(index)
+                saveAllConversations(context, conversations)
+            }
+            return
+        }
         if (index != -1) {
             conversations[index] = conversation
         } else {
@@ -738,17 +751,69 @@ object ChatRepository {
             classificationResult = classification
         )
 
+        val now = System.currentTimeMillis()
+        val factsToEvaluate = mutableListOf<Pair<String, String>>()
         llmResult.extractedInformativeFacts.forEach { fact ->
+            val expId = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}"
+            val initialStrength = MemoryDecayCalculator.calculateInitialStrength(
+                importance = MemoryDecayConfig.DEFAULT_MIGRATION_IMPORTANCE,
+                confidence = MemoryDecayConfig.DEFAULT_MIGRATION_CONFIDENCE,
+                stability = MemoryDecayConfig.DEFAULT_MIGRATION_STABILITY
+            )
             MemoryVaultRepository.saveMemory(context, MemoryItem(
-                id = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}",
+                id = expId,
                 title = fact.take(32),
                 snippet = fact.take(70),
                 message = fact,
                 timestamp = MemoryVaultRepository.formatCurrentTime(),
                 location = MemoryVaultRepository.getCurrentLocation(),
                 tag = "Chat Fact",
-                timeAgo = "Just now"
+                timeAgo = "Just now",
+                importance = MemoryDecayConfig.DEFAULT_MIGRATION_IMPORTANCE,
+                confidence = MemoryDecayConfig.DEFAULT_MIGRATION_CONFIDENCE,
+                stability = MemoryDecayConfig.DEFAULT_MIGRATION_STABILITY,
+                createdAt = now,
+                lastAccessedAt = now,
+                accessCount = 0,
+                reinforcementCount = 0,
+                lastReinforcedAt = now,
+                baseStrength = initialStrength,
+                strength = initialStrength
             ))
+            factsToEvaluate.add(Pair(expId, fact))
+        }
+
+        if (factsToEvaluate.isNotEmpty()) {
+            val appContext = context.applicationContext
+            memoryEvaluatorExecutor.execute {
+                for ((expId, fact) in factsToEvaluate) {
+                    try {
+                        val params = MemoryParameterEvaluator.evaluate(appContext, fact)
+                        val evaluatedStrength = MemoryDecayCalculator.calculateInitialStrength(
+                            params.importance,
+                            params.confidence,
+                            params.stability
+                        )
+                        val existing = MemoryVaultRepository.getMemoryById(appContext, expId)
+                        if (existing != null) {
+                            val updated = existing.copy(
+                                importance = params.importance,
+                                confidence = params.confidence,
+                                stability = params.stability,
+                                baseStrength = evaluatedStrength,
+                                strength = evaluatedStrength
+                            )
+                            MemoryVaultRepository.updateMemory(appContext, updated)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
+
+        if (llmResult.relevantExperienceIds.isNotEmpty()) {
+            MemoryVaultRepository.applyUsedExperiences(context, llmResult.relevantExperienceIds.toSet())
         }
 
         if (topCandidates.isNotEmpty() && llmResult.relevantExperienceIds.isNotEmpty()) {

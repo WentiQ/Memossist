@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.apptempleate.MemoryDecayCalculatorTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-08-15T10:39:10" hostname="DINESH" time="0.038">
+  <properties/>
+  <testcase name="testReinforcementBoost" classname="com.example.apptempleate.MemoryDecayCalculatorTest" time="0.002"/>
+  <testcase name="testBatchParameterEvaluatorJsonParsing" classname="com.example.apptempleate.MemoryDecayCalculatorTest" time="0.003"/>
+  <testcase name="testUsedExperienceApplication" classname="com.example.apptempleate.MemoryDecayCalculatorTest" time="0.022"/>
+  <testcase name="testInitialStrengthFormula" classname="com.example.apptempleate.MemoryDecayCalculatorTest" time="0.0"/>
+  <testcase name="testParameterEvaluatorJsonParsing" classname="com.example.apptempleate.MemoryDecayCalculatorTest" time="0.001"/>
+  <testcase name="testForgettingThreshold" classname="com.example.apptempleate.MemoryDecayCalculatorTest" time="0.0"/>
+  <testcase name="testTimeDecayFactor" classname="com.example.apptempleate.MemoryDecayCalculatorTest" time="0.0"/>
+  <testcase name="testAccessBoostDiminishingReturns" classname="com.example.apptempleate.MemoryDecayCalculatorTest" time="0.0"/>
+  <testcase name="testHalfLifeFormula" classname="com.example.apptempleate.MemoryDecayCalculatorTest" time="0.0"/>
+  <testcase name="testPositionalAndFuzzyBatchParsing" classname="com.example.apptempleate.MemoryDecayCalculatorTest" time="0.004"/>
+  <testcase name="testUserReinforcementEvent" classname="com.example.apptempleate.MemoryDecayCalculatorTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

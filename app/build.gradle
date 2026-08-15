@@ -34,6 +34,10 @@ android {
         jvmTarget = "17"
     }
 
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
@@ -49,6 +53,7 @@ dependencies {
     implementation "com.google.android.material:material:1.7.0"
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
     implementation "androidx.biometric:biometric:1.1.0"
+    implementation "androidx.work:work-runtime-ktx:2.8.1"
 
     testImplementation "junit:junit:4.13.2"
     testImplementation "org.json:json:20220924"

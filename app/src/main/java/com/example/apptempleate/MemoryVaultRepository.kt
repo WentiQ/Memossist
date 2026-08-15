@@ -53,6 +53,7 @@ object MemoryVaultRepository {
         return array.toString()
     }
 
+    @Synchronized
     fun loadAllMemories(context: Context): MutableList<MemoryItem> {
         val file = File(context.filesDir, FILE_NAME)
         if (!file.exists()) {
@@ -65,6 +66,7 @@ object MemoryVaultRepository {
             val jsonStr = file.readText()
             val array = JSONArray(jsonStr)
             val list = mutableListOf<MemoryItem>()
+            val now = System.currentTimeMillis()
 
             for (i in 0 until array.length()) {
                 val obj = array.getJSONObject(i)
@@ -80,6 +82,20 @@ object MemoryVaultRepository {
                 var wordSynonymsJson = obj.optString("wordSynonymsJson", null)
                 val rawAttachmentsJson = obj.optString("attachmentsJson", null)
                 val attachmentsList = parseAttachments(rawAttachmentsJson)
+
+                // Forgetting & Decay Parameters with backward-compatible defaults
+                val importance = obj.optDouble("importance", MemoryDecayConfig.DEFAULT_MIGRATION_IMPORTANCE)
+                val confidence = obj.optDouble("confidence", MemoryDecayConfig.DEFAULT_MIGRATION_CONFIDENCE)
+                val stability = obj.optDouble("stability", MemoryDecayConfig.DEFAULT_MIGRATION_STABILITY)
+                val createdAt = obj.optLong("createdAt", now)
+                val lastAccessedAt = obj.optLong("lastAccessedAt", createdAt)
+                val accessCount = obj.optInt("accessCount", 0)
+                val reinforcementCount = obj.optInt("reinforcementCount", 0)
+                val lastReinforcedAt = obj.optLong("lastReinforcedAt", createdAt)
+
+                val defaultBaseStrength = MemoryDecayCalculator.calculateInitialStrength(importance, confidence, stability)
+                val baseStrength = obj.optDouble("baseStrength", defaultBaseStrength)
+                val strength = obj.optDouble("strength", defaultBaseStrength)
 
                 if (wordSynonymsJson.isNullOrEmpty()) {
                     val extracted = LinguisticAnalyzer.extractWordsAndSynonyms(message)
@@ -99,7 +115,17 @@ object MemoryVaultRepository {
                         isPinned = isPinned,
                         wordSynonymsJson = wordSynonymsJson,
                         attachments = attachmentsList,
-                        attachmentsJson = rawAttachmentsJson
+                        attachmentsJson = rawAttachmentsJson,
+                        importance = importance,
+                        confidence = confidence,
+                        stability = stability,
+                        createdAt = createdAt,
+                        lastAccessedAt = lastAccessedAt,
+                        accessCount = accessCount,
+                        reinforcementCount = reinforcementCount,
+                        lastReinforcedAt = lastReinforcedAt,
+                        baseStrength = baseStrength,
+                        strength = strength
                     )
                 )
             }
@@ -111,6 +137,7 @@ object MemoryVaultRepository {
         }
     }
 
+    @Synchronized
     fun saveMemory(context: Context, memoryItem: MemoryItem) {
         val itemToSave = if (memoryItem.wordSynonymsJson.isNullOrEmpty()) {
             val extracted = LinguisticAnalyzer.extractWordsAndSynonyms(memoryItem.message)
@@ -126,6 +153,7 @@ object MemoryVaultRepository {
         saveAllMemories(context, memories)
     }
 
+    @Synchronized
     fun updateMemory(context: Context, updatedMemory: MemoryItem) {
         val extracted = LinguisticAnalyzer.extractWordsAndSynonyms(updatedMemory.message)
         val itemToSave = updatedMemory.copy(
@@ -141,6 +169,7 @@ object MemoryVaultRepository {
         }
     }
 
+    @Synchronized
     fun deleteMemory(context: Context, memoryId: String) {
         val memories = loadAllMemories(context)
         val removed = memories.removeAll { it.id == memoryId }
@@ -149,10 +178,12 @@ object MemoryVaultRepository {
         }
     }
 
+    @Synchronized
     fun clearAllMemories(context: Context) {
         saveAllMemories(context, emptyList())
     }
 
+    @Synchronized
     fun saveAllMemories(context: Context, memories: List<MemoryItem>) {
         try {
             val array = JSONArray()
@@ -182,6 +213,16 @@ object MemoryVaultRepository {
                     put("isPinned", item.isPinned)
                     put("wordSynonymsJson", synonymsJson)
                     put("attachmentsJson", attJson)
+                    put("importance", item.importance)
+                    put("confidence", item.confidence)
+                    put("stability", item.stability)
+                    put("createdAt", item.createdAt)
+                    put("lastAccessedAt", item.lastAccessedAt)
+                    put("accessCount", item.accessCount)
+                    put("reinforcementCount", item.reinforcementCount)
+                    put("lastReinforcedAt", item.lastReinforcedAt)
+                    put("baseStrength", item.baseStrength)
+                    put("strength", item.strength)
                 }
                 array.put(obj)
             }
@@ -191,6 +232,83 @@ object MemoryVaultRepository {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    /**
+     * Applies usage/reinforcement updates to all memories matching the given used IDs ([USED_EXPERIENCES]).
+     */
+    @Synchronized
+    fun applyUsedExperiences(context: Context, usedExperienceIds: Set<String>) {
+        if (usedExperienceIds.isEmpty()) return
+        val memories = loadAllMemories(context)
+        var changed = false
+        val now = System.currentTimeMillis()
+
+        for (i in memories.indices) {
+            val memory = memories[i]
+            if (usedExperienceIds.contains(memory.id)) {
+                memories[i] = MemoryDecayCalculator.applyUsedExperience(memory, now)
+                changed = true
+            }
+        }
+
+        if (changed) {
+            saveAllMemories(context, memories)
+        }
+    }
+
+    /**
+     * Applies explicit user reinforcement to a specific memory.
+     */
+    @Synchronized
+    fun applyUserReinforcement(context: Context, memoryId: String): MemoryItem? {
+        val memories = loadAllMemories(context)
+        val index = memories.indexOfFirst { it.id.equals(memoryId, ignoreCase = true) }
+        if (index == -1) return null
+
+        val now = System.currentTimeMillis()
+        val reinforced = MemoryDecayCalculator.applyReinforcement(memories[index], now)
+        memories[index] = reinforced
+        saveAllMemories(context, memories)
+        return reinforced
+    }
+
+    /**
+     * Executes decay calculation over all memories:
+     * 1. Recalculates current strength for each memory.
+     * 2. Removes/forgets memories whose strength is below FORGET_THRESHOLD (0.15).
+     * 3. Keeps and updates remaining memories.
+     * 4. Persists the updated list to storage.
+     * Returns the list of retained memories.
+     */
+    @Synchronized
+    fun recalculateAndPruneMemories(context: Context): List<MemoryItem> {
+        val memories = loadAllMemories(context)
+        if (memories.isEmpty()) return emptyList()
+
+        val now = System.currentTimeMillis()
+        val keptMemories = mutableListOf<MemoryItem>()
+        var prunedCount = 0
+
+        for (item in memories) {
+            val currentStrength = MemoryDecayCalculator.calculateCurrentStrength(item, now)
+            val updated = item.copy(strength = currentStrength)
+            if (MemoryDecayCalculator.shouldForget(currentStrength)) {
+                prunedCount++
+                MemoryDecayCalculator.logDebugInfo(updated, now, "Periodic Decay: PRUNED (Strength < 0.15)")
+            } else {
+                keptMemories.add(updated)
+                MemoryDecayCalculator.logDebugInfo(updated, now, "Periodic Decay: KEPT")
+            }
+        }
+
+        saveAllMemories(context, keptMemories)
+        android.util.Log.i("MemoryVaultRepository", "Decay cycle finished: ${keptMemories.size} kept, $prunedCount forgotten/pruned.")
+        return keptMemories
+    }
+
+    fun getMemoryById(context: Context, memoryId: String): MemoryItem? {
+        return loadAllMemories(context).find { it.id.equals(memoryId, ignoreCase = true) }
     }
 
     fun formatCurrentTime(): String {

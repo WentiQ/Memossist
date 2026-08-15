@@ -16,5 +16,7 @@ data class ChatMessage(
     var createdReminderId: String? = null,
     var awaitingTypeConfirmation: Boolean = false,
     var detectedMessageType: MessageType? = null,
-    var classificationConfidence: Float = 1.0f
+    var classificationConfidence: Float = 1.0f,
+    var paramEvaluationStatus: String? = null,
+    var paramEvaluationText: String? = null
 )

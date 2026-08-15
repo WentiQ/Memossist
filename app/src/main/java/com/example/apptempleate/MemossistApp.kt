@@ -10,6 +10,10 @@ class MemossistApp : Application() {
         ThemeManager.applySavedTheme(this)
         AppLifecycleTracker.init(this)
 
+        // Initialize Memory Decay & Forgetting System (Periodic WorkManager worker & Startup check)
+        MemoryDecayManager.schedulePeriodicDecay(this)
+        MemoryDecayManager.runImmediateDecayAsync(this)
+
         // Pre-warm offline ML classification models in memory
         Thread {
             try {

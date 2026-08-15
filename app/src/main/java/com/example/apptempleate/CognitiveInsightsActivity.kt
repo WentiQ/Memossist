@@ -20,19 +20,30 @@ class CognitiveInsightsActivity : AppCompatActivity() {
     private lateinit var btnBack: ImageButton
     private lateinit var tvHumanoidAiInsightStatement: TextView
 
-    // 6 Key Stats Grid
+    // 8 Key Stats Grid
     private lateinit var tvStatTotalMemories: TextView
     private lateinit var tvStatDagEdges: TextView
     private lateinit var tvStatClusters: TextView
     private lateinit var tvStatOrphans: TextView
     private lateinit var tvStatAvgResponseTime: TextView
     private lateinit var tvStatTotalDataSize: TextView
+    private lateinit var tvStatParamSpeed: TextView
+    private lateinit var tvStatParamCount: TextView
+    private lateinit var tvStatAvgStrength: TextView
+    private lateinit var tvStatAvgHalfLife: TextView
 
     // DAG Topology Card
     private lateinit var tvTopologyStatus: TextView
     private lateinit var tvConnectedRatio: TextView
     private lateinit var pbConnectedRatio: ProgressBar
     private lateinit var tvClusterSummary: TextView
+
+    // 2nd LLM Parameter Engine Card
+    private lateinit var tvParamEngineStatus: TextView
+    private lateinit var tvParamEngineDetails: TextView
+    private lateinit var tvParamLastDuration: TextView
+    private lateinit var tvParamTotalFacts: TextView
+    private lateinit var tvParamDecayHealth: TextView
 
     private data class ClusterResult(
         val clustersCount: Int,
@@ -74,11 +85,21 @@ class CognitiveInsightsActivity : AppCompatActivity() {
         tvStatOrphans = findViewById(R.id.tvStatOrphans)
         tvStatAvgResponseTime = findViewById(R.id.tvStatAvgResponseTime)
         tvStatTotalDataSize = findViewById(R.id.tvStatTotalDataSize)
+        tvStatParamSpeed = findViewById(R.id.tvStatParamSpeed)
+        tvStatParamCount = findViewById(R.id.tvStatParamCount)
+        tvStatAvgStrength = findViewById(R.id.tvStatAvgStrength)
+        tvStatAvgHalfLife = findViewById(R.id.tvStatAvgHalfLife)
 
         tvTopologyStatus = findViewById(R.id.tvTopologyStatus)
         tvConnectedRatio = findViewById(R.id.tvConnectedRatio)
         pbConnectedRatio = findViewById(R.id.pbConnectedRatio)
         tvClusterSummary = findViewById(R.id.tvClusterSummary)
+
+        tvParamEngineStatus = findViewById(R.id.tvParamEngineStatus)
+        tvParamEngineDetails = findViewById(R.id.tvParamEngineDetails)
+        tvParamLastDuration = findViewById(R.id.tvParamLastDuration)
+        tvParamTotalFacts = findViewById(R.id.tvParamTotalFacts)
+        tvParamDecayHealth = findViewById(R.id.tvParamDecayHealth)
     }
 
     private fun loadAndCalculateRealTimeInsights() {
@@ -113,7 +134,27 @@ class CognitiveInsightsActivity : AppCompatActivity() {
         val totalVaultBytes = calculateTotalMemoryVaultDataSize(allMemories)
         val formattedDataSize = formatBytes(totalVaultBytes)
 
-        // 4. Update Grid Cards
+        // 4. 2nd LLM Parameter Evaluation Statistics
+        val avgParamSec = ParameterStatsRepository.getAvgDurationSeconds(this)
+        val lastParamSec = ParameterStatsRepository.getLastDurationSeconds(this)
+        val totalParamCount = ParameterStatsRepository.getTotalEvaluationsCount(this)
+        val formattedParamAvgSpeed = ParameterStatsRepository.formatDuration(avgParamSec)
+        val formattedParamLastSpeed = ParameterStatsRepository.formatDuration(lastParamSec)
+
+        // 5. Memory Retention & Decay Metrics
+        val avgStrength = if (allMemories.isNotEmpty()) {
+            allMemories.map { MemoryDecayCalculator.calculateCurrentStrength(it) }.average()
+        } else {
+            0.0
+        }
+        val avgHalfLife = if (allMemories.isNotEmpty()) {
+            allMemories.map { MemoryDecayCalculator.calculateHalfLifeDays(it.importance, it.stability) }.average()
+        } else {
+            0.0
+        }
+        val healthyMemoriesCount = allMemories.count { MemoryDecayCalculator.calculateCurrentStrength(it) >= 0.50 }
+
+        // 6. Update Grid Cards
         tvStatTotalMemories.text = "$memoriesCount"
         tvStatDagEdges.text = "$dagEdgesCount"
         tvStatClusters.text = "$clustersCount"
@@ -121,7 +162,12 @@ class CognitiveInsightsActivity : AppCompatActivity() {
         tvStatAvgResponseTime.text = avgResponseStr
         tvStatTotalDataSize.text = formattedDataSize
 
-        // 5. Update DAG Topology Analysis Card
+        tvStatParamSpeed.text = formattedParamAvgSpeed
+        tvStatParamCount.text = if (totalParamCount > 0) "#$totalParamCount facts scored" else "Avg parameter scoring"
+        tvStatAvgStrength.text = String.format(Locale.US, "%.2f", avgStrength)
+        tvStatAvgHalfLife.text = String.format(Locale.US, "Avg half-life: %.0fd", avgHalfLife)
+
+        // 7. Update DAG Topology Analysis Card
         val connectedMemoriesCount = (memoriesCount - orphansCount).coerceAtLeast(0)
         val connectedPct = if (memoriesCount > 0) (connectedMemoriesCount * 100) / memoriesCount else 0
 
@@ -137,8 +183,15 @@ class CognitiveInsightsActivity : AppCompatActivity() {
 
         tvClusterSummary.text = "Identified $clustersCount connected cluster(s) and $orphansCount orphan memory item(s) in your DAG graph."
 
-        // 6. Humanoid AI Insight Statement Synthesis
-        tvHumanoidAiInsightStatement.text = "Hello $userName! Your Memory Vault contains $memoriesCount memories storing $formattedDataSize of user data. Graph topology reveals $dagEdgesCount DAG synaptic edges across $clustersCount cluster(s) with $orphansCount orphan item(s). Estimated response time for your next message is $avgResponseStr."
+        // 8. Update 2nd LLM Parameter Engine Card
+        tvParamEngineStatus.text = if (totalParamCount > 0) "Active Parallel Context" else "Ready in Background"
+        tvParamEngineDetails.text = "2nd LLM scores Importance, Confidence, and Stability dynamically per extracted fact in background. Average scoring time is $formattedParamAvgSpeed."
+        tvParamLastDuration.text = "Last Latency: $formattedParamLastSpeed"
+        tvParamTotalFacts.text = "Total Facts Scored: $totalParamCount"
+        tvParamDecayHealth.text = "Retention Health: $healthyMemoriesCount of $memoriesCount memories in high-strength state. Vault half-life average is ${String.format(Locale.US, "%.0f", avgHalfLife)} days."
+
+        // 9. Humanoid AI Insight Statement Synthesis
+        tvHumanoidAiInsightStatement.text = "Hello $userName! Your Memory Vault holds $memoriesCount memories ($formattedDataSize) with an average strength of ${String.format(Locale.US, "%.2f", avgStrength)}. Graph topology reveals $dagEdgesCount synaptic edges across $clustersCount cluster(s). 2nd LLM scores fact parameters in $formattedParamAvgSpeed on average without delaying chat responses."
     }
 
     private fun calculateDagClustersAndOrphans(

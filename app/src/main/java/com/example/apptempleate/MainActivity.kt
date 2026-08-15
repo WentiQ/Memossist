@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var rvChatMessages: RecyclerView
     private lateinit var chatAdapter: ChatAdapter
+    private lateinit var btnScrollToBottom: ImageButton
 
     private lateinit var etChatInput: EditText
     private lateinit var btnPlus: ImageButton
@@ -239,6 +240,22 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        // Floating Scroll to Bottom Button Setup
+        btnScrollToBottom = findViewById(R.id.btnScrollToBottom)
+        btnScrollToBottom.setOnClickListener {
+            if (chatAdapter.itemCount > 0) {
+                rvChatMessages.smoothScrollToPosition(chatAdapter.itemCount - 1)
+            }
+            hideScrollToBottomButton()
+        }
+
+        rvChatMessages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                updateScrollToBottomButtonVisibility()
+            }
+        })
 
         // Swipe Left or Right to remove chat message
         val chatSwipeHandler = object : androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(0, androidx.recyclerview.widget.ItemTouchHelper.LEFT or androidx.recyclerview.widget.ItemTouchHelper.RIGHT) {
@@ -468,19 +485,40 @@ class MainActivity : AppCompatActivity() {
                             when (action) {
                                 ChatAiForegroundService.ACTION_CHAT_STEP_UPDATE -> {
                                     val stepText = intent.getStringExtra(ChatAiForegroundService.EXTRA_STEP_TEXT) ?: ""
-                                    val aiMsg = currentConversation?.messages?.findLast { it.isThinking }
+                                    val targetMsgId = intent.getStringExtra(ChatAiForegroundService.EXTRA_TARGET_MESSAGE_ID) ?: ""
+                                    val aiMsg = if (targetMsgId.isNotEmpty()) {
+                                        currentConversation?.messages?.find { it.id == targetMsgId }
+                                    } else {
+                                        currentConversation?.messages?.findLast { it.isThinking }
+                                    }
                                     if (aiMsg != null) {
                                         aiMsg.thinkingStatus = stepText
-                                        chatAdapter.updateThinkingStep(stepText)
+                                        chatAdapter.updateThinkingStep(aiMsg.id, stepText)
                                     }
                                 }
                                 ChatAiForegroundService.ACTION_CHAT_TOKEN_STREAM -> {
                                     val partialText = intent.getStringExtra(ChatAiForegroundService.EXTRA_PARTIAL_TEXT) ?: ""
-                                    val aiMsg = currentConversation?.messages?.findLast { it.isThinking }
+                                    val targetMsgId = intent.getStringExtra(ChatAiForegroundService.EXTRA_TARGET_MESSAGE_ID) ?: ""
+                                    val aiMsg = if (targetMsgId.isNotEmpty()) {
+                                        currentConversation?.messages?.find { it.id == targetMsgId }
+                                    } else {
+                                        currentConversation?.messages?.findLast { it.isThinking }
+                                    }
                                     if (aiMsg != null) {
                                         aiMsg.text = partialText
-                                        chatAdapter.updateStreamingText(partialText)
+                                        chatAdapter.updateStreamingText(aiMsg.id, partialText)
                                     }
+                                }
+                                ChatAiForegroundService.ACTION_PARAM_EVALUATION_UPDATE -> {
+                                    val msgId = intent.getStringExtra(ChatAiForegroundService.EXTRA_MESSAGE_ID) ?: ""
+                                    val paramStatus = intent.getStringExtra(ChatAiForegroundService.EXTRA_PARAM_STATUS)
+                                    val paramText = intent.getStringExtra(ChatAiForegroundService.EXTRA_PARAM_TEXT)
+                                    val msg = currentConversation?.messages?.find { it.id == msgId }
+                                    if (msg != null) {
+                                        msg.paramEvaluationStatus = paramStatus
+                                        msg.paramEvaluationText = paramText
+                                    }
+                                    chatAdapter.updateParamEvaluation(msgId, paramStatus, paramText)
                                 }
                                 ChatAiForegroundService.ACTION_CHAT_COMPLETED -> {
                                     val updated = ChatRepository.loadAllConversations(this@MainActivity).find { it.id == convId }
@@ -501,6 +539,7 @@ class MainActivity : AppCompatActivity() {
                 addAction(ChatAiForegroundService.ACTION_CHAT_STEP_UPDATE)
                 addAction(ChatAiForegroundService.ACTION_CHAT_TOKEN_STREAM)
                 addAction(ChatAiForegroundService.ACTION_CHAT_COMPLETED)
+                addAction(ChatAiForegroundService.ACTION_PARAM_EVALUATION_UPDATE)
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 registerReceiver(chatBroadcastReceiver, filter, RECEIVER_NOT_EXPORTED)
@@ -542,8 +581,13 @@ class MainActivity : AppCompatActivity() {
             if (activeId != null) {
                 activeConversationId = activeId
                 val updated = ChatRepository.loadAllConversations(this).find { it.id == activeId }
-                if (updated != null) {
+                if (updated != null && updated.messages.isNotEmpty()) {
                     loadConversationIntoView(updated, restoreScroll = true)
+                } else {
+                    if (updated != null && updated.messages.isEmpty()) {
+                        ChatRepository.deleteConversation(this, activeId)
+                    }
+                    startNewConversationSession()
                 }
             } else if (newChatSessionTimestamp > 0L && 
                        allConversations.isNotEmpty() && 
@@ -728,12 +772,6 @@ class MainActivity : AppCompatActivity() {
             allConversations.add(0, it)
         }
 
-        // Reset any prior messages so only the latest AI answer receives thinking status
-        activeConv.messages.forEach { msg ->
-            msg.isThinking = false
-            msg.thinkingStatus = null
-        }
-
         // Add user message with attached media/files
         val userMsg = ChatMessage(
             conversationId = activeConv.id,
@@ -775,13 +813,23 @@ class MainActivity : AppCompatActivity() {
             ChatRepository.saveOrUpdateConversation(this@MainActivity, activeConv)
             refreshSidebarHistory()
         } else {
+            // Check if there are already messages in progress globally or in this chat to display queue status
+            val globalPending = ChatAiForegroundService.getGlobalPendingCount()
+            val existingInChat = activeConv.messages.count { it.isThinking }
+            val queuePosition = maxOf(globalPending, existingInChat)
+            val initialStatus = if (queuePosition == 0) {
+                "🔍 Processing message… ($initialTimer)"
+            } else {
+                "⏳ In queue $queuePosition: Waiting for previous response…"
+            }
+
             // Add temporary thinking message for live step progress animation
             val aiMsg = ChatMessage(
                 conversationId = activeConv.id,
                 text = "",
                 isUser = false,
                 isThinking = true,
-                thinkingStatus = "🔍 Processing message… ($initialTimer)"
+                thinkingStatus = initialStatus
             )
             activeConv.messages.add(aiMsg)
 
@@ -871,6 +919,48 @@ class MainActivity : AppCompatActivity() {
         sheet.show(supportFragmentManager, "MessageTypeSelectorBottomSheet")
     }
 
+    private fun updateScrollToBottomButtonVisibility() {
+        if (rvChatMessages.visibility != View.VISIBLE || chatAdapter.itemCount <= 1) {
+            hideScrollToBottomButton()
+            return
+        }
+        val canScrollDown = rvChatMessages.canScrollVertically(1)
+        if (canScrollDown) {
+            showScrollToBottomButton()
+        } else {
+            hideScrollToBottomButton()
+        }
+    }
+
+    private fun showScrollToBottomButton() {
+        if (btnScrollToBottom.visibility != View.VISIBLE) {
+            btnScrollToBottom.visibility = View.VISIBLE
+            btnScrollToBottom.alpha = 0f
+            btnScrollToBottom.scaleX = 0.7f
+            btnScrollToBottom.scaleY = 0.7f
+            btnScrollToBottom.animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(180)
+                .start()
+        }
+    }
+
+    private fun hideScrollToBottomButton() {
+        if (btnScrollToBottom.visibility == View.VISIBLE) {
+            btnScrollToBottom.animate()
+                .alpha(0f)
+                .scaleX(0.7f)
+                .scaleY(0.7f)
+                .setDuration(150)
+                .withEndAction {
+                    btnScrollToBottom.visibility = View.GONE
+                }
+                .start()
+        }
+    }
+
     private fun loadConversationIntoView(conversation: Conversation, restoreScroll: Boolean = false) {
         isNewChatState = false
         currentConversation = conversation
@@ -882,12 +972,16 @@ class MainActivity : AppCompatActivity() {
         chatAdapter.setMessages(conversation.messages)
         if (restoreScroll && chatListScrollState != null) {
             rvChatMessages.layoutManager?.onRestoreInstanceState(chatListScrollState)
+            rvChatMessages.post { updateScrollToBottomButtonVisibility() }
         } else if (conversation.messages.isNotEmpty()) {
             rvChatMessages.post {
                 if (chatAdapter.itemCount > 0) {
                     rvChatMessages.scrollToPosition(chatAdapter.itemCount - 1)
                 }
+                updateScrollToBottomButtonVisibility()
             }
+        } else {
+            updateScrollToBottomButtonVisibility()
         }
     }
 
@@ -900,6 +994,7 @@ class MainActivity : AppCompatActivity() {
         llGreetingContainer.visibility = View.VISIBLE
         rvChatMessages.visibility = View.GONE
         btnDeleteCurrentChat.visibility = View.GONE
+        btnScrollToBottom.visibility = View.GONE
         chatAdapter.setMessages(emptyList())
     }
 

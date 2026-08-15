@@ -1,33 +1,38 @@
 com.example.apptempleate.app-lifecycle-runtime-2.5.1-0 C:\Users\dines\.gradle\caches\transforms-3\024106a60be7a84cc75123ebfb94eefd\transformed\lifecycle-runtime-2.5.1\res
 com.example.apptempleate.app-recyclerview-1.1.0-1 C:\Users\dines\.gradle\caches\transforms-3\03dd3edf3cb397bbeac49b3996ecdf46\transformed\recyclerview-1.1.0\res
-com.example.apptempleate.app-cardview-1.0.0-2 C:\Users\dines\.gradle\caches\transforms-3\21389c6ee3ea1c114e04a96e173d08da\transformed\cardview-1.0.0\res
-com.example.apptempleate.app-drawerlayout-1.1.1-3 C:\Users\dines\.gradle\caches\transforms-3\28a62c79db54694d3b5054a9cc90737f\transformed\drawerlayout-1.1.1\res
-com.example.apptempleate.app-material-1.7.0-4 C:\Users\dines\.gradle\caches\transforms-3\3b75d48d141959e246c2b330b3775d98\transformed\material-1.7.0\res
-com.example.apptempleate.app-fragment-1.3.6-5 C:\Users\dines\.gradle\caches\transforms-3\47be5287fd21484a9de5148af2ab7557\transformed\fragment-1.3.6\res
-com.example.apptempleate.app-jetified-core-ktx-1.8.0-6 C:\Users\dines\.gradle\caches\transforms-3\4be96aaaf5912cc8e20c6d18bf5ace9f\transformed\jetified-core-ktx-1.8.0\res
-com.example.apptempleate.app-biometric-1.1.0-7 C:\Users\dines\.gradle\caches\transforms-3\58f7a70c44aa8c6c59fee79a265b6132\transformed\biometric-1.1.0\res
-com.example.apptempleate.app-lifecycle-viewmodel-2.5.1-8 C:\Users\dines\.gradle\caches\transforms-3\6b62809bf904e26d953b014a91514474\transformed\lifecycle-viewmodel-2.5.1\res
-com.example.apptempleate.app-coordinatorlayout-1.1.0-9 C:\Users\dines\.gradle\caches\transforms-3\70afd2d1bb5da5a67ca74cc0468e1199\transformed\coordinatorlayout-1.1.0\res
-com.example.apptempleate.app-core-1.8.0-10 C:\Users\dines\.gradle\caches\transforms-3\76411c7520f0d995d1e8fc516856d8c3\transformed\core-1.8.0\res
-com.example.apptempleate.app-lifecycle-livedata-core-2.5.1-11 C:\Users\dines\.gradle\caches\transforms-3\798490c70f5bd2bf9ab5d8c03fae007a\transformed\lifecycle-livedata-core-2.5.1\res
-com.example.apptempleate.app-jetified-emoji2-views-helper-1.2.0-12 C:\Users\dines\.gradle\caches\transforms-3\79e28b1e4f8753feb21739a059ffe08a\transformed\jetified-emoji2-views-helper-1.2.0\res
-com.example.apptempleate.app-jetified-activity-1.5.1-13 C:\Users\dines\.gradle\caches\transforms-3\7f4b1fedf57671efdd978344372541a0\transformed\jetified-activity-1.5.1\res
-com.example.apptempleate.app-appcompat-1.5.1-14 C:\Users\dines\.gradle\caches\transforms-3\8a2ec3dcaff7cb2dcb5e290d7acf860b\transformed\appcompat-1.5.1\res
-com.example.apptempleate.app-jetified-annotation-experimental-1.1.0-15 C:\Users\dines\.gradle\caches\transforms-3\96734f50b015a8f649aaf36375e7892b\transformed\jetified-annotation-experimental-1.1.0\res
-com.example.apptempleate.app-transition-1.2.0-16 C:\Users\dines\.gradle\caches\transforms-3\a57643b811448224b5cb6fb804f8bf4e\transformed\transition-1.2.0\res
-com.example.apptempleate.app-constraintlayout-2.1.4-17 C:\Users\dines\.gradle\caches\transforms-3\b33890605d4ea705a62c3c6d94ee3f6c\transformed\constraintlayout-2.1.4\res
-com.example.apptempleate.app-jetified-appcompat-resources-1.5.1-18 C:\Users\dines\.gradle\caches\transforms-3\b40c7a0e93501db5fbfcf2371306e302\transformed\jetified-appcompat-resources-1.5.1\res
-com.example.apptempleate.app-jetified-startup-runtime-1.1.1-19 C:\Users\dines\.gradle\caches\transforms-3\c0d27645c8fdca1c621bb81f3b99e318\transformed\jetified-startup-runtime-1.1.1\res
-com.example.apptempleate.app-jetified-lifecycle-process-2.4.1-20 C:\Users\dines\.gradle\caches\transforms-3\cc28b3cef285540baa54cd92fdd92fcf\transformed\jetified-lifecycle-process-2.4.1\res
-com.example.apptempleate.app-jetified-savedstate-1.2.0-21 C:\Users\dines\.gradle\caches\transforms-3\d96533af548ddd3f0a648d267ea11766\transformed\jetified-savedstate-1.2.0\res
-com.example.apptempleate.app-jetified-emoji2-1.2.0-22 C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\res
-com.example.apptempleate.app-jetified-lifecycle-viewmodel-savedstate-2.5.1-23 C:\Users\dines\.gradle\caches\transforms-3\f9426e2fcbc46c6822edfa1116e1cf45\transformed\jetified-lifecycle-viewmodel-savedstate-2.5.1\res
-com.example.apptempleate.app-jetified-viewpager2-1.0.0-24 C:\Users\dines\.gradle\caches\transforms-3\feb049c96a633b9e0f356b84f2ff2932\transformed\jetified-viewpager2-1.0.0\res
-com.example.apptempleate.app-pngs-25 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\build\generated\res\pngs\release
-com.example.apptempleate.app-resValues-26 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\build\generated\res\resValues\release
-com.example.apptempleate.app-rs-27 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\build\generated\res\rs\release
-com.example.apptempleate.app-mergeReleaseResources-28 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\build\intermediates\incremental\release\mergeReleaseResources\merged.dir
-com.example.apptempleate.app-mergeReleaseResources-29 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\build\intermediates\incremental\release\mergeReleaseResources\stripped.dir
-com.example.apptempleate.app-merged_res-30 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\build\intermediates\merged_res\release
-com.example.apptempleate.app-main-31 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\res
-com.example.apptempleate.app-release-32 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\release\res
+com.example.apptempleate.app-work-runtime-ktx-2.8.1-2 C:\Users\dines\.gradle\caches\transforms-3\0bbe088f0710978da416a9848349dfcd\transformed\work-runtime-ktx-2.8.1\res
+com.example.apptempleate.app-cardview-1.0.0-3 C:\Users\dines\.gradle\caches\transforms-3\21389c6ee3ea1c114e04a96e173d08da\transformed\cardview-1.0.0\res
+com.example.apptempleate.app-drawerlayout-1.1.1-4 C:\Users\dines\.gradle\caches\transforms-3\28a62c79db54694d3b5054a9cc90737f\transformed\drawerlayout-1.1.1\res
+com.example.apptempleate.app-material-1.7.0-5 C:\Users\dines\.gradle\caches\transforms-3\3b75d48d141959e246c2b330b3775d98\transformed\material-1.7.0\res
+com.example.apptempleate.app-sqlite-framework-2.3.0-6 C:\Users\dines\.gradle\caches\transforms-3\3d6e96b7d89604c35e1adf13e2d6cc66\transformed\sqlite-framework-2.3.0\res
+com.example.apptempleate.app-work-runtime-2.8.1-7 C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\res
+com.example.apptempleate.app-fragment-1.3.6-8 C:\Users\dines\.gradle\caches\transforms-3\47be5287fd21484a9de5148af2ab7557\transformed\fragment-1.3.6\res
+com.example.apptempleate.app-jetified-core-ktx-1.8.0-9 C:\Users\dines\.gradle\caches\transforms-3\4be96aaaf5912cc8e20c6d18bf5ace9f\transformed\jetified-core-ktx-1.8.0\res
+com.example.apptempleate.app-room-runtime-2.5.0-10 C:\Users\dines\.gradle\caches\transforms-3\51bb1a80054cc96405e1ba76b76354f4\transformed\room-runtime-2.5.0\res
+com.example.apptempleate.app-biometric-1.1.0-11 C:\Users\dines\.gradle\caches\transforms-3\58f7a70c44aa8c6c59fee79a265b6132\transformed\biometric-1.1.0\res
+com.example.apptempleate.app-lifecycle-viewmodel-2.5.1-12 C:\Users\dines\.gradle\caches\transforms-3\6b62809bf904e26d953b014a91514474\transformed\lifecycle-viewmodel-2.5.1\res
+com.example.apptempleate.app-coordinatorlayout-1.1.0-13 C:\Users\dines\.gradle\caches\transforms-3\70afd2d1bb5da5a67ca74cc0468e1199\transformed\coordinatorlayout-1.1.0\res
+com.example.apptempleate.app-core-1.8.0-14 C:\Users\dines\.gradle\caches\transforms-3\76411c7520f0d995d1e8fc516856d8c3\transformed\core-1.8.0\res
+com.example.apptempleate.app-lifecycle-livedata-core-2.5.1-15 C:\Users\dines\.gradle\caches\transforms-3\798490c70f5bd2bf9ab5d8c03fae007a\transformed\lifecycle-livedata-core-2.5.1\res
+com.example.apptempleate.app-jetified-emoji2-views-helper-1.2.0-16 C:\Users\dines\.gradle\caches\transforms-3\79e28b1e4f8753feb21739a059ffe08a\transformed\jetified-emoji2-views-helper-1.2.0\res
+com.example.apptempleate.app-jetified-activity-1.5.1-17 C:\Users\dines\.gradle\caches\transforms-3\7f4b1fedf57671efdd978344372541a0\transformed\jetified-activity-1.5.1\res
+com.example.apptempleate.app-appcompat-1.5.1-18 C:\Users\dines\.gradle\caches\transforms-3\8a2ec3dcaff7cb2dcb5e290d7acf860b\transformed\appcompat-1.5.1\res
+com.example.apptempleate.app-jetified-annotation-experimental-1.1.0-19 C:\Users\dines\.gradle\caches\transforms-3\96734f50b015a8f649aaf36375e7892b\transformed\jetified-annotation-experimental-1.1.0\res
+com.example.apptempleate.app-sqlite-2.3.0-20 C:\Users\dines\.gradle\caches\transforms-3\9a746f4d115aab726995b0b539cef66f\transformed\sqlite-2.3.0\res
+com.example.apptempleate.app-transition-1.2.0-21 C:\Users\dines\.gradle\caches\transforms-3\a57643b811448224b5cb6fb804f8bf4e\transformed\transition-1.2.0\res
+com.example.apptempleate.app-constraintlayout-2.1.4-22 C:\Users\dines\.gradle\caches\transforms-3\b33890605d4ea705a62c3c6d94ee3f6c\transformed\constraintlayout-2.1.4\res
+com.example.apptempleate.app-jetified-appcompat-resources-1.5.1-23 C:\Users\dines\.gradle\caches\transforms-3\b40c7a0e93501db5fbfcf2371306e302\transformed\jetified-appcompat-resources-1.5.1\res
+com.example.apptempleate.app-jetified-startup-runtime-1.1.1-24 C:\Users\dines\.gradle\caches\transforms-3\c0d27645c8fdca1c621bb81f3b99e318\transformed\jetified-startup-runtime-1.1.1\res
+com.example.apptempleate.app-jetified-lifecycle-process-2.4.1-25 C:\Users\dines\.gradle\caches\transforms-3\cc28b3cef285540baa54cd92fdd92fcf\transformed\jetified-lifecycle-process-2.4.1\res
+com.example.apptempleate.app-jetified-savedstate-1.2.0-26 C:\Users\dines\.gradle\caches\transforms-3\d96533af548ddd3f0a648d267ea11766\transformed\jetified-savedstate-1.2.0\res
+com.example.apptempleate.app-jetified-emoji2-1.2.0-27 C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\res
+com.example.apptempleate.app-jetified-lifecycle-viewmodel-savedstate-2.5.1-28 C:\Users\dines\.gradle\caches\transforms-3\f9426e2fcbc46c6822edfa1116e1cf45\transformed\jetified-lifecycle-viewmodel-savedstate-2.5.1\res
+com.example.apptempleate.app-jetified-viewpager2-1.0.0-29 C:\Users\dines\.gradle\caches\transforms-3\feb049c96a633b9e0f356b84f2ff2932\transformed\jetified-viewpager2-1.0.0\res
+com.example.apptempleate.app-pngs-30 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\build\generated\res\pngs\release
+com.example.apptempleate.app-resValues-31 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\build\generated\res\resValues\release
+com.example.apptempleate.app-rs-32 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\build\generated\res\rs\release
+com.example.apptempleate.app-mergeReleaseResources-33 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\build\intermediates\incremental\release\mergeReleaseResources\merged.dir
+com.example.apptempleate.app-mergeReleaseResources-34 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\build\intermediates\incremental\release\mergeReleaseResources\stripped.dir
+com.example.apptempleate.app-merged_res-35 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\build\intermediates\merged_res\release
+com.example.apptempleate.app-main-36 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\res
+com.example.apptempleate.app-release-37 C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\release\res

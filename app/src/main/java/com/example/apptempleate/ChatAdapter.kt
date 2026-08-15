@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
@@ -26,19 +27,27 @@ class ChatAdapter(
         notifyDataSetChanged()
     }
 
-    fun updateThinkingStep(stepText: String) {
-        val lastIdx = messages.indexOfLast { it.isThinking }
-        if (lastIdx != -1) {
-            messages[lastIdx].thinkingStatus = stepText
-            notifyItemChanged(lastIdx, "PAYLOAD_STEP_UPDATE")
+    fun updateThinkingStep(messageId: String = "", stepText: String) {
+        val idx = if (messageId.isNotEmpty()) {
+            messages.indexOfFirst { it.id == messageId }
+        } else {
+            messages.indexOfLast { it.isThinking }
+        }
+        if (idx != -1) {
+            messages[idx].thinkingStatus = stepText
+            notifyItemChanged(idx, "PAYLOAD_STEP_UPDATE")
         }
     }
 
-    fun updateStreamingText(partialText: String) {
-        val lastIdx = messages.indexOfLast { it.isThinking }
-        if (lastIdx != -1) {
-            messages[lastIdx].text = partialText
-            notifyItemChanged(lastIdx, "PAYLOAD_STEP_UPDATE")
+    fun updateStreamingText(messageId: String = "", partialText: String) {
+        val idx = if (messageId.isNotEmpty()) {
+            messages.indexOfFirst { it.id == messageId }
+        } else {
+            messages.indexOfLast { it.isThinking }
+        }
+        if (idx != -1) {
+            messages[idx].text = partialText
+            notifyItemChanged(idx, "PAYLOAD_STEP_UPDATE")
         }
     }
 
@@ -51,6 +60,15 @@ class ChatAdapter(
         if (position in 0 until messages.size) {
             messages[position] = message
             notifyItemChanged(position)
+        }
+    }
+
+    fun updateParamEvaluation(messageId: String, status: String?, text: String?) {
+        val idx = messages.indexOfFirst { it.id == messageId }
+        if (idx != -1) {
+            messages[idx].paramEvaluationStatus = status
+            messages[idx].paramEvaluationText = text
+            notifyItemChanged(idx)
         }
     }
 
@@ -73,7 +91,19 @@ class ChatAdapter(
         if (payloads.isNotEmpty() && holder is AiViewHolder) {
             val message = messages[position]
             if (message.isThinking) {
-                holder.tvThinkingStep.text = message.thinkingStatus ?: "Thinking..."
+                val statusText = message.thinkingStatus ?: "Thinking..."
+                holder.tvThinkingStep.text = statusText
+                if (statusText.startsWith("⏳ In queue")) {
+                    holder.typingDotsView.stopAnimation()
+                    holder.typingDotsView.visibility = View.GONE
+                    holder.btnChangeMessageType.visibility = View.GONE
+                    holder.tvThinkingStep.setTextColor(androidx.core.content.ContextCompat.getColor(holder.itemView.context, R.color.text_secondary))
+                } else {
+                    holder.typingDotsView.visibility = View.VISIBLE
+                    holder.btnChangeMessageType.visibility = View.VISIBLE
+                    holder.typingDotsView.startAnimation()
+                    holder.tvThinkingStep.setTextColor(android.graphics.Color.parseColor("#4F46E5"))
+                }
                 if (message.text.isNotEmpty()) {
                     holder.tvAiMsg.visibility = View.VISIBLE
                     holder.tvAiMsg.text = message.text
@@ -112,6 +142,7 @@ class ChatAdapter(
                 holder.typingDotsView.stopAnimation()
                 holder.tvAiMsg.visibility = View.GONE
                 holder.rvAiAttachments.visibility = View.GONE
+                holder.llParamProgressContainer.visibility = View.GONE
                 holder.llConfirmationContainer.visibility = View.VISIBLE
 
                 val detectedName = message.detectedMessageType?.displayName ?: "Detected Intent"
@@ -149,8 +180,21 @@ class ChatAdapter(
             } else if (message.isThinking) {
                 holder.llConfirmationContainer.visibility = View.GONE
                 holder.llThinkingContainer.visibility = View.VISIBLE
-                holder.typingDotsView.startAnimation()
-                holder.tvThinkingStep.text = message.thinkingStatus ?: "Thinking..."
+                val statusText = message.thinkingStatus ?: "Thinking..."
+                holder.tvThinkingStep.text = statusText
+
+                if (statusText.startsWith("⏳ In queue")) {
+                    holder.typingDotsView.stopAnimation()
+                    holder.typingDotsView.visibility = View.GONE
+                    holder.btnChangeMessageType.visibility = View.GONE
+                    holder.tvThinkingStep.setTextColor(androidx.core.content.ContextCompat.getColor(holder.itemView.context, R.color.text_secondary))
+                } else {
+                    holder.typingDotsView.visibility = View.VISIBLE
+                    holder.btnChangeMessageType.visibility = View.VISIBLE
+                    holder.typingDotsView.startAnimation()
+                    holder.tvThinkingStep.setTextColor(android.graphics.Color.parseColor("#4F46E5"))
+                }
+
                 if (message.text.isNotEmpty()) {
                     holder.tvAiMsg.visibility = View.VISIBLE
                     holder.tvAiMsg.text = message.text
@@ -158,6 +202,7 @@ class ChatAdapter(
                     holder.tvAiMsg.visibility = View.GONE
                 }
                 holder.rvAiAttachments.visibility = View.GONE
+                holder.llParamProgressContainer.visibility = View.GONE
 
                 holder.btnChangeMessageType.setOnClickListener {
                     onChangeTypeClicked?.invoke(message)
@@ -176,6 +221,20 @@ class ChatAdapter(
                     holder.rvAiAttachments.adapter = MediaAttachmentAdapter(message.attachments)
                 } else {
                     holder.rvAiAttachments.visibility = View.GONE
+                }
+
+                // Render 2nd LLM Parameter Evaluation Progress / Completion Container
+                val paramText = message.paramEvaluationText
+                if (!paramText.isNullOrBlank()) {
+                    holder.llParamProgressContainer.visibility = View.VISIBLE
+                    holder.tvParamProgressText.text = paramText
+                    if (message.paramEvaluationStatus == "DONE") {
+                        holder.pbParamProgress.visibility = View.GONE
+                    } else {
+                        holder.pbParamProgress.visibility = View.VISIBLE
+                    }
+                } else {
+                    holder.llParamProgressContainer.visibility = View.GONE
                 }
 
                 // Enable Long Press Inspection for AI response messages
@@ -204,5 +263,8 @@ class ChatAdapter(
         val llConfirmChipsContainer: LinearLayout = itemView.findViewById(R.id.llConfirmChipsContainer)
         val tvAiMsg: TextView = itemView.findViewById(R.id.tvAiMsg)
         val rvAiAttachments: RecyclerView = itemView.findViewById(R.id.rvAiAttachments)
+        val llParamProgressContainer: LinearLayout = itemView.findViewById(R.id.llParamProgressContainer)
+        val pbParamProgress: ProgressBar = itemView.findViewById(R.id.pbParamProgress)
+        val tvParamProgressText: TextView = itemView.findViewById(R.id.tvParamProgressText)
     }
 }

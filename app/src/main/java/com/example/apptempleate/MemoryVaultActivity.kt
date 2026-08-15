@@ -92,6 +92,20 @@ class MemoryVaultActivity : AppCompatActivity() {
         val tvLocation: TextView = dialogView.findViewById(R.id.tvDetailLocation)
         val tvFullMessage: TextView = dialogView.findViewById(R.id.tvDetailFullMessage)
         val rvDetailAttachments: RecyclerView = dialogView.findViewById(R.id.rvDetailAttachments)
+
+        // Memory Decay & Parameters Views
+        val tvStrengthBadge: TextView = dialogView.findViewById(R.id.tvDetailStrengthBadge)
+        val tvImportance: TextView = dialogView.findViewById(R.id.tvDetailImportance)
+        val tvConfidence: TextView = dialogView.findViewById(R.id.tvDetailConfidence)
+        val tvStability: TextView = dialogView.findViewById(R.id.tvDetailStability)
+        val tvCurrentStrength: TextView = dialogView.findViewById(R.id.tvDetailCurrentStrength)
+        val tvBaseStrength: TextView = dialogView.findViewById(R.id.tvDetailBaseStrength)
+        val tvAccessCount: TextView = dialogView.findViewById(R.id.tvDetailAccessCount)
+        val tvLastAccessed: TextView = dialogView.findViewById(R.id.tvDetailLastAccessed)
+        val tvReinforceCount: TextView = dialogView.findViewById(R.id.tvDetailReinforceCount)
+        val tvLastReinforced: TextView = dialogView.findViewById(R.id.tvDetailLastReinforced)
+        val tvHalfLife: TextView = dialogView.findViewById(R.id.tvDetailHalfLife)
+
         val ibEdit: ImageButton = dialogView.findViewById(R.id.ibDetailEdit)
         val ibDelete: ImageButton = dialogView.findViewById(R.id.ibDetailDelete)
         val btnWordsSynonyms: View = dialogView.findViewById(R.id.btnDetailWordsSynonyms)
@@ -103,6 +117,22 @@ class MemoryVaultActivity : AppCompatActivity() {
         tvTimestamp.text = memory.timestamp
         tvLocation.text = memory.location
         tvFullMessage.text = memory.message
+
+        val currentCalcStrength = MemoryDecayCalculator.calculateCurrentStrength(memory)
+        val halfLifeDays = MemoryDecayCalculator.calculateHalfLifeDays(memory.importance, memory.stability)
+        val dateFmt = java.text.SimpleDateFormat("MMM d, yyyy", java.util.Locale.getDefault())
+
+        tvStrengthBadge.text = "Strength ${String.format("%.2f", currentCalcStrength)}"
+        tvImportance.text = String.format("%.2f", memory.importance)
+        tvConfidence.text = String.format("%.2f", memory.confidence)
+        tvStability.text = String.format("%.2f", memory.stability)
+        tvCurrentStrength.text = "Strength: ${String.format("%.2f", currentCalcStrength)}"
+        tvBaseStrength.text = "Base Strength: ${String.format("%.2f", memory.baseStrength)}"
+        tvAccessCount.text = "Times accessed: ${memory.accessCount}"
+        tvLastAccessed.text = "Last accessed: ${dateFmt.format(java.util.Date(memory.lastAccessedAt))}"
+        tvReinforceCount.text = "Reinforced: ${memory.reinforcementCount}"
+        tvLastReinforced.text = "Last reinforced: ${dateFmt.format(java.util.Date(memory.lastReinforcedAt))}"
+        tvHalfLife.text = "Half-life: ${String.format("%.0f", halfLifeDays)} days (Decay base 2)"
 
         if (memory.attachments.isNotEmpty()) {
             rvDetailAttachments.visibility = View.VISIBLE

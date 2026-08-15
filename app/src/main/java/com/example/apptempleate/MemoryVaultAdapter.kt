@@ -13,6 +13,7 @@ class MemoryVaultAdapter(
 
     class MemoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvTag: TextView = itemView.findViewById(R.id.tvMemoryTag)
+        val tvStrength: TextView = itemView.findViewById(R.id.tvMemoryStrength)
         val tvTime: TextView = itemView.findViewById(R.id.tvMemoryTime)
         val tvTitle: TextView = itemView.findViewById(R.id.tvMemoryTitle)
         val tvSnippet: TextView = itemView.findViewById(R.id.tvMemorySnippet)
@@ -28,6 +29,8 @@ class MemoryVaultAdapter(
     override fun onBindViewHolder(holder: MemoryViewHolder, position: Int) {
         val item = items[position]
         holder.tvTag.text = item.tag.uppercase()
+        val formattedStrength = String.format("%.2f", item.strength)
+        holder.tvStrength.text = "S: $formattedStrength"
         holder.tvTime.text = item.timeAgo
         holder.tvTitle.text = item.title
         holder.tvSnippet.text = item.snippet

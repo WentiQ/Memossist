@@ -249,6 +249,23 @@
 
         </LinearLayout>
 
+        <!-- Floating Scroll-To-Bottom Button -->
+        <ImageButton
+            android:id="@+id/btnScrollToBottom"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_scroll_bottom_fab"
+            android:contentDescription="Scroll to bottom"
+            android:elevation="12dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_arrow_down"
+            android:visibility="gone"
+            app:tint="@color/icon_tint"
+            app:layout_constraintBottom_toTopOf="@+id/llChatInputBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <!-- Gemini-Style Floating Chat Input Bar & Buttons -->
         <LinearLayout
             android:id="@+id/llChatInputBar"

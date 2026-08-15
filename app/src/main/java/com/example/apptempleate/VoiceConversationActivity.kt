@@ -88,7 +88,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
                 title = "New Chat",
                 lastUpdated = System.currentTimeMillis()
             )
-            ChatRepository.saveOrUpdateConversation(this, activeConversation!!)
+            // Empty conversation is kept in-memory only and not saved to disk until user gives input
         }
 
         // Start Foreground Service to keep Microphone & CPU active when screen turns off or app is backgrounded
@@ -103,6 +103,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
 
         // Setup Controls
         btnEndCall.setOnClickListener {
+            cleanupEmptyConversationIfNeeded()
             stopAllVoiceEngines()
             Toast.makeText(this, "Voice call ended", Toast.LENGTH_SHORT).show()
             finishWithSmoothAnimation()
@@ -441,8 +442,18 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         }
     }
 
+    private fun cleanupEmptyConversationIfNeeded() {
+        val conv = activeConversation ?: return
+        val diskConv = ChatRepository.loadAllConversations(this).find { it.id == conv.id }
+        val hasMessages = conv.messages.isNotEmpty() || (diskConv != null && diskConv.messages.isNotEmpty())
+        if (!hasMessages) {
+            ChatRepository.deleteConversation(this, conv.id)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        cleanupEmptyConversationIfNeeded()
         unregisterCallStoppedReceiver()
         unregisterChatAiBroadcastReceiver()
         stopAllVoiceEngines()
@@ -454,6 +465,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
     }
 
     private fun finishWithSmoothAnimation() {
+        cleanupEmptyConversationIfNeeded()
         stopAllVoiceEngines()
         finish()
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)

@@ -73,6 +73,23 @@ class ChatAiForegroundService : Service() {
         }
     }
 
+    private fun updateMessageThinkingStatus(conversationId: String, targetMessageId: String?, statusText: String) {
+        if (targetMessageId.isNullOrEmpty()) return
+        try {
+            val conversations = ChatRepository.loadAllConversations(this@ChatAiForegroundService)
+            val conv = conversations.find { it.id == conversationId }
+            if (conv != null) {
+                val aiMsg = conv.messages.find { it.id == targetMessageId }
+                if (aiMsg != null) {
+                    aiMsg.thinkingStatus = statusText
+                    ChatRepository.saveOrUpdateConversation(this@ChatAiForegroundService, conv)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         val conversationId = intent?.getStringExtra(EXTRA_CONVERSATION_ID) ?: ""
@@ -99,11 +116,48 @@ class ChatAiForegroundService : Service() {
         acquireWakeLock()
         pendingWork.incrementAndGet()
 
+        val request = QueuedChatRequest(
+            conversationId = conversationId,
+            targetMessageId = targetMessageId ?: "",
+            userMessage = userMessage,
+            userAttachments = userAttachments,
+            forcedMessageType = forcedMessageType
+        )
+        chatRequestQueue.add(request)
+
+        val queuePos = chatRequestQueue.indexOf(request)
+        if (queuePos > 0 && !targetMessageId.isNullOrEmpty()) {
+            val queueText = "⏳ In queue $queuePos: Waiting for previous response…"
+            updateMessageThinkingStatus(conversationId, targetMessageId, queueText)
+            val updateIntent = Intent(ACTION_CHAT_STEP_UPDATE).apply {
+                putExtra(EXTRA_CONVERSATION_ID, conversationId)
+                putExtra(EXTRA_TARGET_MESSAGE_ID, targetMessageId)
+                putExtra(EXTRA_STEP_TEXT, queueText)
+            }
+            sendBroadcast(updateIntent)
+        }
+
         // This executor is deliberately owned by the foreground service. The
-        // pipeline now runs synchronously on it, so an Activity lifecycle change
-        // cannot orphan or pause the native inference work.
+        // pipeline runs sequentially (FIFO) on it.
         executor.execute {
             try {
+                // When this item starts execution, update relative queue positions of all remaining items
+                val activeIdx = chatRequestQueue.indexOf(request)
+                if (activeIdx != -1) {
+                    for (i in (activeIdx + 1) until chatRequestQueue.size) {
+                        val other = chatRequestQueue[i]
+                        val relPos = i - activeIdx
+                        val queueStatus = "⏳ In queue $relPos: Waiting for previous response…"
+                        updateMessageThinkingStatus(other.conversationId, other.targetMessageId, queueStatus)
+                        val updateIntent = Intent(ACTION_CHAT_STEP_UPDATE).apply {
+                            putExtra(EXTRA_CONVERSATION_ID, other.conversationId)
+                            putExtra(EXTRA_TARGET_MESSAGE_ID, other.targetMessageId)
+                            putExtra(EXTRA_STEP_TEXT, queueStatus)
+                        }
+                        sendBroadcast(updateIntent)
+                    }
+                }
+
                 ChatRepository.processChatMessageWithPipeline(
                 context = this@ChatAiForegroundService,
                 conversationId = conversationId,
@@ -137,9 +191,10 @@ class ChatAiForegroundService : Service() {
                             }
                         }
 
-                        // Broadcast step update to UI immediately
+                        // Broadcast step update to UI immediately with targetMessageId
                         val updateIntent = Intent(ACTION_CHAT_STEP_UPDATE).apply {
                             putExtra(EXTRA_CONVERSATION_ID, conversationId)
+                            putExtra(EXTRA_TARGET_MESSAGE_ID, targetMessageId)
                             putExtra(EXTRA_STEP_TEXT, stepText)
                         }
                         sendBroadcast(updateIntent)
@@ -170,6 +225,7 @@ class ChatAiForegroundService : Service() {
 
                         val streamIntent = Intent(ACTION_CHAT_TOKEN_STREAM).apply {
                             putExtra(EXTRA_CONVERSATION_ID, conversationId)
+                            putExtra(EXTRA_TARGET_MESSAGE_ID, targetMessageId)
                             putExtra(EXTRA_PARTIAL_TEXT, partialText)
                         }
                         sendBroadcast(streamIntent)
@@ -180,8 +236,10 @@ class ChatAiForegroundService : Service() {
                         debugLogText: String,
                         usedAttachments: List<MediaAttachment>,
                         createdMemoryIds: List<String>,
-                        createdReminderId: String?
+                        createdReminderId: String?,
+                        factsToEvaluate: List<Pair<String, String>>
                     ) {
+                        var targetAiMsgId: String? = null
                         try {
                             val conversations = ChatRepository.loadAllConversations(this@ChatAiForegroundService)
                             val conv = conversations.find { it.id == conversationId }
@@ -201,6 +259,7 @@ class ChatAiForegroundService : Service() {
                                     ).also { conv.messages.add(it) }
                                 }
 
+                                targetAiMsgId = aiMsg.id
                                 aiMsg.isThinking = false
                                 aiMsg.thinkingStatus = null
                                 aiMsg.text = cleanHumanoidAnswer
@@ -209,14 +268,7 @@ class ChatAiForegroundService : Service() {
                                 aiMsg.createdMemoryIds = createdMemoryIds
                                 aiMsg.createdReminderId = createdReminderId
 
-                                // Reset any other stray thinking messages in list to false
-                                conv.messages.forEach { msg ->
-                                    if (msg != aiMsg) {
-                                        msg.isThinking = false
-                                        msg.thinkingStatus = null
-                                    }
-                                }
-
+                                // Reset only THIS message's thinking state so other queued messages preserve their queue status
                                 conv.lastUpdated = System.currentTimeMillis()
                                 ChatRepository.saveOrUpdateConversation(this@ChatAiForegroundService, conv)
                             }
@@ -224,8 +276,20 @@ class ChatAiForegroundService : Service() {
                             e.printStackTrace()
                         }
 
+                        // Enqueue 2nd LLM parameter scoring in FIFO queue if facts were extracted
+                        if (factsToEvaluate.isNotEmpty() && !targetAiMsgId.isNullOrEmpty()) {
+                            val factsForEval = factsToEvaluate.map { FactForEvaluation(it.first, it.second) }
+                            MemoryParameterQueueManager.enqueueTask(
+                                context = this@ChatAiForegroundService,
+                                conversationId = conversationId,
+                                messageId = targetAiMsgId,
+                                facts = factsForEval
+                            )
+                        }
+
                         val completedIntent = Intent(ACTION_CHAT_COMPLETED).apply {
                             putExtra(EXTRA_CONVERSATION_ID, conversationId)
+                            putExtra(EXTRA_TARGET_MESSAGE_ID, targetMessageId)
                             putExtra(EXTRA_ANSWER_TEXT, cleanHumanoidAnswer)
                             putExtra(EXTRA_DEBUG_LOG, debugLogText)
                         }
@@ -246,6 +310,22 @@ class ChatAiForegroundService : Service() {
                 android.util.Log.e(TAG, "Background chat pipeline failed", t)
                 persistFailure(conversationId, t)
             } finally {
+                chatRequestQueue.remove(request)
+                // Shift and broadcast remaining items in queue
+                for (i in 0 until chatRequestQueue.size) {
+                    val other = chatRequestQueue[i]
+                    val newPos = i // If i == 0, it is now next to start; if i > 0, it is in queue i
+                    if (newPos > 0) {
+                        val queueStatus = "⏳ In queue $newPos: Waiting for previous response…"
+                        updateMessageThinkingStatus(other.conversationId, other.targetMessageId, queueStatus)
+                        val updateIntent = Intent(ACTION_CHAT_STEP_UPDATE).apply {
+                            putExtra(EXTRA_CONVERSATION_ID, other.conversationId)
+                            putExtra(EXTRA_TARGET_MESSAGE_ID, other.targetMessageId)
+                            putExtra(EXTRA_STEP_TEXT, queueStatus)
+                        }
+                        sendBroadcast(updateIntent)
+                    }
+                }
                 finishWork(startId)
             }
         }
@@ -377,6 +457,23 @@ class ChatAiForegroundService : Service() {
         const val CHANNEL_ID = "memossist_chat_bg_channel_v2"
         const val NOTIFICATION_ID = 9991
 
+        data class QueuedChatRequest(
+            val conversationId: String,
+            val targetMessageId: String,
+            val userMessage: String,
+            val userAttachments: List<MediaAttachment>,
+            val forcedMessageType: MessageType?
+        )
+
+        private val chatRequestQueue = java.util.concurrent.CopyOnWriteArrayList<QueuedChatRequest>()
+
+        fun getGlobalPendingCount(): Int = chatRequestQueue.size
+
+        fun getGlobalQueuePosition(conversationId: String, messageId: String): Int {
+            val idx = chatRequestQueue.indexOfFirst { it.conversationId == conversationId && it.targetMessageId == messageId }
+            return if (idx >= 0) idx else chatRequestQueue.size
+        }
+
         const val EXTRA_CONVERSATION_ID = "EXTRA_CONVERSATION_ID"
         const val EXTRA_USER_MESSAGE = "EXTRA_USER_MESSAGE"
         const val EXTRA_TARGET_MESSAGE_ID = "EXTRA_TARGET_MESSAGE_ID"
@@ -387,11 +484,15 @@ class ChatAiForegroundService : Service() {
         const val ACTION_CHAT_TOKEN_STREAM = "com.example.apptempleate.ACTION_CHAT_TOKEN_STREAM"
         const val ACTION_CHAT_COMPLETED = "com.example.apptempleate.ACTION_CHAT_COMPLETED"
         const val ACTION_CANCEL_PIPELINE = "com.example.apptempleate.ACTION_CANCEL_PIPELINE"
+        const val ACTION_PARAM_EVALUATION_UPDATE = "com.example.apptempleate.ACTION_PARAM_EVALUATION_UPDATE"
         
         const val EXTRA_STEP_TEXT = "EXTRA_STEP_TEXT"
         const val EXTRA_PARTIAL_TEXT = "EXTRA_PARTIAL_TEXT"
         const val EXTRA_ANSWER_TEXT = "EXTRA_ANSWER_TEXT"
         const val EXTRA_DEBUG_LOG = "EXTRA_DEBUG_LOG"
+        const val EXTRA_MESSAGE_ID = "EXTRA_MESSAGE_ID"
+        const val EXTRA_PARAM_STATUS = "EXTRA_PARAM_STATUS"
+        const val EXTRA_PARAM_TEXT = "EXTRA_PARAM_TEXT"
 
         fun startService(
             context: Context,

@@ -135,6 +135,37 @@
             android:visibility="gone"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
+        <!-- 2nd LLM Parameter Evaluation Progress / Status Container -->
+        <LinearLayout
+            android:id="@+id/llParamProgressContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_circle_icon_button"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/pbParamProgress"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginEnd="6dp"
+                android:indeterminate="true" />
+
+            <TextView
+                android:id="@+id/tvParamProgressText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scoring parameters for extracted facts..."
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>
