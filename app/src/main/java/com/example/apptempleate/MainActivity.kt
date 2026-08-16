@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var btnHamburger: ImageButton
+    private lateinit var vSidebarUnreadBadge: View
     private lateinit var btnHeaderModelPicker: LinearLayout
     private lateinit var tvHeaderModelIcon: TextView
     private lateinit var tvHeaderModelName: TextView
@@ -169,6 +170,7 @@ class MainActivity : AppCompatActivity() {
         // Initialize Navigation & Main Layout Views
         drawerLayout = findViewById(R.id.drawerLayout)
         btnHamburger = findViewById(R.id.btnHamburger)
+        vSidebarUnreadBadge = findViewById(R.id.vSidebarUnreadBadge)
         btnHeaderModelPicker = findViewById(R.id.btnHeaderModelPicker)
         tvHeaderModelIcon = findViewById(R.id.tvHeaderModelIcon)
         tvHeaderModelName = findViewById(R.id.tvHeaderModelName)
@@ -507,8 +509,12 @@ class MainActivity : AppCompatActivity() {
                                 ChatAiForegroundService.ACTION_CHAT_COMPLETED -> {
                                     val updated = ChatRepository.loadAllConversations(this@MainActivity).find { it.id == convId }
                                     if (updated != null) {
-                                        currentConversation = updated
-                                        chatAdapter.setMessages(updated.messages)
+                                        if (currentConversation?.id == convId) {
+                                            updated.hasUnread = false
+                                            ChatRepository.saveOrUpdateConversation(this@MainActivity, updated)
+                                            currentConversation = updated
+                                            chatAdapter.setMessages(updated.messages)
+                                        }
                                     }
                                     refreshSidebarHistory()
                                 }
@@ -968,6 +974,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadConversationIntoView(conversation: Conversation, restoreScroll: Boolean = false) {
         isNewChatState = false
+        if (conversation.hasUnread) {
+            conversation.hasUnread = false
+            ChatRepository.saveOrUpdateConversation(this, conversation)
+        }
         currentConversation = conversation
         activeConversationId = conversation.id
         llGreetingContainer.visibility = View.GONE
@@ -981,6 +991,7 @@ class MainActivity : AppCompatActivity() {
         btnDeleteCurrentChat.visibility = View.VISIBLE
 
         chatAdapter.setMessages(conversation.messages)
+        refreshSidebarHistory()
         if (restoreScroll && chatListScrollState != null) {
             rvChatMessages.layoutManager?.onRestoreInstanceState(chatListScrollState)
             rvChatMessages.post { updateScrollToBottomButtonVisibility() }
@@ -1107,6 +1118,14 @@ class MainActivity : AppCompatActivity() {
     private fun refreshSidebarHistory() {
         allConversations = ChatRepository.loadAllConversations(this)
         sidebarHistoryAdapter.setConversations(allConversations)
+        updateSidebarMenuBadge()
+    }
+
+    private fun updateSidebarMenuBadge() {
+        val hasAnyUnread = allConversations.any { it.hasUnread }
+        if (this::vSidebarUnreadBadge.isInitialized) {
+            vSidebarUnreadBadge.visibility = if (hasAnyUnread) View.VISIBLE else View.GONE
+        }
     }
 
     private fun openVoiceConversationSmoothly() {

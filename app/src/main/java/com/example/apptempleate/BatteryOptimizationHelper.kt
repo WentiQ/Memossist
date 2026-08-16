@@ -70,7 +70,7 @@ object BatteryOptimizationHelper {
     /** 3. Settings -> Apps -> Auto launch -> Enable Memossist */
     fun openAutoLaunchSettings(context: Context) {
         val oemComponents = listOf(
-            // Realme / OPPO (ColorOS / Oplus)
+            // OPPO / ColorOS / Oplus
             ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity"),
             ComponentName("com.coloros.safecenter", "com.coloros.safecenter.startupapp.StartupAppListActivity"),
             ComponentName("com.oppo.safe", "com.oppo.safe.permission.startup.StartupAppListActivity"),

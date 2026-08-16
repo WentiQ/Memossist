@@ -1,16 +1,25 @@
 package com.example.apptempleate
 
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothHeadset
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
+import android.media.AudioDeviceCallback
+import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.PowerManager
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -28,12 +37,23 @@ import java.util.UUID
 
 class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
+    enum class AudioRoute {
+        SPEAKER,
+        EARPIECE,
+        BLUETOOTH,
+        WIRED_HEADSET
+    }
+
+    private lateinit var btnBackVoice: ImageButton
     private lateinit var btnEndCall: ImageButton
     private lateinit var btnMuteMic: ImageButton
     private lateinit var btnSpeakerToggle: ImageButton
     private lateinit var tvVoiceStatus: TextView
     private lateinit var tvVoiceSubStatus: TextView
+    private lateinit var tvAudioRouteBadge: TextView
     private lateinit var leafOrbView: LeafOrbView
+    private lateinit var flMisTouchShield: android.widget.FrameLayout
+    private lateinit var tvShieldSubTitle: TextView
 
     private var speechRecognizer: SpeechRecognizer? = null
     private var textToSpeech: TextToSpeech? = null
@@ -41,13 +61,21 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
     private var activeConversation: Conversation? = null
 
     private var isMuted = false
-    private var isSpeakerOn = true
     private var isTtsReady = false
     private var isListening = false
     private var isAiResponding = false
     private var isCallEnding = false
 
+    // Audio & Sensors
     private val audioManager by lazy { getSystemService(Context.AUDIO_SERVICE) as AudioManager }
+    private val sensorManager by lazy { getSystemService(Context.SENSOR_SERVICE) as SensorManager }
+    private val powerManager by lazy { getSystemService(Context.POWER_SERVICE) as PowerManager }
+
+    private var proximitySensor: Sensor? = null
+    private var proximityWakeLock: PowerManager.WakeLock? = null
+    private var isPhoneNearEar = false
+    private var currentAudioRoute: AudioRoute = AudioRoute.SPEAKER
+    private var userManuallyForcedRoute: AudioRoute? = null
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -69,12 +97,22 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
 
         setContentView(R.layout.activity_voice_conversation)
 
+        btnBackVoice = findViewById(R.id.btnBackVoice)
         btnEndCall = findViewById(R.id.btnEndCall)
         btnMuteMic = findViewById(R.id.btnMuteMic)
         btnSpeakerToggle = findViewById(R.id.btnSpeakerToggle)
         tvVoiceStatus = findViewById(R.id.tvVoiceStatus)
         tvVoiceSubStatus = findViewById(R.id.tvVoiceSubStatus)
+        tvAudioRouteBadge = findViewById(R.id.tvAudioRouteBadge)
         leafOrbView = findViewById(R.id.leafOrbView)
+        flMisTouchShield = findViewById(R.id.flMisTouchShield)
+        tvShieldSubTitle = findViewById(R.id.tvShieldSubTitle)
+
+        // Block all touch events when shield is visible
+        flMisTouchShield.setOnTouchListener { _, _ -> true }
+
+        // Setup Sensors & WakeLocks
+        setupSensorsAndAudio()
 
         // Load active conversation passed from MainActivity or create new one
         val convId = intent.getStringExtra("CONVERSATION_ID")
@@ -88,20 +126,26 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
                 title = "New Chat",
                 lastUpdated = System.currentTimeMillis()
             )
-            // Empty conversation is kept in-memory only and not saved to disk until user gives input
         }
 
-        // Start Foreground Service to keep Microphone & CPU active when screen turns off or app is backgrounded
+        // Start Foreground Service to keep Microphone & CPU active
         VoiceForegroundService.startService(this)
 
-        // Register Broadcast Receiver for End Call action from Notification Bar
+        // Register Broadcast Receivers
         registerCallStoppedReceiver()
         registerChatAiBroadcastReceiver()
+        registerAudioDeviceReceivers()
 
         // Initialize TextToSpeech engine
         textToSpeech = TextToSpeech(this, this)
 
         // Setup Controls
+        btnBackVoice.setOnClickListener {
+            cleanupEmptyConversationIfNeeded()
+            stopAllVoiceEngines()
+            finishWithSmoothAnimation()
+        }
+
         btnEndCall.setOnClickListener {
             cleanupEmptyConversationIfNeeded()
             stopAllVoiceEngines()
@@ -129,15 +173,265 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         }
 
         btnSpeakerToggle.setOnClickListener {
-            isSpeakerOn = !isSpeakerOn
-            audioManager.isSpeakerphoneOn = isSpeakerOn
-            val message = if (isSpeakerOn) "Speakerphone ON" else "Earpiece ON"
-            btnSpeakerToggle.alpha = if (isSpeakerOn) 1.0f else 0.5f
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            handleManualAudioToggle()
         }
+
+        // Apply default audio routing (Speaker by default)
+        evaluateAndApplyAudioRoute()
 
         // Check audio permissions & start Gemini Voice loop
         checkAndStartVoiceCall()
+    }
+
+    private fun setupSensorsAndAudio() {
+        proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY)
+        if (powerManager.isWakeLockLevelSupported(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK)) {
+            proximityWakeLock = powerManager.newWakeLock(
+                PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK,
+                "Memossist:VoiceProximityLock"
+            )
+        }
+
+        proximitySensor?.let { sensor ->
+            sensorManager.registerListener(
+                proximityEventListener,
+                sensor,
+                SensorManager.SENSOR_DELAY_NORMAL
+            )
+        }
+
+        // Register Audio Device Callback for modern Android
+        audioManager.registerAudioDeviceCallback(audioDeviceCallback, Handler(Looper.getMainLooper()))
+    }
+
+    private val proximityEventListener = object : SensorEventListener {
+        override fun onSensorChanged(event: SensorEvent?) {
+            if (event == null || proximitySensor == null) return
+            val distance = event.values[0]
+            val maxRange = proximitySensor!!.maximumRange
+            val isNear = distance < maxRange && distance < 5.0f
+
+            if (isPhoneNearEar != isNear) {
+                isPhoneNearEar = isNear
+                userManuallyForcedRoute = null // Reset manual override on physical motion
+                evaluateAndApplyAudioRoute()
+
+                if (isNear) {
+                    // Activate full-screen touch shield for mis-touch prevention
+                    flMisTouchShield.visibility = android.view.View.VISIBLE
+                    tvShieldSubTitle.text = when (currentAudioRoute) {
+                        AudioRoute.EARPIECE -> "In call via earpiece • Screen locked"
+                        AudioRoute.BLUETOOTH -> "Pocket protection active • Audio on Bluetooth"
+                        AudioRoute.WIRED_HEADSET -> "Pocket protection active • Audio on Headset"
+                        else -> "Touch protection active"
+                    }
+
+                    // Also engage proximity screen-off wake lock
+                    if (proximityWakeLock?.isHeld == false) {
+                        try {
+                            proximityWakeLock?.acquire(15 * 60 * 1000L) // 15 mins max safe timeout
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                } else {
+                    // Deactivate touch shield & restore screen
+                    flMisTouchShield.visibility = android.view.View.GONE
+                    if (proximityWakeLock?.isHeld == true) {
+                        try {
+                            proximityWakeLock?.release()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            }
+        }
+
+        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+    }
+
+    private val audioDeviceCallback = object : AudioDeviceCallback() {
+        override fun onAudioDevicesAdded(addedDevices: Array<out AudioDeviceInfo>?) {
+            userManuallyForcedRoute = null
+            evaluateAndApplyAudioRoute()
+        }
+
+        override fun onAudioDevicesRemoved(removedDevices: Array<out AudioDeviceInfo>?) {
+            userManuallyForcedRoute = null
+            evaluateAndApplyAudioRoute()
+        }
+    }
+
+    private var audioBroadcastReceiver: BroadcastReceiver? = null
+
+    private fun registerAudioDeviceReceivers() {
+        if (audioBroadcastReceiver == null) {
+            audioBroadcastReceiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context?, intent: Intent?) {
+                    userManuallyForcedRoute = null
+                    evaluateAndApplyAudioRoute()
+                }
+            }
+            val filter = IntentFilter().apply {
+                addAction(Intent.ACTION_HEADSET_PLUG)
+                addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+                addAction(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED)
+                addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED)
+                addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(audioBroadcastReceiver, filter, RECEIVER_NOT_EXPORTED)
+            } else {
+                registerReceiver(audioBroadcastReceiver, filter)
+            }
+        }
+    }
+
+    private fun unregisterAudioDeviceReceivers() {
+        try {
+            audioBroadcastReceiver?.let { unregisterReceiver(it) }
+            audioBroadcastReceiver = null
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun isBluetoothHeadsetConnected(): Boolean {
+        val devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+        return devices.any {
+            it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
+            it.type == AudioDeviceInfo.TYPE_BLE_HEADSET ||
+            it.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
+        }
+    }
+
+    private fun isWiredHeadsetConnected(): Boolean {
+        val devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+        return devices.any {
+            it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+            it.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES ||
+            it.type == AudioDeviceInfo.TYPE_USB_HEADSET
+        }
+    }
+
+    private fun evaluateAndApplyAudioRoute() {
+        if (isCallEnding) return
+
+        val targetRoute: AudioRoute = if (userManuallyForcedRoute != null) {
+            userManuallyForcedRoute!!
+        } else if (isBluetoothHeadsetConnected()) {
+            AudioRoute.BLUETOOTH
+        } else if (isWiredHeadsetConnected()) {
+            AudioRoute.WIRED_HEADSET
+        } else if (isPhoneNearEar) {
+            AudioRoute.EARPIECE
+        } else {
+            AudioRoute.SPEAKER // Speaker by default
+        }
+
+        applyAudioRoute(targetRoute)
+    }
+
+    private fun applyAudioRoute(route: AudioRoute) {
+        currentAudioRoute = route
+        audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
+
+        when (route) {
+            AudioRoute.BLUETOOTH -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val btDev = audioManager.availableCommunicationDevices.find {
+                        it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || it.type == AudioDeviceInfo.TYPE_BLE_HEADSET
+                    }
+                    if (btDev != null) {
+                        audioManager.setCommunicationDevice(btDev)
+                    }
+                } else {
+                    audioManager.startBluetoothSco()
+                    audioManager.isBluetoothScoOn = true
+                    audioManager.isSpeakerphoneOn = false
+                }
+                btnSpeakerToggle.setImageResource(R.drawable.ic_bluetooth)
+                tvAudioRouteBadge.text = "Bluetooth"
+            }
+            AudioRoute.WIRED_HEADSET -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val wiredDev = audioManager.availableCommunicationDevices.find {
+                        it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+                        it.type == AudioDeviceInfo.TYPE_USB_HEADSET ||
+                        it.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
+                    }
+                    if (wiredDev != null) {
+                        audioManager.setCommunicationDevice(wiredDev)
+                    }
+                } else {
+                    audioManager.stopBluetoothSco()
+                    audioManager.isBluetoothScoOn = false
+                    audioManager.isSpeakerphoneOn = false
+                }
+                btnSpeakerToggle.setImageResource(R.drawable.ic_headphones)
+                tvAudioRouteBadge.text = "Headset"
+            }
+            AudioRoute.EARPIECE -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val earpieceDev = audioManager.availableCommunicationDevices.find {
+                        it.type == AudioDeviceInfo.TYPE_BUILTIN_EARPIECE
+                    }
+                    if (earpieceDev != null) {
+                        audioManager.setCommunicationDevice(earpieceDev)
+                    } else {
+                        audioManager.clearCommunicationDevice()
+                    }
+                } else {
+                    audioManager.stopBluetoothSco()
+                    audioManager.isBluetoothScoOn = false
+                    audioManager.isSpeakerphoneOn = false
+                }
+                btnSpeakerToggle.setImageResource(R.drawable.ic_earpiece)
+                tvAudioRouteBadge.text = "Earpiece"
+            }
+            AudioRoute.SPEAKER -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val speakerDev = audioManager.availableCommunicationDevices.find {
+                        it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
+                    }
+                    if (speakerDev != null) {
+                        audioManager.setCommunicationDevice(speakerDev)
+                    } else {
+                        audioManager.clearCommunicationDevice()
+                    }
+                } else {
+                    audioManager.stopBluetoothSco()
+                    audioManager.isBluetoothScoOn = false
+                    audioManager.isSpeakerphoneOn = true
+                }
+                btnSpeakerToggle.setImageResource(R.drawable.ic_speaker)
+                tvAudioRouteBadge.text = "Speaker"
+            }
+        }
+    }
+
+    private fun handleManualAudioToggle() {
+        val hasExternalDevice = isBluetoothHeadsetConnected() || isWiredHeadsetConnected()
+
+        if (hasExternalDevice) {
+            // Toggle between External Headset and Speaker
+            if (currentAudioRoute == AudioRoute.SPEAKER) {
+                userManuallyForcedRoute = if (isBluetoothHeadsetConnected()) AudioRoute.BLUETOOTH else AudioRoute.WIRED_HEADSET
+            } else {
+                userManuallyForcedRoute = AudioRoute.SPEAKER
+            }
+        } else {
+            // Toggle between Speaker and Earpiece
+            userManuallyForcedRoute = if (currentAudioRoute == AudioRoute.SPEAKER) {
+                AudioRoute.EARPIECE
+            } else {
+                AudioRoute.SPEAKER
+            }
+        }
+
+        evaluateAndApplyAudioRoute()
+        Toast.makeText(this, "Switched to ${tvAudioRouteBadge.text}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onInit(status: Int) {
@@ -305,7 +599,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
             msg.thinkingStatus = null
         }
 
-        // 2. Update Title dynamically from first spoken user prompt (just like standard chat)
+        // 2. Update Title dynamically from first spoken user prompt
         if (conv.title == "New Chat" || conv.messages.isEmpty() || conv.messages.size <= 1) {
             conv.title = if (userText.length > 28) userText.take(28) + "..." else userText
         }
@@ -362,8 +656,10 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
             tvVoiceSubStatus.text = "Memossist Live Voice"
 
             val utteranceId = "MEMOSSIST_LIVE_${UUID.randomUUID()}"
-            val params = Bundle()
-            params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
+            val params = Bundle().apply {
+                putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
+                putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_VOICE_CALL)
+            }
             val result = textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, params, utteranceId)
             if (result == TextToSpeech.ERROR) {
                 isAiResponding = false
@@ -387,11 +683,11 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         }
     }
 
-    private var voiceCallStoppedReceiver: android.content.BroadcastReceiver? = null
+    private var voiceCallStoppedReceiver: BroadcastReceiver? = null
 
     private fun registerCallStoppedReceiver() {
         if (voiceCallStoppedReceiver == null) {
-            voiceCallStoppedReceiver = object : android.content.BroadcastReceiver() {
+            voiceCallStoppedReceiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context?, intent: Intent?) {
                     if (intent?.action == VoiceForegroundService.ACTION_VOICE_CALL_STOPPED_EVENT) {
                         Toast.makeText(this@VoiceConversationActivity, "Voice call ended from notification", Toast.LENGTH_SHORT).show()
@@ -399,7 +695,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
                     }
                 }
             }
-            val filter = android.content.IntentFilter(VoiceForegroundService.ACTION_VOICE_CALL_STOPPED_EVENT)
+            val filter = IntentFilter(VoiceForegroundService.ACTION_VOICE_CALL_STOPPED_EVENT)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 registerReceiver(voiceCallStoppedReceiver, filter, RECEIVER_NOT_EXPORTED)
             } else {
@@ -420,6 +716,23 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
     private fun stopAllVoiceEngines() {
         isCallEnding = true
         try {
+            // Restore normal audio mode
+            audioManager.mode = AudioManager.MODE_NORMAL
+            audioManager.isSpeakerphoneOn = false
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                audioManager.clearCommunicationDevice()
+            } else {
+                audioManager.stopBluetoothSco()
+                audioManager.isBluetoothScoOn = false
+            }
+
+            // Unregister sensors
+            sensorManager.unregisterListener(proximityEventListener)
+            audioManager.unregisterAudioDeviceCallback(audioDeviceCallback)
+            if (proximityWakeLock?.isHeld == true) {
+                proximityWakeLock?.release()
+            }
+
             VoiceForegroundService.stopService(this)
             textToSpeech?.stop()
             textToSpeech?.shutdown()
@@ -498,6 +811,7 @@ class VoiceConversationActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         cleanupEmptyConversationIfNeeded()
         unregisterCallStoppedReceiver()
         unregisterChatAiBroadcastReceiver()
+        unregisterAudioDeviceReceivers()
         stopAllVoiceEngines()
     }
 

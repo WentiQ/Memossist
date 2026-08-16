@@ -359,7 +359,7 @@ object DataBackupRepository {
                         )
                     }
 
-                    mergedConversations.add(Conversation(newConvId, title, lastUpdated, isPinned, messagesList))
+                    mergedConversations.add(Conversation(id = newConvId, title = title, lastUpdated = lastUpdated, isPinned = isPinned, hasUnread = false, messages = messagesList))
                     importedConvCount++
                 } catch (e: Exception) {
                     e.printStackTrace()

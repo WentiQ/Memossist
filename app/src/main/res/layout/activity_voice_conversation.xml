@@ -7,23 +7,56 @@
     android:background="@color/app_window_background"
     tools:context=".VoiceConversationActivity">
 
-    <!-- Status Tag Badge (Centered cleanly near top without header bar) -->
+    <!-- Top Navigation Row -->
+    <ImageButton
+        android:id="@+id/btnBackVoice"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_circle_icon_button"
+        android:contentDescription="Back"
+        android:padding="10dp"
+        android:src="@drawable/ic_close"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/text_primary" />
+
+    <!-- Status Tag Badge -->
     <TextView
         android:id="@+id/tvLiveBadge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:background="@drawable/bg_metallic_card"
-        android:paddingHorizontal="18dp"
-        android:paddingVertical="8dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="7dp"
         android:text="MEMOSSIST LIVE"
         android:textColor="@color/text_primary"
         android:textSize="12sp"
         android:textStyle="bold"
-        android:letterSpacing="0.15"
+        android:letterSpacing="0.1"
+        app:layout_constraintBottom_toBottomOf="@+id/btnBackVoice"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/btnBackVoice" />
+
+    <!-- Audio Route Badge Indicator (Top Right) -->
+    <TextView
+        android:id="@+id/tvAudioRouteBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_tag_rounded"
+        android:backgroundTint="@color/app_icon_button_background"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="5dp"
+        android:text="Speaker"
+        android:textColor="@color/text_secondary"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/btnBackVoice"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnBackVoice" />
 
     <!-- Custom Smooth Yellow & Green Floating Leaf Animation Circle -->
     <com.example.apptempleate.LeafOrbView
@@ -34,7 +67,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvLiveBadge"
-        app:layout_constraintVertical_bias="0.4" />
+        app:layout_constraintVertical_bias="0.38" />
 
     <!-- Voice State Text Indicator -->
     <TextView
@@ -46,16 +79,18 @@
         android:textColor="@color/text_primary"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:letterSpacing="0.05"
+        android:letterSpacing="0.03"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/leafOrbView" />
 
     <TextView
         android:id="@+id/tvVoiceSubStatus"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="32dp"
+        android:gravity="center"
         android:text="Speak now or tap to pause"
         android:textColor="@color/text_secondary"
         android:textSize="14sp"
@@ -78,38 +113,89 @@
         <!-- Mute / Mic Toggle Button -->
         <ImageButton
             android:id="@+id/btnMuteMic"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginEnd="32dp"
-            android:background="@drawable/bg_metallic_card"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="28dp"
+            android:background="@drawable/bg_circle_icon_button"
             android:contentDescription="Mute Microphone"
-            android:padding="16dp"
+            android:padding="15dp"
             android:src="@drawable/ic_mic"
-            app:tint="@color/icon_tint" />
+            app:tint="@color/text_primary" />
 
         <!-- Red Circular End Call / Exit Button -->
         <ImageButton
             android:id="@+id/btnEndCall"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
             android:background="@drawable/bg_end_call_button"
             android:contentDescription="End Voice Conversation"
+            android:elevation="4dp"
             android:padding="18dp"
             android:src="@drawable/ic_call_end"
             app:tint="#FFFFFF" />
 
-        <!-- Speaker Output Toggle Button -->
+        <!-- Audio Output Route Toggle Button -->
         <ImageButton
             android:id="@+id/btnSpeakerToggle"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="32dp"
-            android:background="@drawable/bg_metallic_card"
-            android:contentDescription="Speaker Output"
-            android:padding="16dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="28dp"
+            android:background="@drawable/bg_circle_icon_button"
+            android:contentDescription="Audio Output Route"
+            android:padding="15dp"
             android:src="@drawable/ic_speaker"
-            app:tint="@color/icon_tint" />
+            app:tint="@color/text_primary" />
 
     </LinearLayout>
+
+    <!-- Mis-Touch Prevention Shield Overlay (Active during Earpiece mode & Pocket mode) -->
+    <FrameLayout
+        android:id="@+id/flMisTouchShield"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F2000000"
+        android:clickable="true"
+        android:elevation="50dp"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <ImageView
+                android:id="@+id/ivShieldIcon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_pin"
+                app:tint="@color/text_secondary"
+                android:contentDescription="Touch Lock" />
+
+            <TextView
+                android:id="@+id/tvShieldTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Touch Protection Active"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvShieldSubTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Phone is in pocket or at ear"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

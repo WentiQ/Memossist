@@ -131,7 +131,7 @@
 
     </LinearLayout>
 
-    <!-- Search Input Bar (Floating over blur effect) -->
+    <!-- Search Input Bar (Floating over blur effect with higher elevation so chips slide behind it) -->
     <LinearLayout
         android:id="@+id/llSearchContainer"
         android:layout_width="0dp"
@@ -143,7 +143,7 @@
         android:minHeight="48dp"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
-        android:elevation="8dp"
+        android:elevation="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/llStatsBanner">
@@ -169,7 +169,7 @@
 
     </LinearLayout>
 
-    <!-- Filter Chips Row (Floating over blur effect) -->
+    <!-- Filter Chips Row (Slides behind search bar on scroll up) -->
     <LinearLayout
         android:id="@+id/llFilterChips"
         android:layout_width="0dp"
@@ -177,7 +177,7 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="12dp"
         android:orientation="horizontal"
-        android:elevation="8dp"
+        android:elevation="6dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/llSearchContainer">

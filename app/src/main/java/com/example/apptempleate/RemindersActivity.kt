@@ -32,6 +32,7 @@ class RemindersActivity : AppCompatActivity() {
     private lateinit var tvActiveCount: TextView
     private lateinit var tvNextEvent: TextView
     private lateinit var etSearchReminders: EditText
+    private lateinit var llFilterChips: LinearLayout
     private lateinit var chipAll: TextView
     private lateinit var chipUpcoming: TextView
     private lateinit var chipCompleted: TextView
@@ -43,6 +44,7 @@ class RemindersActivity : AppCompatActivity() {
     private var allReminders: MutableList<ReminderItem> = mutableListOf()
     private var currentFilter: String = "ALL" // ALL, UPCOMING, COMPLETED
     private var searchQuery: String = ""
+    private var isFilterVisible = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +59,9 @@ class RemindersActivity : AppCompatActivity() {
         tvActiveCount = findViewById(R.id.tvActiveCount)
         tvNextEvent = findViewById(R.id.tvNextEvent)
         etSearchReminders = findViewById(R.id.etSearchReminders)
+        val llSearchContainer: LinearLayout = findViewById(R.id.llSearchContainer)
+        llSearchContainer.bringToFront()
+        llFilterChips = findViewById(R.id.llFilterChips)
         chipAll = findViewById(R.id.chipAll)
         chipUpcoming = findViewById(R.id.chipUpcoming)
         chipCompleted = findViewById(R.id.chipCompleted)
@@ -88,6 +93,9 @@ class RemindersActivity : AppCompatActivity() {
         rvRemindersList.layoutManager = LinearLayoutManager(this)
         rvRemindersList.adapter = remindersAdapter
 
+        // Smooth push & vanish on scroll up, pull back down on scroll down
+        setupScrollAnimationForFilters()
+
         btnBack.setOnClickListener {
             finishWithSmoothAnimation()
         }
@@ -112,6 +120,40 @@ class RemindersActivity : AppCompatActivity() {
 
         setupSearchAndFilters()
         refreshRemindersList()
+    }
+
+    private fun setupScrollAnimationForFilters() {
+        rvRemindersList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                // When scrolling up (dragging content upwards): Push and vanish filter chips
+                if (dy > 10 && isFilterVisible) {
+                    isFilterVisible = false
+                    val pushUpDistance = if (llFilterChips.height > 0) -llFilterChips.height.toFloat() - 16f else -100f
+                    llFilterChips.animate()
+                        .translationY(pushUpDistance)
+                        .alpha(0f)
+                        .setDuration(220L)
+                        .withEndAction {
+                            if (!isFilterVisible) {
+                                llFilterChips.visibility = View.INVISIBLE
+                            }
+                        }
+                        .start()
+                }
+                // When scrolling down (dragging content downwards) or reached the top: Pull filter chips back down
+                else if ((dy < -10 || !recyclerView.canScrollVertically(-1)) && !isFilterVisible) {
+                    isFilterVisible = true
+                    llFilterChips.visibility = View.VISIBLE
+                    llFilterChips.animate()
+                        .translationY(0f)
+                        .alpha(1f)
+                        .setDuration(220L)
+                        .start()
+                }
+            }
+        })
     }
 
     override fun onResume() {

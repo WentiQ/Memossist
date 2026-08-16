@@ -395,7 +395,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:lineSpacingExtra="2dp"
-                        android:text="Realme, Oppo, Xiaomi &amp; Android power managers freeze background processes when locked. Please configure these 3 settings for smooth background LLM execution:"
+                        android:text="OEM device power managers frequently freeze background processes when locked. Please configure these 3 settings for smooth background LLM execution:"
                         android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 

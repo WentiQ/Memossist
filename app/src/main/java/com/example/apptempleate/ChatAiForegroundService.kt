@@ -270,6 +270,9 @@ class ChatAiForegroundService : Service() {
 
                                 // Reset only THIS message's thinking state so other queued messages preserve their queue status
                                 conv.lastUpdated = System.currentTimeMillis()
+                                if (MainActivity.activeConversationId != conversationId) {
+                                    conv.hasUnread = true
+                                }
                                 ChatRepository.saveOrUpdateConversation(this@ChatAiForegroundService, conv)
                             }
                         } catch (e: Exception) {

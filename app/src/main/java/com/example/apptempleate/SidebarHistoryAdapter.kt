@@ -29,6 +29,7 @@ class SidebarHistoryAdapter(
         val conv = conversations[position]
         holder.tvHistoryTitle.text = if (conv.isPinned) "📌 ${conv.title}" else conv.title
         holder.ivHistoryIcon.setImageResource(if (conv.isPinned) R.drawable.ic_pin else R.drawable.ic_chat_history)
+        holder.vChatUnreadBadge.visibility = if (conv.hasUnread) View.VISIBLE else View.GONE
         
         holder.itemView.setOnClickListener {
             onItemClick(conv)
@@ -45,5 +46,6 @@ class SidebarHistoryAdapter(
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ivHistoryIcon: ImageView = itemView.findViewById(R.id.ivHistoryIcon)
         val tvHistoryTitle: TextView = itemView.findViewById(R.id.tvHistoryTitle)
+        val vChatUnreadBadge: View = itemView.findViewById(R.id.vChatUnreadBadge)
     }
 }

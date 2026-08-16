@@ -2634,6 +2634,7 @@ drawable fingerprint_dialog_fp_icon
 drawable ic_alarm
 drawable ic_arrow_down
 drawable ic_bell
+drawable ic_bluetooth
 drawable ic_calendar
 drawable ic_call_end
 drawable ic_camera
@@ -2643,9 +2644,11 @@ drawable ic_clock
 drawable ic_clock_black_24dp
 drawable ic_close
 drawable ic_connections
+drawable ic_earpiece
 drawable ic_edit
 drawable ic_export
 drawable ic_file_document
+drawable ic_headphones
 drawable ic_help
 drawable ic_import
 drawable ic_insights
@@ -2850,6 +2853,7 @@ id btnAlarmGotIt
 id btnAlarmSnooze
 id btnBack
 id btnBackMarketplace
+id btnBackVoice
 id btnCancelEditMessage
 id btnChangeAvatar
 id btnChangeMessageType
@@ -3044,8 +3048,10 @@ id fitToContents
 id fitXY
 id fixed
 id flAiDocBadgeContainer
+id flHamburgerContainer
 id flHeaderNotifications
 id flLogoContainer
+id flMisTouchShield
 id flSplashOverlay
 id flip
 id floating
@@ -3100,6 +3106,7 @@ id ivHistoryIcon
 id ivOptPinIcon
 id ivPreviewThumbnail
 id ivProfilePic
+id ivShieldIcon
 id ivSidebarLogo
 id ivSplashLogo
 id ivTypeSelectedCheck
@@ -3427,6 +3434,7 @@ id tvAlarmTitle
 id tvAttachmentIcon
 id tvAttachmentName
 id tvAttachmentSize
+id tvAudioRouteBadge
 id tvAvatarInitials
 id tvCaseCount
 id tvCaseEstTime
@@ -3536,6 +3544,8 @@ id tvSettingsActiveModelBadge
 id tvSettingsActiveModelName
 id tvSettingsModelIcon
 id tvSettingsTitle
+id tvShieldSubTitle
+id tvShieldTitle
 id tvSpeedScore
 id tvSpeedStars
 id tvStatActiveRetention
@@ -3586,8 +3596,10 @@ id unlabeled
 id up
 id useLogo
 id vBottomGradientOverlay
+id vChatUnreadBadge
 id vHeaderUnreadBadge
 id vLogoPulseRing
+id vSidebarUnreadBadge
 id vTopFadeOverlay
 id vTopGradientOverlay
 id vUnreadDot

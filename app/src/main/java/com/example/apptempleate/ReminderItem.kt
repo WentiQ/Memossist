@@ -59,15 +59,61 @@ data class ReminderItem(
         return sdf.format(Date(eventTimeMillis))
     }
 
+    fun getCalendarDayDifference(): Int {
+        val calNow = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val calEvent = Calendar.getInstance().apply {
+            timeInMillis = eventTimeMillis
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val diffMillis = calEvent.timeInMillis - calNow.timeInMillis
+        return (diffMillis / (1000L * 60 * 60 * 24)).toInt()
+    }
+
+    fun getTimeBasedGreeting(userName: String = "Dinesh"): String {
+        val cal = Calendar.getInstance()
+        val hour = cal.get(Calendar.HOUR_OF_DAY)
+        return when (hour) {
+            in 5..11 -> "Good morning $userName"
+            in 12..16 -> "Good afternoon $userName"
+            in 17..21 -> "Good evening $userName"
+            else -> "Hey $userName"
+        }
+    }
+
     fun getTimeStatusLabel(): String {
         val now = System.currentTimeMillis()
         val diff = eventTimeMillis - now
+
+        if (isCompleted) return "Completed"
+        if (diff < 0) {
+            val pastMinutes = (-diff / 60_000L).coerceAtLeast(1)
+            return when {
+                pastMinutes < 60 -> "${pastMinutes}m ago"
+                pastMinutes < 1440 -> "${pastMinutes / 60}h ago"
+                else -> "${pastMinutes / 1440}d ago"
+            }
+        }
+
         return when {
-            isCompleted -> "Completed"
-            diff < 0 -> "Passed"
-            diff < 3600_000L -> "In ${(diff / 60_000L).coerceAtLeast(1)} mins"
-            diff < 86400_000L -> "In ${diff / 3600_000L} hours"
-            else -> "In ${diff / 86400_000L} days"
+            diff < 60_000L -> "Starting now"
+            diff < 3600_000L -> "In ${(diff / 60_000L).coerceAtLeast(1)}m"
+            diff < 86400_000L -> {
+                val hours = diff / 3600_000L
+                val remainderMins = (diff % 3600_000L) / 60_000L
+                if (remainderMins > 0 && hours < 6) "In ${hours}h ${remainderMins}m" else "In ${hours}h"
+            }
+            else -> {
+                val days = (diff / 86400_000L).coerceAtLeast(1)
+                if (days == 1L) "In 1 day" else "In $days days"
+            }
         }
     }
 
@@ -90,35 +136,67 @@ data class ReminderItem(
     }
 
     fun getHumanoidWorkspaceStatement(userName: String = "Dinesh"): String {
-        val triggerMsg = triggers.firstOrNull { it.humanoidMessage.isNotEmpty() }?.humanoidMessage
-        if (!triggerMsg.isNullOrEmpty()) {
-            return triggerMsg
+        val now = System.currentTimeMillis()
+        val diffMillis = eventTimeMillis - now
+        val diffDays = getCalendarDayDifference()
+        val timeOnly = getFormattedEventTimeOnly()
+        val greeting = getTimeBasedGreeting(userName)
+
+        if (isCompleted) {
+            return "$greeting, '${title}' was marked as completed."
         }
 
-        val now = System.currentTimeMillis()
-        val calNow = Calendar.getInstance().apply { timeInMillis = now }
-        val calEvent = Calendar.getInstance().apply { timeInMillis = eventTimeMillis }
+        if (diffMillis < 0) {
+            return when (diffDays) {
+                0 -> "$greeting, your '${title}' was scheduled for $timeOnly earlier today."
+                -1 -> "$greeting, your '${title}' was scheduled yesterday at $timeOnly."
+                else -> "$greeting, your '${title}' was scheduled for ${getFormattedEventDateTime()}."
+            }
+        }
 
-        val isToday = calNow.get(Calendar.DAY_OF_YEAR) == calEvent.get(Calendar.DAY_OF_YEAR) &&
-                      calNow.get(Calendar.YEAR) == calEvent.get(Calendar.YEAR)
-
-        val timeOnly = getFormattedEventTimeOnly()
-
-        return if (isToday) {
-            "Hey $userName, do you remember today you have $title at $timeOnly?"
-        } else {
-            "Hey $userName, tomorrow you have $title at $timeOnly."
+        return when {
+            // Event in less than 15 minutes
+            diffMillis <= 15 * 60_000L -> {
+                val mins = (diffMillis / 60_000L).coerceAtLeast(1)
+                "🚨 $greeting! '${title}' starts in $mins minute${if (mins > 1) "s" else ""} ($timeOnly)!"
+            }
+            // Event in less than 1 hour
+            diffMillis <= 60 * 60_000L -> {
+                val mins = (diffMillis / 60_000L).coerceAtLeast(1)
+                "$greeting, your '${title}' is coming up in $mins minutes ($timeOnly)!"
+            }
+            // Event later today
+            diffDays == 0 -> {
+                val hours = (diffMillis / 3600_000L).coerceAtLeast(1)
+                "$greeting! Do you remember today you have '${title}' at $timeOnly (in ~$hours hour${if (hours > 1) "s" else ""})?"
+            }
+            // Event tomorrow
+            diffDays == 1 -> {
+                "$greeting! Gentle reminder for tomorrow: You have '${title}' scheduled at $timeOnly."
+            }
+            // Event within next few days of this week
+            diffDays in 2..6 -> {
+                val dayOfWeek = SimpleDateFormat("EEEE", Locale.getDefault()).format(Date(eventTimeMillis))
+                "$greeting! Reminder for this $dayOfWeek: You have '${title}' scheduled at $timeOnly."
+            }
+            // Event on later specific date
+            else -> {
+                val dateStr = SimpleDateFormat("MMM d", Locale.getDefault()).format(Date(eventTimeMillis))
+                "$greeting! Reminder for $dateStr: You have '${title}' scheduled at $timeOnly."
+            }
         }
     }
 
     fun getDayLabel(): String {
-        val now = System.currentTimeMillis()
-        val calNow = Calendar.getInstance().apply { timeInMillis = now }
-        val calEvent = Calendar.getInstance().apply { timeInMillis = eventTimeMillis }
+        val diffDays = getCalendarDayDifference()
+        val timeOnly = getFormattedEventTimeOnly()
 
-        val isToday = calNow.get(Calendar.DAY_OF_YEAR) == calEvent.get(Calendar.DAY_OF_YEAR) &&
-                      calNow.get(Calendar.YEAR) == calEvent.get(Calendar.YEAR)
-
-        return if (isToday) "TODAY ${getFormattedEventTimeOnly()}" else "TOMORROW ${getFormattedEventTimeOnly()}"
+        return when (diffDays) {
+            0 -> "TODAY $timeOnly"
+            1 -> "TOMORROW $timeOnly"
+            -1 -> "YESTERDAY $timeOnly"
+            in 2..6 -> "${SimpleDateFormat("EEE", Locale.getDefault()).format(Date(eventTimeMillis)).uppercase()} $timeOnly"
+            else -> "${SimpleDateFormat("MMM d", Locale.getDefault()).format(Date(eventTimeMillis)).uppercase()} $timeOnly"
+        }
     }
 }

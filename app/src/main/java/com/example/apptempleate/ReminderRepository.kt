@@ -317,13 +317,15 @@ object ReminderRepository {
     fun cancelSystemAlarmsForReminder(context: Context, reminder: ReminderItem) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
         for (trigger in reminder.triggers) {
-            val intent = Intent(context, ReminderReceiver::class.java)
+            val intent = Intent(context, ReminderReceiver::class.java).apply {
+                action = "com.example.apptempleate.ACTION_TRIGGER_REMINDER"
+            }
             val requestCode = trigger.triggerId.hashCode()
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
                 requestCode,
                 intent,
-                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
             if (pendingIntent != null) {
                 alarmManager.cancel(pendingIntent)

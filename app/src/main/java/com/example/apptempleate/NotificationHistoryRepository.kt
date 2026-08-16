@@ -90,12 +90,19 @@ object NotificationHistoryRepository {
     }
 
     fun addNotification(context: Context, notification: NotificationItem) {
-        // Do not record notification if user is currently viewing that particular chat
-        if (AppLifecycleTracker.isAppInForeground && notification.conversationId != null) {
-            val activeConvId = MainActivity.activeConversationId
-            if (activeConvId == notification.conversationId) {
-                return
-            }
+        // STRICT RULE: Only record in notification centre if app is closed, in recent tasks (background),
+        // or phone is slept / screen locked. Do not record if user is actively using the app in foreground.
+        val powerManager = context.getSystemService(Context.POWER_SERVICE) as? android.os.PowerManager
+        val isScreenInteractive = powerManager?.isInteractive ?: true
+        val keyguardManager = context.getSystemService(Context.KEYGUARD_SERVICE) as? android.app.KeyguardManager
+        val isPhoneLocked = keyguardManager?.isKeyguardLocked ?: false
+        val isPhoneSlept = !isScreenInteractive || isPhoneLocked
+
+        val isAppClosedOrBackground = !AppLifecycleTracker.isAppInForeground
+
+        if (!isAppClosedOrBackground && !isPhoneSlept) {
+            // App is active in foreground with screen awake and unlocked -> Do not record in notification centre
+            return
         }
 
         val list = loadLast30DaysNotifications(context)

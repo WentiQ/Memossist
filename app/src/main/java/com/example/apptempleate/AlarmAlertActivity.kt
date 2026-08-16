@@ -106,6 +106,14 @@ class AlarmAlertActivity : AppCompatActivity() {
         }
 
         reminderId = intent.getStringExtra("EXTRA_REMINDER_ID")
+        if (!reminderId.isNullOrBlank()) {
+            val reminder = ReminderRepository.loadAllReminders(this).find { it.id == reminderId }
+            if (reminder == null || !reminder.isActive || reminder.isCompleted) {
+                finish()
+                return
+            }
+        }
+
         val title = intent.getStringExtra("EXTRA_TITLE") ?: "Smart Reminder"
         val message = intent.getStringExtra("EXTRA_MESSAGE") ?: "Hey! You have an upcoming event."
         val eventTime = intent.getLongExtra("EXTRA_EVENT_TIME", System.currentTimeMillis())

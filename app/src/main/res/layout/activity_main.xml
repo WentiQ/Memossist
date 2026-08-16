@@ -44,21 +44,40 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Hamburger Side Menu Button (Floating above top gradient) -->
-        <ImageButton
-            android:id="@+id/btnHamburger"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+        <!-- Hamburger Side Menu Button Container with Red Dot Badge -->
+        <FrameLayout
+            android:id="@+id/flHamburgerContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:background="@drawable/bg_circle_icon_button"
-            android:contentDescription="Open Navigation Menu"
             android:elevation="10dp"
-            android:padding="10dp"
-            android:src="@drawable/ic_menu"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/icon_tint" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/btnHamburger"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_circle_icon_button"
+                android:contentDescription="Open Navigation Menu"
+                android:padding="10dp"
+                android:src="@drawable/ic_menu"
+                app:tint="@color/icon_tint" />
+
+            <!-- Red Dot Unread Indicator for Sidebar Menu Button -->
+            <View
+                android:id="@+id/vSidebarUnreadBadge"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="2dp"
+                android:background="@drawable/bg_circle_icon_button"
+                android:backgroundTint="#EF4444"
+                android:visibility="gone" />
+
+        </FrameLayout>
 
         <!-- Gemini-Style Header Model Selector Pill -->
         <LinearLayout
@@ -73,9 +92,9 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="14dp"
-            app:layout_constraintBottom_toBottomOf="@+id/btnHamburger"
-            app:layout_constraintStart_toEndOf="@+id/btnHamburger"
-            app:layout_constraintTop_toTopOf="@+id/btnHamburger">
+            app:layout_constraintBottom_toBottomOf="@+id/flHamburgerContainer"
+            app:layout_constraintStart_toEndOf="@+id/flHamburgerContainer"
+            app:layout_constraintTop_toTopOf="@+id/flHamburgerContainer">
 
             <TextView
                 android:id="@+id/tvHeaderModelIcon"

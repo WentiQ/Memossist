@@ -19,16 +19,22 @@ class ReminderReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val reminderId = intent.getStringExtra("EXTRA_REMINDER_ID") ?: return
+        val reminder = ReminderRepository.loadAllReminders(context).find { it.id == reminderId }
+        
+        // Strict guard: if reminder was deleted, deactivated, or completed, cancel & drop immediately
+        if (reminder == null || !reminder.isActive || reminder.isCompleted) {
+            return
+        }
+
         val triggerId = intent.getStringExtra("EXTRA_TRIGGER_ID") ?: ""
-        val title = intent.getStringExtra("EXTRA_TITLE") ?: "Smart Reminder"
+        val title = intent.getStringExtra("EXTRA_TITLE") ?: reminder.title
         val message = intent.getStringExtra("EXTRA_MESSAGE") ?: "Hey! You have an upcoming reminder event."
         val deliveryStyle = intent.getStringExtra("EXTRA_DELIVERY_STYLE") ?: "NOTIFICATION"
-        val importance = intent.getStringExtra("EXTRA_IMPORTANCE") ?: "MEDIUM"
-        val eventTime = intent.getLongExtra("EXTRA_EVENT_TIME", System.currentTimeMillis())
-        val reminder = ReminderRepository.loadAllReminders(context).find { it.id == reminderId }
+        val importance = intent.getStringExtra("EXTRA_IMPORTANCE") ?: reminder.importance
+        val eventTime = intent.getLongExtra("EXTRA_EVENT_TIME", reminder.eventTimeMillis)
         val shouldUseFullscreenAlert =
             (deliveryStyle == "FULLSCREEN_ALARM" || deliveryStyle == "CALL_SIMULATION" || importance == "HIGH") &&
-                (reminder?.consecutiveUnansweredFullscreenAlerts ?: 0) < 3
+                reminder.consecutiveUnansweredFullscreenAlerts < 3
 
         if (triggerId.isNotBlank()) {
             ReminderRepository.markTriggerAsFired(context, triggerId)

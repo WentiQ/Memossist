@@ -7,5 +7,6 @@ data class Conversation(
     var title: String,
     var lastUpdated: Long = System.currentTimeMillis(),
     var isPinned: Boolean = false,
+    var hasUnread: Boolean = false,
     val messages: MutableList<ChatMessage> = mutableListOf()
 )

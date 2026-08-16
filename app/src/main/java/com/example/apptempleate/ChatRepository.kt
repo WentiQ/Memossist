@@ -479,6 +479,16 @@ object ChatRepository {
                     isRead = false
                 )
             )
+
+            // Mark conversation as unread if user is not currently viewing this specific conversation
+            if (!targetConvId.isNullOrEmpty() && MainActivity.activeConversationId != targetConvId) {
+                val conversations = loadAllConversations(context)
+                val conv = conversations.find { it.id == targetConvId }
+                if (conv != null) {
+                    conv.hasUnread = true
+                    saveOrUpdateConversation(context, conv)
+                }
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -500,6 +510,7 @@ object ChatRepository {
                     val title = convObj.getString("title")
                     val lastUpdated = convObj.optLong("lastUpdated", System.currentTimeMillis())
                     val isPinned = convObj.optBoolean("isPinned", false)
+                    val hasUnread = convObj.optBoolean("hasUnread", false)
 
                     val messagesList = mutableListOf<ChatMessage>()
                     val msgArray = convObj.optJSONArray("messages") ?: JSONArray()
@@ -535,7 +546,7 @@ object ChatRepository {
                     }
 
                     if (messagesList.isNotEmpty()) {
-                        conversations.add(Conversation(id, title, lastUpdated, isPinned, messagesList))
+                        conversations.add(Conversation(id, title, lastUpdated, isPinned, hasUnread, messagesList))
                     }
                 }
             }
@@ -552,6 +563,7 @@ object ChatRepository {
                         val title = convObj.getString("title")
                         val lastUpdated = convObj.optLong("lastUpdated", System.currentTimeMillis())
                         val isPinned = convObj.optBoolean("isPinned", false)
+                        val hasUnread = convObj.optBoolean("hasUnread", false)
 
                         val messagesList = mutableListOf<ChatMessage>()
                         val msgArray = convObj.optJSONArray("messages") ?: JSONArray()
@@ -583,7 +595,7 @@ object ChatRepository {
                         }
 
                         if (messagesList.isNotEmpty()) {
-                            conversations.add(Conversation(id, title, lastUpdated, isPinned, messagesList))
+                            conversations.add(Conversation(id, title, lastUpdated, isPinned, hasUnread, messagesList))
                         }
                     }
                 } catch (be: Exception) {
@@ -607,6 +619,7 @@ object ChatRepository {
                     put("title", conv.title)
                     put("lastUpdated", conv.lastUpdated)
                     put("isPinned", conv.isPinned)
+                    put("hasUnread", conv.hasUnread)
 
                     val msgArray = JSONArray()
                     for (msg in conv.messages) {
