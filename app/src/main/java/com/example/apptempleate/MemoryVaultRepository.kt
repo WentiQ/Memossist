@@ -172,15 +172,52 @@ object MemoryVaultRepository {
     @Synchronized
     fun deleteMemory(context: Context, memoryId: String) {
         val memories = loadAllMemories(context)
+        val target = memories.find { it.id == memoryId }
         val removed = memories.removeAll { it.id == memoryId }
         if (removed) {
+            target?.let { MemoryStorageManager.cleanupMemoryAttachments(it) }
+            ExperienceDagRepository.removeEdgesForMemory(context, memoryId)
             saveAllMemories(context, memories)
         }
     }
 
     @Synchronized
     fun clearAllMemories(context: Context) {
+        val memories = loadAllMemories(context)
+        for (mem in memories) {
+            MemoryStorageManager.cleanupMemoryAttachments(mem)
+        }
+        ExperienceDagRepository.clearAllEdges(context)
         saveAllMemories(context, emptyList())
+    }
+
+    /**
+     * Checks storage limit and capacity before saving newly extracted memories.
+     * Prunes weakest memories if in AUTO mode, or prompts user in ASK mode.
+     */
+    @Synchronized
+    fun saveExtractedMemoriesWithLimitCheck(
+        context: Context,
+        newMemories: List<MemoryItem>
+    ): MemoryStorageManager.CapacityCheckResult {
+        if (newMemories.isEmpty()) return MemoryStorageManager.CapacityCheckResult.FitsWithoutPruning
+
+        val checkResult = MemoryStorageManager.checkCapacityAndPlan(context, newMemories)
+        when (checkResult) {
+            is MemoryStorageManager.CapacityCheckResult.FitsWithoutPruning,
+            is MemoryStorageManager.CapacityCheckResult.AutoPruned -> {
+                for (mem in newMemories) {
+                    saveMemory(context, mem)
+                }
+            }
+            is MemoryStorageManager.CapacityCheckResult.NeedsConfirmation -> {
+                // Pending user approval; memories will be saved upon confirmation
+            }
+            is MemoryStorageManager.CapacityCheckResult.CannotFit -> {
+                android.util.Log.w("MemoryVaultRepository", "Cannot fit new memories: ${checkResult.reason}")
+            }
+        }
+        return checkResult
     }
 
     @Synchronized
@@ -288,6 +325,7 @@ object MemoryVaultRepository {
 
         val now = System.currentTimeMillis()
         val keptMemories = mutableListOf<MemoryItem>()
+        val prunedMemoryIds = mutableSetOf<String>()
         var prunedCount = 0
 
         for (item in memories) {
@@ -295,6 +333,8 @@ object MemoryVaultRepository {
             val updated = item.copy(strength = currentStrength)
             if (MemoryDecayCalculator.shouldForget(currentStrength)) {
                 prunedCount++
+                prunedMemoryIds.add(item.id)
+                MemoryStorageManager.cleanupMemoryAttachments(item)
                 MemoryDecayCalculator.logDebugInfo(updated, now, "Periodic Decay: PRUNED (Strength < 0.15)")
             } else {
                 keptMemories.add(updated)
@@ -304,6 +344,7 @@ object MemoryVaultRepository {
 
         if (prunedCount > 0) {
             incrementForgottenMemoriesCount(context, prunedCount)
+            ExperienceDagRepository.removeEdgesForMemories(context, prunedMemoryIds)
         }
 
         saveAllMemories(context, keptMemories)

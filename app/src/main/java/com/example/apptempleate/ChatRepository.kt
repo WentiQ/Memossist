@@ -222,7 +222,7 @@ object ChatRepository {
             if (llmResult.extractedInformativeFacts.isNotEmpty() || classification.messageType in listOf(MessageType.TELLING, MessageType.MIXED, MessageType.REMINDER_AND_TELLING, MessageType.REMINDER_AND_MIXED)) {
                 currentStep++
                 updateLiveStep("Step $currentStep/$totalSteps: Saving facts to Memory Vault…")
-                if (llmResult.extractedInformativeFacts.isNotEmpty()) {
+                    val newMemoriesList = mutableListOf<MemoryItem>()
                     val now = System.currentTimeMillis()
                     for (fact in llmResult.extractedInformativeFacts) {
                         val expId = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}"
@@ -253,10 +253,22 @@ object ChatRepository {
                             baseStrength = initialStrength,
                             strength = initialStrength
                         )
-                        MemoryVaultRepository.saveMemory(context, memoryItem)
-                        factsToEvaluate.add(Pair(expId, fact))
+                        newMemoriesList.add(memoryItem)
                     }
-                }
+
+                    val saveResult = MemoryVaultRepository.saveExtractedMemoriesWithLimitCheck(context, newMemoriesList)
+                    when (saveResult) {
+                        is MemoryStorageManager.CapacityCheckResult.FitsWithoutPruning,
+                        is MemoryStorageManager.CapacityCheckResult.AutoPruned -> {
+                            newMemoriesList.forEach { factsToEvaluate.add(Pair(it.id, it.message)) }
+                        }
+                        is MemoryStorageManager.CapacityCheckResult.NeedsConfirmation -> {
+                            android.util.Log.i("ChatRepository", "Memory limit reached: awaiting user confirmation to prune memories.")
+                        }
+                        is MemoryStorageManager.CapacityCheckResult.CannotFit -> {
+                            android.util.Log.w("ChatRepository", "Memory limit reached: cannot fit new memories (${saveResult.reason}).")
+                        }
+                    }
             }
 
             // Extract and set Smart Reminders if present in user message
@@ -778,6 +790,7 @@ object ChatRepository {
 
         val now = System.currentTimeMillis()
         val factsToEvaluate = mutableListOf<Pair<String, String>>()
+        val newMemoriesList = mutableListOf<MemoryItem>()
         llmResult.extractedInformativeFacts.forEach { fact ->
             val expId = "EXP-${UUID.randomUUID().toString().take(6).uppercase()}"
             val initialStrength = MemoryDecayCalculator.calculateInitialStrength(
@@ -785,7 +798,7 @@ object ChatRepository {
                 confidence = MemoryDecayConfig.DEFAULT_MIGRATION_CONFIDENCE,
                 stability = MemoryDecayConfig.DEFAULT_MIGRATION_STABILITY
             )
-            MemoryVaultRepository.saveMemory(context, MemoryItem(
+            val item = MemoryItem(
                 id = expId,
                 title = fact.take(32),
                 snippet = fact.take(70),
@@ -804,8 +817,22 @@ object ChatRepository {
                 lastReinforcedAt = now,
                 baseStrength = initialStrength,
                 strength = initialStrength
-            ))
-            factsToEvaluate.add(Pair(expId, fact))
+            )
+            newMemoriesList.add(item)
+        }
+
+        val saveResult = MemoryVaultRepository.saveExtractedMemoriesWithLimitCheck(context, newMemoriesList)
+        when (saveResult) {
+            is MemoryStorageManager.CapacityCheckResult.FitsWithoutPruning,
+            is MemoryStorageManager.CapacityCheckResult.AutoPruned -> {
+                newMemoriesList.forEach { factsToEvaluate.add(Pair(it.id, it.message)) }
+            }
+            is MemoryStorageManager.CapacityCheckResult.NeedsConfirmation -> {
+                android.util.Log.i("ChatRepository", "Memory limit reached: awaiting user confirmation to prune memories.")
+            }
+            is MemoryStorageManager.CapacityCheckResult.CannotFit -> {
+                android.util.Log.w("ChatRepository", "Memory limit reached: cannot fit new memories (${saveResult.reason}).")
+            }
         }
 
         if (factsToEvaluate.isNotEmpty()) {

@@ -32,11 +32,9 @@ class WorkspaceRemindersAdapter(
     override fun getItemCount(): Int = reminderList.size
 
     inner class WorkspaceReminderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvWsReminderIcon: TextView = itemView.findViewById(R.id.tvWsReminderIcon)
         private val tvWsReminderStatement: TextView = itemView.findViewById(R.id.tvWsReminderStatement)
 
         fun bind(item: ReminderItem) {
-            tvWsReminderIcon.text = "🤖"
             tvWsReminderStatement.text = item.getHumanoidWorkspaceStatement(userName)
 
             itemView.setOnClickListener {

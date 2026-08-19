@@ -75,7 +75,7 @@
 32-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:25:22-78
 33
 34    <application
-34-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:23:5-154:19
+34-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:23:5-136:19
 35        android:name="com.example.apptempleate.MemossistApp"
 35-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:24:9-37
 36        android:allowBackup="true"
@@ -99,431 +99,394 @@
 46        android:theme="@style/Theme.AppTempeLate" >
 46-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:32:9-50
 47        <activity
-47-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:34:9-38:57
+47-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:34:9-43:20
 48            android:name="com.example.apptempleate.MainActivity"
 48-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:35:13-41
 49            android:exported="true"
 49-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:36:13-36
 50            android:theme="@style/Theme.AppTempeLate"
 50-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:38:13-54
-51            android:windowSoftInputMode="adjustResize" />
+51            android:windowSoftInputMode="adjustResize" >
 51-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:37:13-55
-52
-53        <activity-alias
-53-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:54:9-66:26
-54            android:name="com.example.apptempleate.MainActivityDark"
-54-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:55:13-45
-55            android:enabled="false"
-55-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:58:13-36
-56            android:exported="true"
-56-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:57:13-36
-57            android:icon="@mipmap/ic_launcher_dark"
-57-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:59:13-52
-58            android:label="Memossist"
-58-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:61:13-38
-59            android:roundIcon="@mipmap/ic_launcher_round_dark"
-59-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:60:13-63
-60            android:targetActivity="com.example.apptempleate.MainActivity" >
-60-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:56:13-51
-61            <intent-filter>
-61-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:48:13-51:29
-62                <action android:name="android.intent.action.MAIN" />
-62-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:49:17-69
-62-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:49:25-66
-63
-64                <category android:name="android.intent.category.LAUNCHER" />
-64-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:50:17-77
-64-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:50:27-74
-65            </intent-filter>
-66        </activity-alias>
-67        <activity-alias
-67-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:40:9-52:26
-68            android:name="com.example.apptempleate.MainActivityLight"
-68-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:41:13-46
-69            android:enabled="true"
-69-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:44:13-35
-70            android:exported="true"
-70-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:43:13-36
-71            android:icon="@mipmap/ic_launcher_light"
-71-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:45:13-53
-72            android:label="Memossist"
-72-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:47:13-38
-73            android:roundIcon="@mipmap/ic_launcher_round_light"
-73-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:46:13-64
-74            android:targetActivity="com.example.apptempleate.MainActivity" >
-74-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:42:13-51
-75            <intent-filter>
-75-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:48:13-51:29
-76                <action android:name="android.intent.action.MAIN" />
-76-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:49:17-69
-76-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:49:25-66
-77
-78                <category android:name="android.intent.category.LAUNCHER" />
-78-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:50:17-77
-78-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:50:27-74
-79            </intent-filter>
-80        </activity-alias>
-81
-82        <activity
-82-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:68:9-71:57
-83            android:name="com.example.apptempleate.VoiceConversationActivity"
-83-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:69:13-54
-84            android:exported="false"
-84-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:70:13-37
-85            android:theme="@style/Theme.AppTempeLate" />
-85-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:71:13-54
-86        <activity
-86-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:73:9-76:57
-87            android:name="com.example.apptempleate.OnboardingActivity"
-87-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:74:13-47
-88            android:exported="false"
-88-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:75:13-37
-89            android:theme="@style/Theme.AppTempeLate" />
-89-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:76:13-54
-90        <activity
-90-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:78:9-81:57
-91            android:name="com.example.apptempleate.RemindersActivity"
-91-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:79:13-46
-92            android:exported="false"
-92-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:80:13-37
-93            android:theme="@style/Theme.AppTempeLate" />
-93-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:81:13-54
-94        <activity
-94-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:83:9-88:57
-95            android:name="com.example.apptempleate.AlarmAlertActivity"
-95-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:84:13-47
-96            android:exported="false"
-96-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:85:13-37
-97            android:showWhenLocked="true"
-97-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:86:13-42
-98            android:theme="@style/Theme.AppTempeLate"
-98-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:88:13-54
-99            android:turnScreenOn="true" />
-99-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:87:13-40
+52            <intent-filter>
+52-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:39:13-42:29
+53                <action android:name="android.intent.action.MAIN" />
+53-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:40:17-69
+53-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:40:25-66
+54
+55                <category android:name="android.intent.category.LAUNCHER" />
+55-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:41:17-77
+55-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:41:27-74
+56            </intent-filter>
+57        </activity>
+58        <activity
+58-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:45:9-48:57
+59            android:name="com.example.apptempleate.VoiceConversationActivity"
+59-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:46:13-54
+60            android:exported="false"
+60-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:47:13-37
+61            android:theme="@style/Theme.AppTempeLate" />
+61-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:48:13-54
+62        <activity
+62-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:50:9-53:57
+63            android:name="com.example.apptempleate.OnboardingActivity"
+63-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:51:13-47
+64            android:exported="false"
+64-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:52:13-37
+65            android:theme="@style/Theme.AppTempeLate" />
+65-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:53:13-54
+66        <activity
+66-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:55:9-58:57
+67            android:name="com.example.apptempleate.RemindersActivity"
+67-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:56:13-46
+68            android:exported="false"
+68-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:57:13-37
+69            android:theme="@style/Theme.AppTempeLate" />
+69-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:58:13-54
+70        <activity
+70-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:60:9-65:57
+71            android:name="com.example.apptempleate.AlarmAlertActivity"
+71-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:61:13-47
+72            android:exported="false"
+72-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:62:13-37
+73            android:showWhenLocked="true"
+73-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:63:13-42
+74            android:theme="@style/Theme.AppTempeLate"
+74-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:65:13-54
+75            android:turnScreenOn="true" />
+75-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:64:13-40
+76        <activity
+76-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:67:9-70:57
+77            android:name="com.example.apptempleate.MemoryVaultActivity"
+77-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:68:13-48
+78            android:exported="false"
+78-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:69:13-37
+79            android:theme="@style/Theme.AppTempeLate" />
+79-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:70:13-54
+80        <activity
+80-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:72:9-75:57
+81            android:name="com.example.apptempleate.CognitiveInsightsActivity"
+81-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:73:13-54
+82            android:exported="false"
+82-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:74:13-37
+83            android:theme="@style/Theme.AppTempeLate" />
+83-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:75:13-54
+84        <activity
+84-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:77:9-80:57
+85            android:name="com.example.apptempleate.ConnectionsActivity"
+85-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:78:13-48
+86            android:exported="false"
+86-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:79:13-37
+87            android:theme="@style/Theme.AppTempeLate" />
+87-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:80:13-54
+88        <activity
+88-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:82:9-85:57
+89            android:name="com.example.apptempleate.SettingsActivity"
+89-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:83:13-45
+90            android:exported="false"
+90-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:84:13-37
+91            android:theme="@style/Theme.AppTempeLate" />
+91-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:85:13-54
+92        <activity
+92-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:87:9-90:57
+93            android:name="com.example.apptempleate.MemoryCleanupActivity"
+93-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:88:13-50
+94            android:exported="false"
+94-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:89:13-37
+95            android:theme="@style/Theme.AppTempeLate" />
+95-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:90:13-54
+96        <activity
+96-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:92:9-95:57
+97            android:name="com.example.apptempleate.ModelMarketplaceActivity"
+97-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:93:13-53
+98            android:exported="false"
+98-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:94:13-37
+99            android:theme="@style/Theme.AppTempeLate" />
+99-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:95:13-54
 100        <activity
-100-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:90:9-93:57
-101            android:name="com.example.apptempleate.MemoryVaultActivity"
-101-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:91:13-48
+100-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:97:9-100:57
+101            android:name="com.example.apptempleate.DeviceHelpActivity"
+101-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:98:13-47
 102            android:exported="false"
-102-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:92:13-37
+102-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:99:13-37
 103            android:theme="@style/Theme.AppTempeLate" />
-103-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:93:13-54
-104        <activity
-104-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:95:9-98:57
-105            android:name="com.example.apptempleate.CognitiveInsightsActivity"
-105-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:96:13-54
-106            android:exported="false"
-106-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:97:13-37
-107            android:theme="@style/Theme.AppTempeLate" />
-107-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:98:13-54
-108        <activity
-108-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:100:9-103:57
-109            android:name="com.example.apptempleate.ConnectionsActivity"
-109-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:101:13-48
-110            android:exported="false"
-110-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:102:13-37
-111            android:theme="@style/Theme.AppTempeLate" />
-111-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:103:13-54
-112        <activity
-112-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:105:9-108:57
-113            android:name="com.example.apptempleate.SettingsActivity"
-113-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:106:13-45
-114            android:exported="false"
-114-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:107:13-37
-115            android:theme="@style/Theme.AppTempeLate" />
-115-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:108:13-54
-116        <activity
-116-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:110:9-113:57
-117            android:name="com.example.apptempleate.ModelMarketplaceActivity"
-117-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:111:13-53
-118            android:exported="false"
-118-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:112:13-37
-119            android:theme="@style/Theme.AppTempeLate" />
-119-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:113:13-54
-120        <activity
-120-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:115:9-118:57
-121            android:name="com.example.apptempleate.DeviceHelpActivity"
-121-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:116:13-47
-122            android:exported="false"
-122-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:117:13-37
-123            android:theme="@style/Theme.AppTempeLate" />
-123-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:118:13-54
-124
-125        <receiver
-125-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:120:9-122:40
-126            android:name="com.example.apptempleate.ReminderReceiver"
-126-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:121:13-45
-127            android:exported="false" />
-127-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:122:13-37
-128
-129        <service
-129-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:124:9-128:58
-130            android:name="com.example.apptempleate.VoiceForegroundService"
-130-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:125:13-51
-131            android:enabled="true"
-131-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:126:13-35
-132            android:exported="false"
-132-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:127:13-37
-133            android:foregroundServiceType="microphone" />
-133-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:128:13-55
-134        <service
-134-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:130:9-136:56
-135            android:name="com.example.apptempleate.ChatAiForegroundService"
-135-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:131:13-52
-136            android:enabled="true"
-136-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:132:13-35
-137            android:exported="false"
-137-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:133:13-37
-138            android:foregroundServiceType="dataSync"
-138-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:136:13-53
-139            android:process=":chat_inference"
-139-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:134:13-46
-140            android:stopWithTask="false" />
-140-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:135:13-41
-141        <service
-141-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:138:9-142:56
-142            android:name="com.example.apptempleate.ModelDownloadForegroundService"
-142-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:139:13-59
-143            android:enabled="true"
-143-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:140:13-35
-144            android:exported="false"
-144-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:141:13-37
-145            android:foregroundServiceType="dataSync" />
-145-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:142:13-53
-146
-147        <provider
-147-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:144:9-152:20
-148            android:name="androidx.core.content.FileProvider"
-148-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:145:13-62
-149            android:authorities="com.example.apptempleate.fileprovider"
-149-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:146:13-72
-150            android:exported="false"
-150-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:147:13-37
-151            android:grantUriPermissions="true" >
-151-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:148:13-47
-152            <meta-data
-152-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:149:13-151:54
-153                android:name="android.support.FILE_PROVIDER_PATHS"
-153-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:150:17-67
-154                android:resource="@xml/file_paths" />
-154-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:151:17-51
-155        </provider>
-156        <provider
-156-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:29:9-37:20
-157            android:name="androidx.startup.InitializationProvider"
-157-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:30:13-67
-158            android:authorities="com.example.apptempleate.androidx-startup"
-158-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:31:13-68
-159            android:exported="false" >
-159-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:32:13-37
-160            <meta-data
-160-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:34:13-36:52
-161                android:name="androidx.work.WorkManagerInitializer"
-161-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:35:17-68
-162                android:value="androidx.startup" />
-162-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:36:17-49
-163            <meta-data
-163-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
-164                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-164-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:30:17-75
-165                android:value="androidx.startup" />
-165-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:31:17-49
-166            <meta-data
-166-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\dines\.gradle\caches\transforms-3\cc28b3cef285540baa54cd92fdd92fcf\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
-167                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-167-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\dines\.gradle\caches\transforms-3\cc28b3cef285540baa54cd92fdd92fcf\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
-168                android:value="androidx.startup" />
-168-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\dines\.gradle\caches\transforms-3\cc28b3cef285540baa54cd92fdd92fcf\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
-169        </provider>
-170
-171        <service
-171-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:39:9-45:35
-172            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
-172-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:40:13-88
-173            android:directBootAware="false"
-173-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:41:13-44
-174            android:enabled="@bool/enable_system_alarm_service_default"
-174-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:42:13-72
-175            android:exported="false" />
-175-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:43:13-37
-176        <service
-176-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:46:9-52:35
-177            android:name="androidx.work.impl.background.systemjob.SystemJobService"
-177-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:47:13-84
-178            android:directBootAware="false"
-178-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:48:13-44
-179            android:enabled="@bool/enable_system_job_service_default"
-179-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:49:13-70
-180            android:exported="true"
-180-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:50:13-36
-181            android:permission="android.permission.BIND_JOB_SERVICE" />
-181-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:51:13-69
-182        <service
-182-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:53:9-59:35
-183            android:name="androidx.work.impl.foreground.SystemForegroundService"
-183-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:54:13-81
-184            android:directBootAware="false"
-184-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:55:13-44
-185            android:enabled="@bool/enable_system_foreground_service_default"
-185-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:56:13-77
-186            android:exported="false" />
-186-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:57:13-37
-187
-188        <receiver
-188-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:61:9-66:35
-189            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
-189-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:62:13-88
-190            android:directBootAware="false"
-190-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:63:13-44
-191            android:enabled="true"
-191-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:64:13-35
-192            android:exported="false" />
-192-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:65:13-37
+103-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:100:13-54
+104
+105        <receiver
+105-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:102:9-104:40
+106            android:name="com.example.apptempleate.ReminderReceiver"
+106-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:103:13-45
+107            android:exported="false" />
+107-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:104:13-37
+108
+109        <service
+109-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:106:9-110:58
+110            android:name="com.example.apptempleate.VoiceForegroundService"
+110-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:107:13-51
+111            android:enabled="true"
+111-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:108:13-35
+112            android:exported="false"
+112-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:109:13-37
+113            android:foregroundServiceType="microphone" />
+113-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:110:13-55
+114        <service
+114-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:112:9-118:56
+115            android:name="com.example.apptempleate.ChatAiForegroundService"
+115-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:113:13-52
+116            android:enabled="true"
+116-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:114:13-35
+117            android:exported="false"
+117-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:115:13-37
+118            android:foregroundServiceType="dataSync"
+118-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:118:13-53
+119            android:process=":chat_inference"
+119-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:116:13-46
+120            android:stopWithTask="false" />
+120-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:117:13-41
+121        <service
+121-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:120:9-124:56
+122            android:name="com.example.apptempleate.ModelDownloadForegroundService"
+122-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:121:13-59
+123            android:enabled="true"
+123-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:122:13-35
+124            android:exported="false"
+124-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:123:13-37
+125            android:foregroundServiceType="dataSync" />
+125-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:124:13-53
+126
+127        <provider
+127-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:126:9-134:20
+128            android:name="androidx.core.content.FileProvider"
+128-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:127:13-62
+129            android:authorities="com.example.apptempleate.fileprovider"
+129-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:128:13-72
+130            android:exported="false"
+130-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:129:13-37
+131            android:grantUriPermissions="true" >
+131-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:130:13-47
+132            <meta-data
+132-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:131:13-133:54
+133                android:name="android.support.FILE_PROVIDER_PATHS"
+133-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:132:17-67
+134                android:resource="@xml/file_paths" />
+134-->C:\Users\dines\Documents\01-WORK\NOEON(The 1st AB)\Projects\App\Memossist\app\src\main\AndroidManifest.xml:133:17-51
+135        </provider>
+136        <provider
+136-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:29:9-37:20
+137            android:name="androidx.startup.InitializationProvider"
+137-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:30:13-67
+138            android:authorities="com.example.apptempleate.androidx-startup"
+138-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:31:13-68
+139            android:exported="false" >
+139-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:32:13-37
+140            <meta-data
+140-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:34:13-36:52
+141                android:name="androidx.work.WorkManagerInitializer"
+141-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:35:17-68
+142                android:value="androidx.startup" />
+142-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:36:17-49
+143            <meta-data
+143-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+144                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+144-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:30:17-75
+145                android:value="androidx.startup" />
+145-->[androidx.emoji2:emoji2:1.2.0] C:\Users\dines\.gradle\caches\transforms-3\f0a2bc0d6fe9b631b3bc81797f835a9c\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:31:17-49
+146            <meta-data
+146-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\dines\.gradle\caches\transforms-3\cc28b3cef285540baa54cd92fdd92fcf\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
+147                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+147-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\dines\.gradle\caches\transforms-3\cc28b3cef285540baa54cd92fdd92fcf\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
+148                android:value="androidx.startup" />
+148-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\dines\.gradle\caches\transforms-3\cc28b3cef285540baa54cd92fdd92fcf\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
+149        </provider>
+150
+151        <service
+151-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:39:9-45:35
+152            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
+152-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:40:13-88
+153            android:directBootAware="false"
+153-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:41:13-44
+154            android:enabled="@bool/enable_system_alarm_service_default"
+154-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:42:13-72
+155            android:exported="false" />
+155-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:43:13-37
+156        <service
+156-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:46:9-52:35
+157            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+157-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:47:13-84
+158            android:directBootAware="false"
+158-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:48:13-44
+159            android:enabled="@bool/enable_system_job_service_default"
+159-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:49:13-70
+160            android:exported="true"
+160-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:50:13-36
+161            android:permission="android.permission.BIND_JOB_SERVICE" />
+161-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:51:13-69
+162        <service
+162-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:53:9-59:35
+163            android:name="androidx.work.impl.foreground.SystemForegroundService"
+163-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:54:13-81
+164            android:directBootAware="false"
+164-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:55:13-44
+165            android:enabled="@bool/enable_system_foreground_service_default"
+165-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:56:13-77
+166            android:exported="false" />
+166-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:57:13-37
+167
+168        <receiver
+168-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:61:9-66:35
+169            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
+169-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:62:13-88
+170            android:directBootAware="false"
+170-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:63:13-44
+171            android:enabled="true"
+171-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:64:13-35
+172            android:exported="false" />
+172-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:65:13-37
+173        <receiver
+173-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:67:9-77:20
+174            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy"
+174-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:68:13-106
+175            android:directBootAware="false"
+175-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:69:13-44
+176            android:enabled="false"
+176-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:70:13-36
+177            android:exported="false" >
+177-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:71:13-37
+178            <intent-filter>
+178-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:73:13-76:29
+179                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+179-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:74:17-87
+179-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:74:25-84
+180                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+180-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:75:17-90
+180-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:75:25-87
+181            </intent-filter>
+182        </receiver>
+183        <receiver
+183-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:78:9-88:20
+184            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy"
+184-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:79:13-104
+185            android:directBootAware="false"
+185-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:80:13-44
+186            android:enabled="false"
+186-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:81:13-36
+187            android:exported="false" >
+187-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:82:13-37
+188            <intent-filter>
+188-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:84:13-87:29
+189                <action android:name="android.intent.action.BATTERY_OKAY" />
+189-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:85:17-77
+189-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:85:25-74
+190                <action android:name="android.intent.action.BATTERY_LOW" />
+190-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:86:17-76
+190-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:86:25-73
+191            </intent-filter>
+192        </receiver>
 193        <receiver
-193-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:67:9-77:20
-194            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy"
-194-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:68:13-106
+193-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:89:9-99:20
+194            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy"
+194-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:90:13-104
 195            android:directBootAware="false"
-195-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:69:13-44
+195-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:91:13-44
 196            android:enabled="false"
-196-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:70:13-36
+196-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:92:13-36
 197            android:exported="false" >
-197-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:71:13-37
+197-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:93:13-37
 198            <intent-filter>
-198-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:73:13-76:29
-199                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
-199-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:74:17-87
-199-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:74:25-84
-200                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
-200-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:75:17-90
-200-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:75:25-87
+198-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:95:13-98:29
+199                <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
+199-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:96:17-83
+199-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:96:25-80
+200                <action android:name="android.intent.action.DEVICE_STORAGE_OK" />
+200-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:97:17-82
+200-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:97:25-79
 201            </intent-filter>
 202        </receiver>
 203        <receiver
-203-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:78:9-88:20
-204            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy"
-204-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:79:13-104
+203-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:100:9-109:20
+204            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy"
+204-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:101:13-103
 205            android:directBootAware="false"
-205-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:80:13-44
+205-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:102:13-44
 206            android:enabled="false"
-206-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:81:13-36
+206-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:103:13-36
 207            android:exported="false" >
-207-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:82:13-37
+207-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:104:13-37
 208            <intent-filter>
-208-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:84:13-87:29
-209                <action android:name="android.intent.action.BATTERY_OKAY" />
-209-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:85:17-77
-209-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:85:25-74
-210                <action android:name="android.intent.action.BATTERY_LOW" />
-210-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:86:17-76
-210-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:86:25-73
-211            </intent-filter>
-212        </receiver>
-213        <receiver
-213-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:89:9-99:20
-214            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy"
-214-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:90:13-104
-215            android:directBootAware="false"
-215-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:91:13-44
-216            android:enabled="false"
-216-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:92:13-36
-217            android:exported="false" >
-217-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:93:13-37
-218            <intent-filter>
-218-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:95:13-98:29
-219                <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
-219-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:96:17-83
-219-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:96:25-80
-220                <action android:name="android.intent.action.DEVICE_STORAGE_OK" />
-220-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:97:17-82
-220-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:97:25-79
+208-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:106:13-108:29
+209                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+209-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:107:17-79
+209-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:107:25-76
+210            </intent-filter>
+211        </receiver>
+212        <receiver
+212-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:110:9-121:20
+213            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+213-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:111:13-88
+214            android:directBootAware="false"
+214-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:112:13-44
+215            android:enabled="false"
+215-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:113:13-36
+216            android:exported="false" >
+216-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:114:13-37
+217            <intent-filter>
+217-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:116:13-120:29
+218                <action android:name="android.intent.action.BOOT_COMPLETED" />
+218-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:117:17-79
+218-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:117:25-76
+219                <action android:name="android.intent.action.TIME_SET" />
+219-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:118:17-73
+219-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:118:25-70
+220                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+220-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:119:17-81
+220-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:119:25-78
 221            </intent-filter>
 222        </receiver>
 223        <receiver
-223-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:100:9-109:20
-224            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy"
-224-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:101:13-103
+223-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:122:9-131:20
+224            android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver"
+224-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:123:13-99
 225            android:directBootAware="false"
-225-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:102:13-44
-226            android:enabled="false"
-226-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:103:13-36
+225-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:124:13-44
+226            android:enabled="@bool/enable_system_alarm_service_default"
+226-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:125:13-72
 227            android:exported="false" >
-227-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:104:13-37
+227-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:126:13-37
 228            <intent-filter>
-228-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:106:13-108:29
-229                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-229-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:107:17-79
-229-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:107:25-76
+228-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:128:13-130:29
+229                <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies" />
+229-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:129:17-98
+229-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:129:25-95
 230            </intent-filter>
 231        </receiver>
 232        <receiver
-232-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:110:9-121:20
-233            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
-233-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:111:13-88
+232-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:132:9-142:20
+233            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
+233-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:133:13-78
 234            android:directBootAware="false"
-234-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:112:13-44
-235            android:enabled="false"
-235-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:113:13-36
-236            android:exported="false" >
-236-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:114:13-37
-237            <intent-filter>
-237-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:116:13-120:29
-238                <action android:name="android.intent.action.BOOT_COMPLETED" />
-238-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:117:17-79
-238-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:117:25-76
-239                <action android:name="android.intent.action.TIME_SET" />
-239-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:118:17-73
-239-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:118:25-70
-240                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
-240-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:119:17-81
-240-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:119:25-78
-241            </intent-filter>
-242        </receiver>
-243        <receiver
-243-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:122:9-131:20
-244            android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver"
-244-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:123:13-99
-245            android:directBootAware="false"
-245-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:124:13-44
-246            android:enabled="@bool/enable_system_alarm_service_default"
-246-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:125:13-72
-247            android:exported="false" >
-247-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:126:13-37
-248            <intent-filter>
-248-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:128:13-130:29
-249                <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies" />
-249-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:129:17-98
-249-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:129:25-95
-250            </intent-filter>
-251        </receiver>
-252        <receiver
-252-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:132:9-142:20
-253            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
-253-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:133:13-78
-254            android:directBootAware="false"
-254-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:134:13-44
-255            android:enabled="true"
-255-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:135:13-35
-256            android:exported="true"
-256-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:136:13-36
-257            android:permission="android.permission.DUMP" >
-257-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:137:13-57
-258            <intent-filter>
-258-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:139:13-141:29
-259                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
-259-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:140:17-88
-259-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:140:25-85
-260            </intent-filter>
-261        </receiver>
-262
-263        <service
-263-->[androidx.room:room-runtime:2.5.0] C:\Users\dines\.gradle\caches\transforms-3\51bb1a80054cc96405e1ba76b76354f4\transformed\room-runtime-2.5.0\AndroidManifest.xml:24:9-28:63
-264            android:name="androidx.room.MultiInstanceInvalidationService"
-264-->[androidx.room:room-runtime:2.5.0] C:\Users\dines\.gradle\caches\transforms-3\51bb1a80054cc96405e1ba76b76354f4\transformed\room-runtime-2.5.0\AndroidManifest.xml:25:13-74
-265            android:directBootAware="true"
-265-->[androidx.room:room-runtime:2.5.0] C:\Users\dines\.gradle\caches\transforms-3\51bb1a80054cc96405e1ba76b76354f4\transformed\room-runtime-2.5.0\AndroidManifest.xml:26:13-43
-266            android:exported="false" />
-266-->[androidx.room:room-runtime:2.5.0] C:\Users\dines\.gradle\caches\transforms-3\51bb1a80054cc96405e1ba76b76354f4\transformed\room-runtime-2.5.0\AndroidManifest.xml:27:13-37
-267    </application>
-268
-269</manifest>
+234-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:134:13-44
+235            android:enabled="true"
+235-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:135:13-35
+236            android:exported="true"
+236-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:136:13-36
+237            android:permission="android.permission.DUMP" >
+237-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:137:13-57
+238            <intent-filter>
+238-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:139:13-141:29
+239                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
+239-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:140:17-88
+239-->[androidx.work:work-runtime:2.8.1] C:\Users\dines\.gradle\caches\transforms-3\41d3bf9f45de3b462c086aba56b54b31\transformed\work-runtime-2.8.1\AndroidManifest.xml:140:25-85
+240            </intent-filter>
+241        </receiver>
+242
+243        <service
+243-->[androidx.room:room-runtime:2.5.0] C:\Users\dines\.gradle\caches\transforms-3\51bb1a80054cc96405e1ba76b76354f4\transformed\room-runtime-2.5.0\AndroidManifest.xml:24:9-28:63
+244            android:name="androidx.room.MultiInstanceInvalidationService"
+244-->[androidx.room:room-runtime:2.5.0] C:\Users\dines\.gradle\caches\transforms-3\51bb1a80054cc96405e1ba76b76354f4\transformed\room-runtime-2.5.0\AndroidManifest.xml:25:13-74
+245            android:directBootAware="true"
+245-->[androidx.room:room-runtime:2.5.0] C:\Users\dines\.gradle\caches\transforms-3\51bb1a80054cc96405e1ba76b76354f4\transformed\room-runtime-2.5.0\AndroidManifest.xml:26:13-43
+246            android:exported="false" />
+246-->[androidx.room:room-runtime:2.5.0] C:\Users\dines\.gradle\caches\transforms-3\51bb1a80054cc96405e1ba76b76354f4\transformed\room-runtime-2.5.0\AndroidManifest.xml:27:13-37
+247    </application>
+248
+249</manifest>

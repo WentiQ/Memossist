@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_rounded"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Configure Memory Limit"
+        android:textColor="@color/text_primary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:letterSpacing="-0.01" />
+
+    <!-- Subtitle / Explanation -->
+    <TextView
+        android:id="@+id/tvDialogLimitExplanation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="Set a memory capacity limit for Memossist. By default, it uses available device storage."
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp"
+        android:lineSpacingExtra="2dp" />
+
+    <!-- Mode Selector: Unlimited vs Custom Limit -->
+    <RadioGroup
+        android:id="@+id/rgLimitMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/rbUnlimited"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Unlimited (Default: Phone Free Storage)"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:paddingStart="8dp" />
+
+        <RadioButton
+            android:id="@+id/rbCustom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Custom Memory Limit"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:paddingStart="8dp" />
+
+    </RadioGroup>
+
+    <!-- Custom Input Container (visible when Custom is selected) -->
+    <LinearLayout
+        android:id="@+id/llCustomLimitInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="vertical">
+
+        <!-- Input row with unit selector -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_gemini_chat_box"
+                android:gravity="center_vertical"
+                android:minHeight="48dp"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="4dp">
+
+                <EditText
+                    android:id="@+id/etLimitValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:hint="e.g. 500"
+                    android:inputType="numberDecimal"
+                    android:singleLine="true"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_hint"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <Spinner
+                android:id="@+id/spLimitUnit"
+                android:layout_width="96dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/bg_gemini_chat_box"
+                android:paddingHorizontal="8dp" />
+
+        </LinearLayout>
+
+        <!-- Dynamic Validation Text -->
+        <TextView
+            android:id="@+id/tvLimitValidation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Limit cannot exceed phone available storage."
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <!-- Storage Stats Summary Box -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_metallic_card"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/tvDialogCurrentVaultUsage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vault Usage: --"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvDialogDeviceFreeStorage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Device Free Space: --"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvDialogMaxAllowableLimit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Max Allowable Limit: --"
+            android:textColor="@color/text_primary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- Action Buttons Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal">
+
+        <!-- Cancel Button -->
+        <TextView
+            android:id="@+id/btnLimitDialogCancel"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_button_cancel_pill"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="Cancel"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <!-- Save Button -->
+        <TextView
+            android:id="@+id/btnLimitDialogSave"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_button_save_pill"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="Save Limit"
+            android:textColor="@color/app_window_background"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</LinearLayout>

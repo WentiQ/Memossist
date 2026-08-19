@@ -28,7 +28,6 @@ object ThemeManager {
             .putString(PREF_KEY, normalizedTheme)
             .apply()
         AppCompatDelegate.setDefaultNightMode(modeFromTheme(normalizedTheme))
-        updateLauncherIcon(context)
     }
 
     fun isDarkTheme(context: Context): Boolean {
@@ -47,34 +46,11 @@ object ThemeManager {
         return if (isDarkTheme(context)) R.drawable.app_logo_dark else R.drawable.app_logo_light
     }
 
-    fun updateLauncherIcon(context: Context) {
-        try {
-            val isDark = isDarkTheme(context)
-            val pm = context.packageManager
-            val lightAlias = android.content.ComponentName(context, "com.example.apptempleate.MainActivityLight")
-            val darkAlias = android.content.ComponentName(context, "com.example.apptempleate.MainActivityDark")
-
-            val enableAlias = if (isDark) darkAlias else lightAlias
-            val disableAlias = if (isDark) lightAlias else darkAlias
-
-            pm.setComponentEnabledSetting(
-                enableAlias,
-                android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                android.content.pm.PackageManager.DONT_KILL_APP
-            )
-            pm.setComponentEnabledSetting(
-                disableAlias,
-                android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                android.content.pm.PackageManager.DONT_KILL_APP
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
     fun applySavedTheme(context: Context) {
-        AppCompatDelegate.setDefaultNightMode(modeFromTheme(getSavedTheme(context)))
-        updateLauncherIcon(context)
+        val targetMode = modeFromTheme(getSavedTheme(context))
+        if (AppCompatDelegate.getDefaultNightMode() != targetMode) {
+            AppCompatDelegate.setDefaultNightMode(targetMode)
+        }
     }
 
     fun modeFromTheme(theme: String): Int {
@@ -95,3 +71,4 @@ object ThemeManager {
         }
     }
 }
+

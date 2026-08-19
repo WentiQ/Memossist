@@ -158,7 +158,7 @@ data class ReminderItem(
             // Event in less than 15 minutes
             diffMillis <= 15 * 60_000L -> {
                 val mins = (diffMillis / 60_000L).coerceAtLeast(1)
-                "🚨 $greeting! '${title}' starts in $mins minute${if (mins > 1) "s" else ""} ($timeOnly)!"
+                "$greeting! '${title}' starts in $mins minute${if (mins > 1) "s" else ""} ($timeOnly)!"
             }
             // Event in less than 1 hour
             diffMillis <= 60 * 60_000L -> {

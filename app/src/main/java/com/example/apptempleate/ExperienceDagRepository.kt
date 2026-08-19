@@ -371,6 +371,39 @@ object ExperienceDagRepository {
         }
     }
 
+    /**
+     * Removes all DAG edges connecting to the specified memory ID.
+     */
+    fun removeEdgesForMemory(context: Context, memoryId: String) {
+        if (memoryId.isBlank()) return
+        val allEdges = loadAllEdges(context)
+        val removed = allEdges.removeAll { 
+            it.experienceId1.equals(memoryId, ignoreCase = true) || 
+            it.experienceId2.equals(memoryId, ignoreCase = true) 
+        }
+        if (removed) {
+            saveAllEdges(context, allEdges)
+            android.util.Log.i("ExperienceDagRepository", "Removed DAG edges connected to deleted memory: $memoryId")
+        }
+    }
+
+    /**
+     * Removes all DAG edges connecting to any of the specified memory IDs.
+     */
+    fun removeEdgesForMemories(context: Context, memoryIds: Set<String>) {
+        if (memoryIds.isEmpty()) return
+        val allEdges = loadAllEdges(context)
+        val targetIds = memoryIds.map { it.lowercase() }.toSet()
+        val removed = allEdges.removeAll {
+            targetIds.contains(it.experienceId1.lowercase()) ||
+            targetIds.contains(it.experienceId2.lowercase())
+        }
+        if (removed) {
+            saveAllEdges(context, allEdges)
+            android.util.Log.i("ExperienceDagRepository", "Removed DAG edges for ${memoryIds.size} deleted/forgotten memories.")
+        }
+    }
+
     fun clearAllEdges(context: Context) {
         saveAllEdges(context, emptyList())
     }

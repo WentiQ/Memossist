@@ -144,17 +144,17 @@ object ResponseStatsRepository {
         val estFormatted = String.format(Locale.US, "%02d:%02d", estMin, estSec)
 
         val caseTag = when (targetType) {
-            MessageType.REMINDER_ONLY -> "⏰ Rem"
-            MessageType.TELLING -> "📝 Tell"
-            MessageType.ASKING -> "❓ Ask"
-            MessageType.MIXED -> "🔀 Mix"
-            MessageType.REMINDER_AND_TELLING -> "⏰📝"
-            MessageType.REMINDER_AND_ASKING -> "⏰❓"
-            MessageType.REMINDER_AND_MIXED -> "⏰🔀"
+            MessageType.REMINDER_ONLY -> "Rem"
+            MessageType.TELLING -> "Tell"
+            MessageType.ASKING -> "Ask"
+            MessageType.MIXED -> "Mix"
+            MessageType.REMINDER_AND_TELLING -> "Rem+Tell"
+            MessageType.REMINDER_AND_ASKING -> "Rem+Ask"
+            MessageType.REMINDER_AND_MIXED -> "Rem+Mix"
         }
 
         val countTag = if (count > 0) " (#$count)" else ""
-        return "⏱️ $elapsedFormatted / Est. $estFormatted [$caseTag$countTag]"
+        return "$elapsedFormatted / Est. $estFormatted [$caseTag$countTag]"
     }
 
     fun formatTimerString(context: Context, elapsedSeconds: Long, avgSeconds: Float = 0f, totalCount: Int = 0): String {
@@ -165,18 +165,18 @@ object ResponseStatsRepository {
         val sec = elapsedSeconds % 60
         val estMin = estInt / 60
         val estSec = estInt % 60
-        return String.format(Locale.US, "⏱️ %02d:%02d / Est. %02d:%02d", min, sec, estMin, estSec)
+        return String.format(Locale.US, "%02d:%02d / Est. %02d:%02d", min, sec, estMin, estSec)
     }
 
     fun getAllCaseStats(context: Context): List<CaseLatencyStat> {
         val cases = listOf(
-            Triple(MessageType.REMINDER_ONLY, "Reminder Only", "⏰"),
-            Triple(MessageType.TELLING, "Telling (Facts)", "📝"),
-            Triple(MessageType.ASKING, "Asking (Q&A Recall)", "❓"),
-            Triple(MessageType.MIXED, "Mixed (Fact + Q&A)", "🔀"),
-            Triple(MessageType.REMINDER_AND_TELLING, "Reminder + Telling", "⏰📝"),
-            Triple(MessageType.REMINDER_AND_ASKING, "Reminder + Asking", "⏰❓"),
-            Triple(MessageType.REMINDER_AND_MIXED, "Reminder + Mixed", "⏰🔀")
+            Triple(MessageType.REMINDER_ONLY, "Reminder Only", ""),
+            Triple(MessageType.TELLING, "Telling (Facts)", ""),
+            Triple(MessageType.ASKING, "Asking (Q&A Recall)", ""),
+            Triple(MessageType.MIXED, "Mixed (Fact + Q&A)", ""),
+            Triple(MessageType.REMINDER_AND_TELLING, "Reminder + Telling", ""),
+            Triple(MessageType.REMINDER_AND_ASKING, "Reminder + Asking", ""),
+            Triple(MessageType.REMINDER_AND_MIXED, "Reminder + Mixed", "")
         )
 
         return cases.map { (type, name, icon) ->

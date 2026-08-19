@@ -231,7 +231,7 @@ class CognitiveInsightsActivity : AppCompatActivity() {
         val heaviest = caseStats.maxByOrNull { it.effectiveEstimatedSeconds }
 
         if (fastest != null && heaviest != null) {
-            tvCaseGraphSummary.text = "Fastest: ${fastest.icon} ${fastest.displayName} (${String.format(Locale.US, "%.1fs", fastest.effectiveEstimatedSeconds)}) • Heaviest: ${heaviest.icon} ${heaviest.displayName} (${String.format(Locale.US, "%.1fs", heaviest.effectiveEstimatedSeconds)})"
+            tvCaseGraphSummary.text = "Fastest: ${fastest.displayName} (${String.format(Locale.US, "%.1fs", fastest.effectiveEstimatedSeconds)}) • Heaviest: ${heaviest.displayName} (${String.format(Locale.US, "%.1fs", heaviest.effectiveEstimatedSeconds)})"
         }
 
         val totalEvaluated = caseStats.sumOf { it.totalCount }
@@ -250,14 +250,12 @@ class CognitiveInsightsActivity : AppCompatActivity() {
         for (stat in caseStats) {
             val itemView = LayoutInflater.from(this).inflate(R.layout.item_case_latency_bar, llCaseLatencyGraphContainer, false)
 
-            val tvIcon: TextView = itemView.findViewById(R.id.tvCaseIcon)
             val tvName: TextView = itemView.findViewById(R.id.tvCaseName)
             val tvEstTime: TextView = itemView.findViewById(R.id.tvCaseEstTime)
             val tvCount: TextView = itemView.findViewById(R.id.tvCaseCount)
             val pbLatencyBar: ProgressBar = itemView.findViewById(R.id.pbLatencyBar)
             val tvPipelineDetail: TextView = itemView.findViewById(R.id.tvCasePipelineDetail)
 
-            tvIcon.text = stat.icon
             tvName.text = stat.displayName
             tvEstTime.text = String.format(Locale.US, "%.1fs", stat.effectiveEstimatedSeconds)
             tvCount.text = if (stat.totalCount > 0) "#${stat.totalCount}" else "Est"

@@ -6,13 +6,21 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.RelativeLayout
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -45,6 +53,14 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var btnOpenDeviceHelp: LinearLayout
     private lateinit var switchAppLock: androidx.appcompat.widget.SwitchCompat
     private var pendingAppLockEnableState: Boolean = false
+    private lateinit var tvSettingsStorageUsage: TextView
+    private lateinit var pbSettingsStorage: android.widget.ProgressBar
+    private lateinit var tvSettingsStorageSubtext: TextView
+    private lateinit var btnMemoryLimit: LinearLayout
+    private lateinit var tvSettingsMemoryLimitValue: TextView
+    private lateinit var btnPruneBehavior: LinearLayout
+    private lateinit var tvSettingsPruneModeValue: TextView
+    private lateinit var btnManageMemoryCleanup: LinearLayout
 
     private lateinit var prefs: SharedPreferences
 
@@ -172,6 +188,15 @@ class SettingsActivity : AppCompatActivity() {
         tvThemeValue = findViewById(R.id.tvThemeValue)
         btnManageReminders = findViewById(R.id.btnManageReminders)
 
+        tvSettingsStorageUsage = findViewById(R.id.tvSettingsStorageUsage)
+        pbSettingsStorage = findViewById(R.id.pbSettingsStorage)
+        tvSettingsStorageSubtext = findViewById(R.id.tvSettingsStorageSubtext)
+        btnMemoryLimit = findViewById(R.id.btnMemoryLimit)
+        tvSettingsMemoryLimitValue = findViewById(R.id.tvSettingsMemoryLimitValue)
+        btnPruneBehavior = findViewById(R.id.btnPruneBehavior)
+        tvSettingsPruneModeValue = findViewById(R.id.tvSettingsPruneModeValue)
+        btnManageMemoryCleanup = findViewById(R.id.btnManageMemoryCleanup)
+
         btnExportAllData = findViewById(R.id.btnExportAllData)
         btnImportAllData = findViewById(R.id.btnImportAllData)
         btnOpenDeviceHelp = findViewById(R.id.btnOpenDeviceHelp)
@@ -213,9 +238,24 @@ class SettingsActivity : AppCompatActivity() {
         loadUserProfileData()
         updateMorningTimeDisplay()
         updateThemeDisplay()
+        updateMemoryStorageDisplay()
 
         btnBack.setOnClickListener {
             finishWithSmoothAnimation()
+        }
+
+        btnMemoryLimit.setOnClickListener {
+            showMemoryLimitDialog()
+        }
+
+        btnPruneBehavior.setOnClickListener {
+            showPruneBehaviorDialog()
+        }
+
+        btnManageMemoryCleanup.setOnClickListener {
+            val intent = Intent(this, MemoryCleanupActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         btnMorningTime.setOnClickListener {
@@ -274,6 +314,7 @@ class SettingsActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         updateActiveModelDisplay()
+        updateMemoryStorageDisplay()
     }
 
     private fun updateActiveModelDisplay() {
@@ -440,7 +481,6 @@ class SettingsActivity : AppCompatActivity() {
                 updateThemeDisplay()
                 Toast.makeText(this, "Theme set to ${ThemeManager.displayName(chosenTheme)}", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
-                recreate()
             }
             .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
             .show()
@@ -467,6 +507,292 @@ class SettingsActivity : AppCompatActivity() {
             .show()
     }
 
+    private fun updateMemoryStorageDisplay() {
+        val status = MemoryStorageManager.getStorageStatus(this)
+        tvSettingsStorageUsage.text = "${status.usedFormatted} / ${status.limitFormatted}"
+        pbSettingsStorage.progress = status.usagePercentage
+
+        if (status.isUnlimited) {
+            tvSettingsMemoryLimitValue.text = "Unlimited (Phone Free: ${status.deviceFreeFormatted})"
+            tvSettingsStorageSubtext.text = "Default limit: Memory vault is bounded by available device space."
+        } else {
+            val limitVal = MemoryStorageManager.getLimitValue(this)
+            val limitUnit = MemoryStorageManager.getLimitUnit(this)
+            val formattedVal = if (limitVal % 1.0 == 0.0) limitVal.toLong().toString() else limitVal.toString()
+            tvSettingsMemoryLimitValue.text = "$formattedVal $limitUnit (${status.usagePercentage}% used)"
+            tvSettingsStorageSubtext.text = "Configured limit: ${status.limitFormatted}. Device Free: ${status.deviceFreeFormatted}."
+        }
+
+        if (status.pruneMode == MemoryStorageManager.PruneMode.AUTO) {
+            tvSettingsPruneModeValue.text = "Auto-delete least strength memories"
+        } else {
+            tvSettingsPruneModeValue.text = "Ask before deleting memories"
+        }
+    }
+
+    private fun showMemoryLimitDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_memory_limit, null)
+        val rgLimitMode = dialogView.findViewById<RadioGroup>(R.id.rgLimitMode)
+        val rbUnlimited = dialogView.findViewById<RadioButton>(R.id.rbUnlimited)
+        val rbCustom = dialogView.findViewById<RadioButton>(R.id.rbCustom)
+        val llCustomLimitInput = dialogView.findViewById<LinearLayout>(R.id.llCustomLimitInput)
+        val etLimitValue = dialogView.findViewById<EditText>(R.id.etLimitValue)
+        val spLimitUnit = dialogView.findViewById<Spinner>(R.id.spLimitUnit)
+        val tvLimitValidation = dialogView.findViewById<TextView>(R.id.tvLimitValidation)
+        val tvDialogCurrentVaultUsage = dialogView.findViewById<TextView>(R.id.tvDialogCurrentVaultUsage)
+        val tvDialogDeviceFreeStorage = dialogView.findViewById<TextView>(R.id.tvDialogDeviceFreeStorage)
+        val tvDialogMaxAllowableLimit = dialogView.findViewById<TextView>(R.id.tvDialogMaxAllowableLimit)
+        val btnLimitDialogCancel = dialogView.findViewById<TextView>(R.id.btnLimitDialogCancel)
+        val btnLimitDialogSave = dialogView.findViewById<TextView>(R.id.btnLimitDialogSave)
+
+        // Setup unit spinner
+        val units = arrayOf(MemoryStorageManager.UNIT_MB, MemoryStorageManager.UNIT_GB, MemoryStorageManager.UNIT_KB, MemoryStorageManager.UNIT_B)
+        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, units)
+        spLimitUnit.adapter = spinnerAdapter
+
+        val status = MemoryStorageManager.getStorageStatus(this)
+        tvDialogCurrentVaultUsage.text = "Existing Vault Data: ${status.usedFormatted}"
+        tvDialogDeviceFreeStorage.text = "Device Free Storage: ${status.deviceFreeFormatted}"
+        tvDialogMaxAllowableLimit.text = "Max Allowable Limit: ${status.maxAllowableFormatted}"
+
+        val isCurrentlyUnlimited = MemoryStorageManager.isUnlimited(this)
+        if (isCurrentlyUnlimited) {
+            rbUnlimited.isChecked = true
+            llCustomLimitInput.visibility = View.GONE
+        } else {
+            rbCustom.isChecked = true
+            llCustomLimitInput.visibility = View.VISIBLE
+            val currVal = MemoryStorageManager.getLimitValue(this)
+            etLimitValue.setText(if (currVal > 0) (if (currVal % 1.0 == 0.0) currVal.toLong().toString() else currVal.toString()) else "")
+            val currUnit = MemoryStorageManager.getLimitUnit(this)
+            val unitIdx = units.indexOf(currUnit).coerceAtLeast(0)
+            spLimitUnit.setSelection(unitIdx)
+        }
+
+        val alertDialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+        alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        fun validateInput() {
+            if (rbUnlimited.isChecked) {
+                tvLimitValidation.text = "✓ Memory vault is bounded by available device storage (${status.deviceFreeFormatted})."
+                tvLimitValidation.setTextColor(getColor(R.color.text_secondary))
+                btnLimitDialogSave.isEnabled = true
+                btnLimitDialogSave.alpha = 1.0f
+                return
+            }
+
+            val inputStr = etLimitValue.text.toString().trim()
+            val value = inputStr.toDoubleOrNull()
+            if (value == null || value <= 0.0) {
+                tvLimitValidation.text = "Please enter a valid numeric limit greater than 0."
+                tvLimitValidation.setTextColor(android.graphics.Color.parseColor("#EF4444"))
+                btnLimitDialogSave.isEnabled = false
+                btnLimitDialogSave.alpha = 0.5f
+                return
+            }
+
+            val selectedUnit = spLimitUnit.selectedItem?.toString() ?: MemoryStorageManager.UNIT_MB
+            val multiplier = when (selectedUnit) {
+                MemoryStorageManager.UNIT_B -> 1L
+                MemoryStorageManager.UNIT_KB -> 1024L
+                MemoryStorageManager.UNIT_MB -> 1024L * 1024L
+                MemoryStorageManager.UNIT_GB -> 1024L * 1024L * 1024L
+                else -> 1024L * 1024L
+            }
+            val targetBytes = (value * multiplier).toLong()
+            val maxAllowable = status.maxAllowableBytes
+            val incremental = (targetBytes - status.usedBytes).coerceAtLeast(0L)
+
+            if (targetBytes > maxAllowable) {
+                tvLimitValidation.text = "⚠ Limit exceeds phone capacity! Max allowed: ${status.maxAllowableFormatted}."
+                tvLimitValidation.setTextColor(android.graphics.Color.parseColor("#EF4444"))
+                btnLimitDialogSave.isEnabled = false
+                btnLimitDialogSave.alpha = 0.5f
+            } else {
+                tvLimitValidation.text = "✓ Valid limit. Requires +${MemoryStorageManager.formatBytes(incremental)} of phone space (${status.deviceFreeFormatted} free)."
+                tvLimitValidation.setTextColor(android.graphics.Color.parseColor("#10B981"))
+                btnLimitDialogSave.isEnabled = true
+                btnLimitDialogSave.alpha = 1.0f
+            }
+        }
+
+        rgLimitMode.setOnCheckedChangeListener { _, checkedId ->
+            if (checkedId == R.id.rbUnlimited) {
+                llCustomLimitInput.visibility = View.GONE
+            } else {
+                llCustomLimitInput.visibility = View.VISIBLE
+            }
+            validateInput()
+        }
+
+        etLimitValue.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                validateInput()
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        spLimitUnit.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                validateInput()
+            }
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
+        }
+
+        validateInput()
+
+        btnLimitDialogCancel.setOnClickListener {
+            alertDialog.dismiss()
+        }
+
+        btnLimitDialogSave.setOnClickListener {
+            if (rbUnlimited.isChecked) {
+                MemoryStorageManager.setMemoryLimit(this, 0.0, MemoryStorageManager.UNIT_UNLIMITED)
+                updateMemoryStorageDisplay()
+                Toast.makeText(this, "Memory limit set to Default (Unlimited)", Toast.LENGTH_SHORT).show()
+                alertDialog.dismiss()
+            } else {
+                val inputStr = etLimitValue.text.toString().trim()
+                val value = inputStr.toDoubleOrNull() ?: 0.0
+                val selectedUnit = spLimitUnit.selectedItem?.toString() ?: MemoryStorageManager.UNIT_MB
+                val multiplier = when (selectedUnit) {
+                    MemoryStorageManager.UNIT_B -> 1L
+                    MemoryStorageManager.UNIT_KB -> 1024L
+                    MemoryStorageManager.UNIT_MB -> 1024L * 1024L
+                    MemoryStorageManager.UNIT_GB -> 1024L * 1024L * 1024L
+                    else -> 1024L * 1024L
+                }
+                val targetBytes = (value * multiplier).toLong()
+                val currentVaultBytes = MemoryStorageManager.getCurrentVaultSizeBytes(this)
+
+                if (targetBytes < currentVaultBytes) {
+                    // New limit is less than current vault data: prompt user with 3 choices
+                    showLimitReductionOptionsDialog(targetBytes, value, selectedUnit, alertDialog)
+                } else {
+                    val success = MemoryStorageManager.setMemoryLimit(this, value, selectedUnit)
+                    if (success) {
+                        updateMemoryStorageDisplay()
+                        Toast.makeText(this, "Memory limit set to $inputStr $selectedUnit", Toast.LENGTH_SHORT).show()
+                        alertDialog.dismiss()
+                    } else {
+                        Toast.makeText(this, "Cannot set limit: exceeds phone storage capacity", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+
+        alertDialog.show()
+    }
+
+    private fun showLimitReductionOptionsDialog(
+        newLimitBytes: Long,
+        newLimitValue: Double,
+        newLimitUnit: String,
+        parentLimitDialog: AlertDialog
+    ) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_limit_reduction_choice, null)
+        val tvReductionCurrentUsed = dialogView.findViewById<TextView>(R.id.tvReductionCurrentUsed)
+        val tvReductionNewLimit = dialogView.findViewById<TextView>(R.id.tvReductionNewLimit)
+        val tvReductionExcess = dialogView.findViewById<TextView>(R.id.tvReductionExcess)
+        val btnReductionAutoDelete = dialogView.findViewById<LinearLayout>(R.id.btnReductionAutoDelete)
+        val btnReductionManualDelete = dialogView.findViewById<LinearLayout>(R.id.btnReductionManualDelete)
+        val btnReductionCancel = dialogView.findViewById<TextView>(R.id.btnReductionCancel)
+
+        val currentVaultBytes = MemoryStorageManager.getCurrentVaultSizeBytes(this)
+        val excessBytes = (currentVaultBytes - newLimitBytes).coerceAtLeast(0L)
+
+        tvReductionCurrentUsed.text = "Current Vault Usage: ${MemoryStorageManager.formatBytes(currentVaultBytes)}"
+        tvReductionNewLimit.text = "New Limit Target: ${MemoryStorageManager.formatBytes(newLimitBytes)}"
+        tvReductionExcess.text = "Excess to remove: ~${MemoryStorageManager.formatBytes(excessBytes)}"
+
+        val choiceDialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+        choiceDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        btnReductionAutoDelete.setOnClickListener {
+            val candidates = MemoryStorageManager.findRecommendedMemoriesToFreeBytes(this, excessBytes)
+            val freed = MemoryStorageManager.executePruning(this, candidates)
+            MemoryStorageManager.setMemoryLimit(this, newLimitValue, newLimitUnit)
+            updateMemoryStorageDisplay()
+            Toast.makeText(this, "Pruned ${candidates.size} weakest memories (Freed ${MemoryStorageManager.formatBytes(freed)}) & applied limit.", Toast.LENGTH_SHORT).show()
+            choiceDialog.dismiss()
+            parentLimitDialog.dismiss()
+        }
+
+        btnReductionManualDelete.setOnClickListener {
+            choiceDialog.dismiss()
+            parentLimitDialog.dismiss()
+            val intent = Intent(this, MemoryCleanupActivity::class.java).apply {
+                putExtra(MemoryCleanupActivity.EXTRA_TARGET_BYTES_TO_FREE, excessBytes)
+                putExtra(MemoryCleanupActivity.EXTRA_TARGET_NEW_LIMIT, newLimitBytes)
+            }
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+        }
+
+        btnReductionCancel.setOnClickListener {
+            choiceDialog.dismiss()
+        }
+
+        choiceDialog.show()
+    }
+
+    private fun showPruneBehaviorDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_prune_mode, null)
+        val rbPruneAuto = dialogView.findViewById<RadioButton>(R.id.rbPruneAuto)
+        val rbPruneAsk = dialogView.findViewById<RadioButton>(R.id.rbPruneAsk)
+        val llOptionAuto = dialogView.findViewById<LinearLayout>(R.id.llOptionAuto)
+        val llOptionAsk = dialogView.findViewById<LinearLayout>(R.id.llOptionAsk)
+        val btnPruneDialogCancel = dialogView.findViewById<TextView>(R.id.btnPruneDialogCancel)
+        val btnPruneDialogSave = dialogView.findViewById<TextView>(R.id.btnPruneDialogSave)
+
+        val currentMode = MemoryStorageManager.getPruneMode(this)
+        if (currentMode == MemoryStorageManager.PruneMode.AUTO) {
+            rbPruneAuto.isChecked = true
+            rbPruneAsk.isChecked = false
+        } else {
+            rbPruneAuto.isChecked = false
+            rbPruneAsk.isChecked = true
+        }
+
+        llOptionAuto.setOnClickListener {
+            rbPruneAuto.isChecked = true
+            rbPruneAsk.isChecked = false
+        }
+
+        llOptionAsk.setOnClickListener {
+            rbPruneAuto.isChecked = false
+            rbPruneAsk.isChecked = true
+        }
+
+        val alertDialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+        alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        btnPruneDialogCancel.setOnClickListener {
+            alertDialog.dismiss()
+        }
+
+        btnPruneDialogSave.setOnClickListener {
+            val selected = if (rbPruneAuto.isChecked) MemoryStorageManager.PruneMode.AUTO else MemoryStorageManager.PruneMode.ASK
+            MemoryStorageManager.setPruneMode(this, selected)
+            updateMemoryStorageDisplay()
+            val text = if (selected == MemoryStorageManager.PruneMode.AUTO) "Auto-delete least strength memories" else "Ask before deleting memories"
+            Toast.makeText(this, "Pruning mode: $text", Toast.LENGTH_SHORT).show()
+            alertDialog.dismiss()
+        }
+
+        alertDialog.show()
+    }
+
     override fun onBackPressed() {
         super.onBackPressed()
         finishWithSmoothAnimation()
@@ -477,3 +803,4 @@ class SettingsActivity : AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 }
+

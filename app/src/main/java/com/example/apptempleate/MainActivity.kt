@@ -299,6 +299,13 @@ class MainActivity : AppCompatActivity() {
         // Initialize Workspace Upcoming Reminders (Next 24h)
         setupWorkspaceReminders()
 
+        // Setup Memory Storage Capacity Confirmation Listener (Ask-Before-Deleting mode)
+        MemoryStorageManager.onPruneConfirmationRequiredListener = { plan ->
+            runOnUiThread {
+                showPruneConfirmationPromptDialog(plan)
+            }
+        }
+
         // Load Saved Conversations & Populate Sidebar Recent History List
         refreshSidebarHistory()
 
@@ -564,6 +571,11 @@ class MainActivity : AppCompatActivity() {
         updateHeaderActiveModel()
         updateUnreadNotificationBadge()
         refreshWorkspaceReminders()
+
+        // Check if there is a pending prune confirmation waiting
+        MemoryStorageManager.pendingPrunePlan?.let { plan ->
+            showPruneConfirmationPromptDialog(plan)
+        }
 
         val handled = handleIncomingIntent(intent)
         if (!handled) {
@@ -1402,8 +1414,54 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private var prunePromptDialog: AlertDialog? = null
+
+    private fun showPruneConfirmationPromptDialog(plan: MemoryStorageManager.PruneCandidatePlan) {
+        if (isFinishing || isDestroyed) return
+        if (prunePromptDialog?.isShowing == true) return
+
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_prune_confirmation_prompt, null)
+        val tvPruneCandidateCount = dialogView.findViewById<TextView>(R.id.tvPruneCandidateCount)
+        val tvPruneEstimatedFreed = dialogView.findViewById<TextView>(R.id.tvPruneEstimatedFreed)
+        val tvPruneNewMemoriesCount = dialogView.findViewById<TextView>(R.id.tvPruneNewMemoriesCount)
+        val btnPrunePromptDecline = dialogView.findViewById<TextView>(R.id.btnPrunePromptDecline)
+        val btnPrunePromptAgree = dialogView.findViewById<TextView>(R.id.btnPrunePromptAgree)
+
+        tvPruneCandidateCount.text = "Memories to prune: ${plan.memoriesToPrune.size} least strength facts"
+        tvPruneEstimatedFreed.text = "Space to reclaim: ~${MemoryStorageManager.formatBytes(plan.estimatedFreedBytes)}"
+        tvPruneNewMemoriesCount.text = "New memories waiting: ${plan.newMemories.size} facts"
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        prunePromptDialog = dialog
+
+        btnPrunePromptDecline.setOnClickListener {
+            MemoryStorageManager.rejectPendingPrune()
+            dialog.dismiss()
+            Toast.makeText(this, "New memories skipped to keep existing vault intact.", Toast.LENGTH_SHORT).show()
+        }
+
+        btnPrunePromptAgree.setOnClickListener {
+            val success = MemoryStorageManager.confirmPendingPruneAndSave(this)
+            dialog.dismiss()
+            if (success) {
+                Toast.makeText(this, "Pruned ${plan.memoriesToPrune.size} weakest memories & saved new facts 🎉", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialog.show()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        MemoryStorageManager.onPruneConfirmationRequiredListener = null
+        try {
+            prunePromptDialog?.dismiss()
+            prunePromptDialog = null
+        } catch (e: Exception) {}
         speechRecognizer?.destroy()
         speechRecognizer = null
         activeConversationId = null

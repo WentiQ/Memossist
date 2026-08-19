@@ -78,13 +78,12 @@
                 android:padding="16dp"
                 android:gravity="center_vertical">
 
-                <TextView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/bg_circle_icon_button"
-                    android:gravity="center"
-                    android:text="🤖"
-                    android:textSize="20sp" />
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_insights"
+                    app:tint="@color/text_primary"
+                    android:contentDescription="Insights" />
 
                 <TextView
                     android:id="@+id/tvHumanoidAiInsightStatement"
@@ -128,7 +127,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🧠 MEMORIES"
+                            android:text="MEMORIES"
                             android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
@@ -173,7 +172,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="⚡ DAG EDGES"
+                            android:text="DAG EDGES"
                             android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
@@ -227,7 +226,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🌐 DAG CLUSTERS"
+                            android:text="DAG CLUSTERS"
                             android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
@@ -272,7 +271,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🔍 ORPHANS"
+                            android:text="ORPHANS"
                             android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
@@ -326,7 +325,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="⏱️ EST. NEXT RESPONSE"
+                            android:text="EST. NEXT RESPONSE"
                             android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
@@ -371,7 +370,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="💾 VAULT DATA"
+                            android:text="VAULT DATA"
                             android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
@@ -425,7 +424,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="⚡ 2ND LLM SPEED"
+                            android:text="2ND LLM SPEED"
                             android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
@@ -471,7 +470,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🛡️ AVG STRENGTH"
+                            android:text="AVG STRENGTH"
                             android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
@@ -526,7 +525,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🍂 FORGOTTEN MEMORIES"
+                            android:text="FORGOTTEN MEMORIES"
                             android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
@@ -572,7 +571,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="💎 RETENTION HEALTH"
+                            android:text="RETENTION HEALTH"
                             android:textColor="@color/text_secondary"
                             android:textSize="10sp"
                             android:textStyle="bold"
@@ -619,7 +618,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="⏱️ CASE ESTIMATED RESPONSE TIMES"
+                        android:text="CASE ESTIMATED RESPONSE TIMES"
                         android:textColor="@color/text_tertiary"
                         android:textSize="12sp"
                         android:textStyle="bold"
@@ -730,7 +729,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🕸️ DAG TOPOLOGY ANALYSIS"
+                        android:text="DAG TOPOLOGY ANALYSIS"
                         android:textColor="@color/text_tertiary"
                         android:textSize="12sp"
                         android:textStyle="bold"
@@ -819,7 +818,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🧠 2ND LLM PARAMETER ENGINE"
+                        android:text="2ND LLM PARAMETER ENGINE"
                         android:textColor="@color/text_tertiary"
                         android:textSize="12sp"
                         android:textStyle="bold"
