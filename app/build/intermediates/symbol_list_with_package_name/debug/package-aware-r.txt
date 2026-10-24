@@ -2611,6 +2611,7 @@ drawable bg_rating_progress_fill
 drawable bg_recommendation_card
 drawable bg_red_dot
 drawable bg_scroll_bottom_fab
+drawable bg_sidebar_item
 drawable bg_tag_rounded
 drawable bg_top_chat_gradient
 drawable bg_video_play_circle
@@ -3124,7 +3125,6 @@ id ivAiVideoThumbnail
 id ivAlarmLogo
 id ivAttachmentImage
 id ivHeaderLogo
-id ivHistoryIcon
 id ivOptPinIcon
 id ivPreviewThumbnail
 id ivProfilePic

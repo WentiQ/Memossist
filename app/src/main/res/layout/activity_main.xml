@@ -456,7 +456,7 @@
 
     <!-- Side Navigation Drawer Container -->
     <LinearLayout
-        android:layout_width="280dp"
+        android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/app_surface_background"
@@ -470,8 +470,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="20dp"
-            android:paddingTop="28dp"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="20dp"
             android:paddingBottom="8dp">
 
             <!-- Brand Row -->
@@ -483,15 +483,15 @@
 
                 <ImageView
                     android:id="@+id/ivSidebarLogo"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:src="@drawable/app_logo"
                     android:contentDescription="Memossist Logo" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
@@ -500,17 +500,9 @@
                         android:layout_height="wrap_content"
                         android:text="Memossist"
                         android:textColor="@color/text_primary"
-                        android:textSize="18sp"
+                        android:textSize="17sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.02" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="1dp"
-                        android:text="Cognitive Workspace"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
 
                 </LinearLayout>
 
@@ -521,13 +513,13 @@
                 android:id="@+id/btnSidebarNewChat"
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
-                android:layout_marginTop="18dp"
-                android:background="@drawable/bg_button_cancel_pill"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_sidebar_item"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingHorizontal="16dp">
+                android:paddingHorizontal="12dp">
 
                 <ImageView
                     android:layout_width="20dp"
@@ -543,20 +535,20 @@
                     android:text="New Chat"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:fontFamily="sans-serif-medium" />
 
             </LinearLayout>
 
-            <!-- Workspace Navigation Menu Items (Consistent Bold Weight) -->
+            <!-- Workspace Navigation Menu Items -->
             <LinearLayout
                 android:id="@+id/btnNavHome"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="14dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="12dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingHorizontal="8dp"
-                android:background="?android:attr/selectableItemBackground"
+                android:paddingHorizontal="10dp"
+                android:background="@drawable/bg_sidebar_item"
                 android:clickable="true"
                 android:focusable="true">
 
@@ -569,22 +561,23 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="14dp"
                     android:text="Home Workspace"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textStyle="normal" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/btnNavReminders"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="2dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingHorizontal="8dp"
-                android:background="?android:attr/selectableItemBackground"
+                android:paddingHorizontal="10dp"
+                android:background="@drawable/bg_sidebar_item"
                 android:clickable="true"
                 android:focusable="true">
 
@@ -597,22 +590,23 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="14dp"
                     android:text="Smart Reminders"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textStyle="normal" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/btnNavVault"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="2dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingHorizontal="8dp"
-                android:background="?android:attr/selectableItemBackground"
+                android:paddingHorizontal="10dp"
+                android:background="@drawable/bg_sidebar_item"
                 android:clickable="true"
                 android:focusable="true">
 
@@ -625,22 +619,23 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="14dp"
                     android:text="Memory Vault"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textStyle="normal" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/btnNavInsights"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="2dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingHorizontal="8dp"
-                android:background="?android:attr/selectableItemBackground"
+                android:paddingHorizontal="10dp"
+                android:background="@drawable/bg_sidebar_item"
                 android:clickable="true"
                 android:focusable="true">
 
@@ -653,22 +648,23 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="14dp"
                     android:text="Cognitive Insights"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textStyle="normal" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/btnNavConnections"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="2dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingHorizontal="8dp"
-                android:background="?android:attr/selectableItemBackground"
+                android:paddingHorizontal="10dp"
+                android:background="@drawable/bg_sidebar_item"
                 android:clickable="true"
                 android:focusable="true">
 
@@ -681,11 +677,11 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="14dp"
                     android:text="Connections"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textStyle="normal" />
 
             </LinearLayout>
 
@@ -695,17 +691,19 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
-                android:background="@color/app_card_border" />
+                android:background="@color/app_card_border"
+                android:alpha="0.65" />
 
             <!-- Recent History Subheader Title -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Recent History"
+                android:layout_marginStart="10dp"
+                android:text="Recent"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:letterSpacing="0.04" />
 
         </LinearLayout>
 
@@ -716,8 +714,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:clipToPadding="false"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="4dp" />
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="6dp" />
 
         <!-- Separation Line Above Settings -->
         <View
@@ -734,24 +732,26 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="16dp"
-            android:paddingVertical="10dp">
+            android:paddingTop="8dp"
+            android:paddingBottom="12dp">
 
             <LinearLayout
                 android:id="@+id/llPinnedSettings"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="?android:attr/selectableItemBackground"
+                android:background="@drawable/bg_sidebar_item"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingVertical="6dp"
-                android:paddingHorizontal="8dp">
+                android:minHeight="44dp"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="10dp">
 
                 <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:src="@drawable/ic_settings"
                     app:tint="@color/icon_tint"
                     android:contentDescription="Settings Icon" />
@@ -763,15 +763,15 @@
                     android:text="Settings"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textStyle="normal" />
 
             </LinearLayout>
 
             <!-- Help Icon Button (Right side of Settings button) -->
             <ImageButton
                 android:id="@+id/btnSidebarHelp"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/bg_circle_icon_button"
                 android:contentDescription="Background &amp; OEM Battery Help"

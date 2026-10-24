@@ -10,13 +10,13 @@ object PromptComponent {
 
     const val REMINDER_EXTRACTION =
         "REMINDERS: Extract every future event, task, obligation, appointment, commitment, deadline, or scheduled activity represented in the message.\n" +
-        "Produce JSON format: {\"title\":\"<task_name>\",\"time\":\"<due_time_or_date>\",\"description\":\"<details>\"}\n" +
+        "Return each reminder as a JSON object containing title, time, and description fields.\n" +
         "Do not invent dates or times. Use the user's actual information. If none exist, output NONE."
 
     const val FACT_EXTRACTION =
-        "FACTS: Extract informative statements explicitly declared by the user as a JSON array of complete, standalone full sentences.\n" +
-        "- FULL STANDALONE SENTENCE RULE: Every extracted fact MUST be a complete, grammatically standalone full sentence capturing what the user stated. NEVER extract fragmented keywords or dangling phrases.\n" +
-        "- Facts are strictly meaningful personal details, preferences, events, or state which the user may ask to remember in the future.\n" +
+        "FACTS: Extract user-stated experiences as a JSON array. Each experience must be self-contained and written in complete sentences. It may contain multiple sentences when needed to preserve all details belonging to that context. NEVER extract fragmented keywords or dangling phrases.\n" +
+        "- CONTEXT GROUPING: Each item represents one distinct experience and includes all user-stated details belonging to that context. Combine related statements and separate unrelated contexts.\n" +
+        "- Capture every detail the user states about each personal context, including small details, quantities, timing, lists, preferences, events, observations, and temporary feelings. Never omit details because they seem unimportant, short-lived, or unlikely to be useful later.\n" +
         "- Never extract questions as facts.\n" +
         "- Never extract general/world knowledge or AI-generated information.\n" +
         "- Do not duplicate facts already represented by relevant memory candidates.\n" +
@@ -58,19 +58,19 @@ object PromptComponent {
         includeReminderExtraction: Boolean,
         includeFactExtraction: Boolean
     ): String = buildString {
-        append("OUTPUT FORMAT — Begin response with exactly these 5 lines (no text or blank lines before them):\n")
+        append("OUTPUT FORMAT: begin with the required headers in order and no text before them:\n")
         append("[INTENT: $knownIntent]\n")
         if (includeReminderExtraction) {
-            append("[EXTRACTED_REMINDERS: NONE|{\"title\":\"...\",\"time\":\"...\",\"description\":\"...\"}]\n")
+            append("[EXTRACTED_REMINDERS: NONE or reminder JSON array]\n")
         } else {
             append("[EXTRACTED_REMINDERS: NONE]\n")
         }
         if (includeFactExtraction) {
-            append("[EXTRACTED_FACTS: []|[\"user fact\",...]]\n")
+            append("[EXTRACTED_FACTS: JSON array of complete experience strings]\n")
         } else {
             append("[EXTRACTED_FACTS: []]\n")
         }
-        append("[USED_EXPERIENCES: NONE|EXP-ID1, EXP-ID2]\n")
+        append("[USED_EXPERIENCES: exact candidate IDs or NONE]\n")
         append("[HUMANOID_ANSWER]\n")
         append("<conversational answer starts here — never before [HUMANOID_ANSWER]>")
     }

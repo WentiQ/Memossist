@@ -174,7 +174,11 @@ object NoeonAiEngine {
         if (usedIds.isEmpty() && !modelExplicitlyUsedNoExperiences && candidateExperiences.isNotEmpty()) {
             usedIds = inferUsedExperienceIdsFromAnswer(cleanAnswer, candidateExperiences)
         }
-        val extractedFacts = parseFacts(parseTagValue(raw, "EXTRACTED_FACTS"), userMessage, candidateExperiences)
+        // Validate against the complete vault so a paraphrased or repeated
+        // statement cannot create another experience just because it was not
+        // among the small set of retrieval candidates.
+        val existingExperiences = MemoryVaultRepository.loadAllMemories(context)
+        val extractedFacts = parseFacts(parseTagValue(raw, "EXTRACTED_FACTS"), userMessage, existingExperiences)
         val extractedReminderTag = parseTagValue(raw, "EXTRACTED_REMINDERS")
         val finalHumanoidAnswer = if (cleanAnswer.isNotBlank()) {
             cleanAnswer
@@ -262,7 +266,10 @@ object NoeonAiEngine {
         if (content.isBlank()) return ""
         val marker = Regex("\\[HUMANOID_ANSWER\\]", RegexOption.IGNORE_CASE).find(content)
         if (marker != null) {
-            return content.substring(marker.range.last + 1).trim()
+            return content.substring(marker.range.last + 1)
+                .trim()
+                .trimStart(']', '[', ':', '|', ',', ';')
+                .trim()
         }
         // If [HUMANOID_ANSWER] tag was missing, strip metadata tags from anywhere in the response body
         return content
@@ -271,6 +278,7 @@ object NoeonAiEngine {
             .replace(Regex("\\[EXTRACTED_FACTS\\s*:[^\\]]*\\]?", RegexOption.IGNORE_CASE), "")
             .replace(Regex("\\[USED_EXPERIENCES\\s*:[^\\]]*\\]?", RegexOption.IGNORE_CASE), "")
             .replace(Regex("\\[HUMANOID_ANSWER\\]?", RegexOption.IGNORE_CASE), "")
+            .replace(Regex("^[\\s\\]\\[|,:;.!?`*_~-]+"), "")
             .trim()
     }
 
@@ -379,6 +387,184 @@ object NoeonAiEngine {
         return matchRatio >= 0.75
     }
 
+    /**
+     * A high word overlap alone is not enough to make a memory. This gate
+     * rejects keyword fragments such as "auto immune disease" while allowing
+     * explicit, complete first-person statements.
+     */
+    private fun isCompletePersonalStatement(fact: String): Boolean {
+        val words = fact.lowercase()
+            .replace(Regex("[^a-z0-9' ]"), " ")
+            .split(Regex("\\s+"))
+            .filter { it.isNotBlank() }
+        if (words.size < 3) return false
+
+        val hasPersonalSubject = words.any {
+            it in setOf("i", "i'm", "im", "i've", "ive", "i'll", "ill", "my", "we", "we're", "were", "we've", "weve", "our", "you", "your")
+        }
+        if (!hasPersonalSubject) return false
+
+        val finiteVerbs = setOf(
+            "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had",
+            "do", "does", "did", "can", "could", "will", "would", "should", "must", "might",
+            "feel", "feels", "felt", "think", "thinks", "believe", "believes", "know", "knows",
+            "like", "likes", "love", "loves", "prefer", "prefers", "enjoy", "enjoys", "want", "wants",
+            "need", "needs", "work", "works", "study", "studies", "live", "lives", "use", "uses",
+            "own", "owns", "attend", "attends", "suffer", "suffers", "suffered", "experience", "experiences",
+            "get", "gets", "got", "take", "takes", "took", "make", "makes", "made", "go", "goes", "went",
+            "born", "diagnosed", "allergic", "married", "graduated", "joined", "moved", "started", "became"
+        )
+        return words.any { it in finiteVerbs || it.endsWith("ing") }
+    }
+
+    private fun cleanSourceStatement(statement: String): String? {
+        var cleaned = statement.trim().trim('"', '\'', ' ', '\t', '\n')
+        cleaned = cleaned.replace(Regex("(?i)^(?:bro|hey|well|so),\\s+"), "")
+        cleaned = cleaned.replace(
+            Regex("(?i)^(?:please\\s+)?(?:remember|note|save|store)\\s+(?:this\\s*[:,]?\\s*)?(?:that\\s+)?"),
+            ""
+        )
+        cleaned = cleaned.replace(
+            Regex("(?i)^i\\s+want\\s+you\\s+to\\s+remember\\s+(?:that\\s+)?"),
+            ""
+        )
+        cleaned = cleaned.trim().trim(',', ';', ':')
+        if (cleaned.isBlank() || isQuestionText(cleaned) || !isCompletePersonalStatement(cleaned)) return null
+        if (!cleaned.endsWith(".") && !cleaned.endsWith("!") && !cleaned.endsWith("?")) cleaned += "."
+        return cleaned
+    }
+
+    /** Groups adjacent statements that describe one experience before saving. */
+    private fun groupRelatedStatements(statements: List<String>): List<String> {
+        if (statements.size < 2) return statements
+        val groups = mutableListOf<String>()
+        for (statement in statements) {
+            val previous = groups.lastOrNull()
+            if (previous != null && describeSameContext(previous, statement)) {
+                groups[groups.lastIndex] = "$previous $statement"
+            } else {
+                groups.add(statement)
+            }
+        }
+        return groups
+    }
+
+    private fun describeSameContext(first: String, second: String): Boolean {
+        if (hasHealthContext(first) && hasHealthContext(second)) return true
+
+        val firstWords = contextWords(first)
+        val secondWords = contextWords(second)
+        if (firstWords.intersect(secondWords).size >= 2) return true
+
+        val isReaction = Regex(
+            "(?i)^\\s*(?:i feel|i felt|it feels|this feels|that feels|it makes me|this makes me|that makes me|it helps me|this helps me|i find it)\\b"
+        ).containsMatchIn(second)
+        val firstDescribesActivity = Regex(
+            "(?i)\\b(watch\\w*|view\\w*|listen\\w*|play\\w*|read\\w*|cook\\w*|dance\\w*|sing\\w*|visit\\w*|stud\\w*|work\\w*|habit)\\b"
+        ).containsMatchIn(first)
+        return isReaction && firstDescribesActivity
+    }
+
+    private fun hasHealthContext(text: String): Boolean = Regex(
+        "\\b(health|disease|illness|pain|inflamm\\w*|symptom|medical|doctor|joint|autoimmune|medicine|injur\\w*)\\b",
+        RegexOption.IGNORE_CASE
+    ).containsMatchIn(text)
+
+    private fun contextWords(text: String): Set<String> {
+        val generic = setOf("have", "has", "had", "feel", "felt", "every", "much", "many", "very", "often", "daily", "today", "yesterday", "tomorrow")
+        return text.lowercase().split(Regex("[^a-z0-9]+"))
+            .filter { it.length >= 4 && it !in generic && it !in setOf("that", "this", "with", "from", "your", "about", "into", "when", "where", "what", "which", "while") }
+            .toSet()
+    }
+
+    private fun splitExplicitContextClauses(sentence: String): List<String> {
+        val boundary = Regex(
+            "(?i)\\s+(?:and|but|while)\\s+(?=(?:i(?:'m|'ve|'ll)?|my|we(?:'re|'ve)?|our|you|your)\\b)"
+        )
+        return sentence.split(boundary).map { it.trim() }.filter { it.isNotBlank() }
+    }
+
+    private fun isMemoryInstruction(text: String): Boolean = Regex(
+        "(?i)^\\s*(?:(?:please\\s+)?(?:remember|note|save|store|keep\\s+in\\s+mind)\\b|i\\s+want\\s+you\\s+to\\s+remember\\b)"
+    ).containsMatchIn(text)
+
+    /** A sentence that refers back to the immediately preceding context belongs with it. */
+    private fun isContextContinuation(text: String): Boolean = Regex(
+        "(?i)^\\s*(?:(?:and|so|because|which|while)\\b|(?:this|that|it|these|those)\\b)"
+    ).containsMatchIn(text)
+
+    /** Rebuilds list fragments under a context heading into one full experience. */
+    private fun extractSourceExperiences(userMessage: String): List<String> {
+        val segments = SentenceSegmenter.segment(userMessage)
+        val experiences = mutableListOf<String>()
+        var index = 0
+
+        while (index < segments.size) {
+            val rawHeading = segments[index].trim()
+            val heading = cleanSourceStatement(rawHeading)
+            if (rawHeading.endsWith(":") && heading != null) {
+                val details = mutableListOf<String>()
+                var cursor = index + 1
+                var markerPending = false
+
+                while (cursor < segments.size) {
+                    val part = segments[cursor].trim()
+                    if (part.isBlank() || isMemoryInstruction(part) || isQuestionText(part)) break
+
+                    if (Regex("^\\d+\\s*[.)]$").matches(part)) {
+                        markerPending = true
+                        cursor++
+                        continue
+                    }
+
+                    val prefixedItem = Regex("^(?:\\d+\\s*[.)]|[-*•])\\s*(.*)$").find(part)
+                    if (prefixedItem != null) {
+                        val content = prefixedItem.groupValues[1].trim()
+                        if (content.isNotBlank()) details.add(content.trimEnd('.', '!', '?', ',', ';'))
+                        markerPending = content.isBlank()
+                        cursor++
+                        continue
+                    }
+
+                    if (markerPending || !isCompletePersonalStatement(part)) {
+                        details.add(part.trimStart('-', '*', '•').trim().trimEnd('.', '!', '?', ',', ';'))
+                        markerPending = false
+                        cursor++
+                    } else {
+                        break
+                    }
+                }
+
+                if (details.isNotEmpty()) {
+                    val context = heading.trimEnd('.', '!', '?')
+                    experiences.add("$context: ${details.joinToString(", ")}.")
+                    index = cursor
+                    continue
+                }
+            }
+
+            for (clause in splitExplicitContextClauses(rawHeading)) {
+                val statement = cleanSourceStatement(clause)
+                if (statement != null) {
+                    experiences.add(statement)
+                } else if (experiences.isNotEmpty() && isContextContinuation(clause)) {
+                    // Preserve complete follow-up details even when the sentence uses a
+                    // pronoun instead of repeating a first-person subject.
+                    val continuation = clause.trim().trim('"', '\'', ' ', '\t', '\n')
+                    if (continuation.isNotBlank() && !isQuestionText(continuation)) {
+                        val completeContinuation = if (
+                            continuation.endsWith(".") || continuation.endsWith("!") || continuation.endsWith("?")
+                        ) continuation else "$continuation."
+                        experiences[experiences.lastIndex] = "${experiences.last()} $completeContinuation"
+                    }
+                }
+            }
+            index++
+        }
+
+        return experiences.distinctBy { it.lowercase().replace(Regex("[^a-z0-9]+"), " ").trim() }
+    }
+
     private fun parseFacts(
         value: String?,
         userMessage: String = "",
@@ -400,9 +586,6 @@ object NoeonAiEngine {
 
         if (!value.isNullOrBlank()) {
             val trimmedVal = value.trim()
-            if (trimmedVal == "[]" || trimmedVal.equals("NONE", true) || trimmedVal == "[\"\"]" || trimmedVal == "['']") {
-                return emptyList()
-            }
             val cleanedVal = trimmedVal.removeSurrounding("[", "]").removeSurrounding("[", "]").trim()
 
             // 1. Try standard JSONArray parsing
@@ -428,13 +611,31 @@ object NoeonAiEngine {
         // 1. Are questions or invalid
         // 2. Were NOT declared by the user in userMessage
         // 3. Duplicate existing candidate experiences
-        return rawList.map { it.trim('"', '\'', '[', ']').trim() }
-            .filter { fact ->
-                if (fact.length < 3 || fact.equals("NONE", true)) return@filter false
-                if (isQuestionText(fact)) return@filter false // NEVER save questions as facts!
-                if (!isUserDeclaredFact(fact, userMessage)) return@filter false // MUST be declared by user in userMessage!
-                !isDuplicateExperience(fact, candidateExperiences)
-            }.distinct()
+        val validatedModelFacts = rawList.map { it.trim('"', '\'', '[', ']', ' ', '\t', '\n') }
+            .mapNotNull { rawFact ->
+                if (rawFact.length < 3 || rawFact.equals("NONE", true)) return@mapNotNull null
+                if (isQuestionText(rawFact) || !isCompletePersonalStatement(rawFact)) return@mapNotNull null
+                val fact = if (rawFact.endsWith(".") || rawFact.endsWith("!") || rawFact.endsWith("?")) rawFact else "$rawFact."
+                if (!isUserDeclaredFact(fact, userMessage)) return@mapNotNull null
+                if (isDuplicateExperience(fact, candidateExperiences)) return@mapNotNull null
+                fact
+            }
+
+        // Use the user's own complete statements as the canonical memories.
+        // This works even when a small local model returns [] or fragments,
+        // and groups related source statements into one experience.
+        val sourceFacts = groupRelatedStatements(extractSourceExperiences(userMessage))
+            .filterNot { experience ->
+                val componentStatements = SentenceSegmenter.segment(experience)
+                isDuplicateExperience(experience, candidateExperiences) ||
+                    (componentStatements.size > 1 && componentStatements.all {
+                        isDuplicateExperience(it, candidateExperiences)
+                    })
+            }
+
+        return sourceFacts.ifEmpty {
+            validatedModelFacts.distinctBy { it.lowercase().replace(Regex("[^a-z0-9]+"), " ").trim() }
+        }
     }
 
     fun evaluateFactBatchParameters(context: Context, facts: List<FactForEvaluation>): String {

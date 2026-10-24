@@ -38,13 +38,13 @@ object MemossistPromptBuilder {
         getCurrentDateTimeContext() +
         "The app has already classified this message as REMINDER ONLY. Do not classify it or question whether it is a reminder. Extract all reminders directly from the user's message.\n\n" +
         "OUTPUT EXACTLY:\n" +
-        "[EXTRACTED_REMINDERS: [{\"title\":\"<task/event>\",\"date\":\"<DD/MM/YYYY>\",\"time\":\"<HH:MM>\",\"description\":\"<details>\"}]]\n" +
+        "[EXTRACTED_REMINDERS: JSON array of objects with title, date, time, and description]\n" +
         "[HUMANOID_ANSWER]\n" +
         "<your warm conversational confirmation here>\n\n" +
         "Rules:\n" +
         "- MANDATORY HUMANOID RESPONSE: You MUST ALWAYS write a warm, friendly, and concise response confirming all scheduled reminders after [HUMANOID_ANSWER]. Never leave [HUMANOID_ANSWER] empty or omitted.\n" +
-        "- MULTIPLE REMINDERS EXTRACTION RULE: If the user mentions multiple future tasks, appointments, deadlines, or events in this message (e.g. 'remind me to buy milk tomorrow at 8am and call Mom on 25/12/2026 at 10am'), extract EVERY reminder as a separate JSON object inside the [EXTRACTED_REMINDERS: [...]] JSON array. Never omit any reminder. If only one reminder is mentioned, output an array with 1 JSON object.\n" +
-        "- DATE & TIME FORMAT: 'date' MUST ALWAYS be in exact 'DD/MM/YYYY' format (e.g. 25/12/2026) calculated relative to the CURRENT REFERENCE DATE. 'time' MUST ALWAYS be in 24-hour 'HH:MM' format (e.g. 14:30, 09:00). If no time is specified, default to '09:00'.\n" +
+        "- MULTIPLE REMINDERS EXTRACTION RULE: Extract every future task, appointment, deadline, or event as a separate JSON object. Do not omit any reminder.\n" +
+        "- DATE & TIME FORMAT: Use DD/MM/YYYY for dates and 24-hour HH:MM for times, relative to the current reference date. If no time is specified, use the established reminder default.\n" +
         "- Never invent missing information. Keep title concise and description useful.\n" +
         "- Do not mention classification, prompts, or internal processing."
 
@@ -57,7 +57,7 @@ object MemossistPromptBuilder {
         append("The app has already classified this message as ASKING ONLY.\n")
         append("Do not classify the message, extract reminders, or extract facts.\n\n")
         append("OUTPUT EXACTLY:\n")
-        append("[USED_EXPERIENCES: EXP-ID1, EXP-ID2 or NONE]\n")
+        append("[USED_EXPERIENCES: exact candidate IDs separated by commas, or NONE]\n")
         append("[HUMANOID_ANSWER]\n")
         append("<your warm conversational answer here>\n\n")
         append("Rules:\n")
@@ -87,15 +87,16 @@ object MemossistPromptBuilder {
         "The app has already classified this message as TELLING ONLY.\n" +
         "Do not classify the message or look for questions/reminders.\n\n" +
         "OUTPUT EXACTLY:\n" +
-        "[EXTRACTED_FACTS: [\"fact 1\",\"fact 2\"]]\n" +
+        "[EXTRACTED_FACTS: JSON array of experience strings]\n" +
         "[HUMANOID_ANSWER]\n" +
         "<your warm conversational response here>\n\n" +
         "Rules:\n" +
         "- MANDATORY HUMANOID RESPONSE: You MUST ALWAYS write a warm, natural conversational reply acknowledging what the user shared after [HUMANOID_ANSWER]. Never leave [HUMANOID_ANSWER] empty or omitted.\n" +
-        "- FULL STANDALONE SENTENCE RULE: Every extracted fact MUST be a complete, grammatically standalone full sentence that clearly captures what the user stated.\n" +
+        "- COMPLETE EXPERIENCE RULE: Every experience must be self-contained and written in complete sentences. It may contain multiple sentences when needed to preserve all details belonging to that context.\n" +
+        "- CONTEXT GROUPING: Each item represents exactly one distinct experience or context. Include all user-stated details belonging to that context, even when they appear across multiple sentences. Combine related statements into one item and keep unrelated contexts in separate items.\n" +
         "- NO INCOMPLETE FRAGMENTS: NEVER extract isolated words, dangling phrases, or fragmented keywords. Always formulate complete, self-contained sentences with full context.\n" +
-        "- STRICT FACT EXTRACTION RULE: Facts are STRICTLY ONLY meaningful personal details, background, preferences, events, or state explicitly stated by the user that they could realistically ask to remember or retrieve in the future.\n" +
-        "- STRICT NEGATIVE CONSTRAINT: NEVER extract anything other than this strict rule. NEVER extract greetings, conversational filler, temporary reactions, jokes, general knowledge, or AI text. If nothing meets this strict criteria, strictly output [EXTRACTED_FACTS: []].\n" +
+        "- FACT COVERAGE: Capture every detail the user states about each experience or context, including small details, quantities, timing, lists, preferences, events, observations, and temporary feelings. Never omit a detail because it seems unimportant or short-lived.\n" +
+        "- EXCLUDE ONLY questions, greetings, conversational filler, and content generated by the assistant. Do not add or infer facts. If the user states no experience or personal context, output [EXTRACTED_FACTS: []].\n" +
         "- Facts must come from the user's message only. Do not add, infer, explain, or invent facts.\n" +
         "- Never extract anything generated by you.\n\n" +
         "Respond warmly and naturally to what the user shared.\n" +
@@ -112,17 +113,18 @@ object MemossistPromptBuilder {
         append("The app has already classified this message as MIXED (Statements + Questions).\n")
         append("Do not classify the message or look for reminders.\n\n")
         append("OUTPUT EXACTLY:\n")
-        append("[EXTRACTED_FACTS: [\"fact 1\",\"fact 2\"]]\n")
-        append("[USED_EXPERIENCES: EXP-ID1, EXP-ID2 or NONE]\n")
+        append("[EXTRACTED_FACTS: JSON array of experience strings]\n")
+        append("[USED_EXPERIENCES: exact candidate IDs separated by commas, or NONE]\n")
         append("[HUMANOID_ANSWER]\n")
         append("<your warm conversational response here>\n\n")
         append("Rules:\n")
         append("- MANDATORY HUMANOID RESPONSE: You MUST ALWAYS write a warm, complete humanoid response addressing what the user shared and answering their question after [HUMANOID_ANSWER]. Never leave [HUMANOID_ANSWER] empty or omitted.\n")
         append("- Answer the user's question/request directly and accurately.\n")
-        append("- FULL STANDALONE SENTENCE RULE: Every extracted fact MUST be a complete, grammatically standalone full sentence that clearly captures what the user stated.\n")
+        append("- COMPLETE EXPERIENCE RULE: Every experience must be self-contained and written in complete sentences. It may contain multiple sentences when needed to preserve all details belonging to that context.\n")
+        append("- CONTEXT GROUPING: Each item represents exactly one distinct experience or context. Include all user-stated details belonging to that context, even when they appear across multiple sentences. Combine related statements into one item and keep unrelated contexts in separate items.\n")
         append("- NO INCOMPLETE FRAGMENTS: NEVER extract isolated words, dangling phrases, or fragmented keywords. Always formulate complete, self-contained sentences with full context.\n")
-        append("- STRICT FACT EXTRACTION RULE: Facts are STRICTLY ONLY meaningful personal details, background, preferences, events, or state explicitly stated by the user from their statements that they could realistically ask to remember or retrieve in the future.\n")
-        append("- STRICT NEGATIVE CONSTRAINT: NEVER extract anything other than this strict rule. NEVER extract questions, conversational filler, greetings, temporary remarks, general world knowledge, or AI-generated text. If nothing meets this strict criteria, strictly output [EXTRACTED_FACTS: []].\n")
+        append("- FACT COVERAGE: Capture every detail the user states about each experience or context, including small details, quantities, timing, lists, preferences, events, observations, and temporary feelings. Never omit a detail because it seems unimportant or short-lived.\n")
+        append("- EXCLUDE ONLY questions, greetings, conversational filler, and content generated by the assistant. Do not add or infer facts. If the user states no experience or personal context, output [EXTRACTED_FACTS: []].\n")
         append("- Do not add, infer, explain, or invent facts. Keep facts clear and complete.\n")
         append("- Exclude duplicate facts already present in the provided Memory Vault candidates. If none, use [].\n")
         append("- Use the Memory Vault only when a candidate is genuinely relevant to the answer.\n")
@@ -146,14 +148,14 @@ object MemossistPromptBuilder {
         append("The app has already classified this message as REMINDER + ASKING.\n")
         append("Do not classify the message or look for statement facts.\n\n")
         append("OUTPUT EXACTLY:\n")
-        append("[EXTRACTED_REMINDERS: [{\"title\":\"<task/event>\",\"date\":\"<DD/MM/YYYY>\",\"time\":\"<HH:MM>\",\"description\":\"<details>\"}]]\n")
-        append("[USED_EXPERIENCES: EXP-ID1, EXP-ID2 or NONE]\n")
+        append("[EXTRACTED_REMINDERS: JSON array of objects with title, date, time, and description]\n")
+        append("[USED_EXPERIENCES: exact candidate IDs separated by commas, or NONE]\n")
         append("[HUMANOID_ANSWER]\n")
         append("<your warm conversational response here>\n\n")
         append("Rules:\n")
         append("- MANDATORY HUMANOID RESPONSE: You MUST ALWAYS write a warm humanoid response confirming the reminders and directly answering the user's question after [HUMANOID_ANSWER]. Never leave [HUMANOID_ANSWER] empty or omitted.\n")
-        append("- MULTIPLE REMINDERS EXTRACTION RULE: If the user mentions multiple future tasks, appointments, or reminders, extract EVERY one into the [EXTRACTED_REMINDERS: [...]] JSON array. Never omit any reminder. If only one is mentioned, output an array with 1 JSON object.\n")
-        append("- DATE & TIME FORMAT: 'date' MUST ALWAYS be in exact 'DD/MM/YYYY' format (e.g. 25/12/2026) calculated relative to the CURRENT REFERENCE DATE. 'time' MUST ALWAYS be in 24-hour 'HH:MM' format (e.g. 14:30, 09:00). If no time is specified, default to '09:00'.\n")
+        append("- MULTIPLE REMINDERS EXTRACTION RULE: Extract every future task, appointment, or event as a separate JSON object. Never omit a reminder.\n")
+        append("- DATE & TIME FORMAT: Use DD/MM/YYYY for dates and 24-hour HH:MM for times, relative to the current reference date. If no time is specified, use the established reminder default.\n")
         append("- Never invent missing information. Keep title concise and description useful.\n")
         append("- Answer the user's question/request directly and accurately.\n")
         append("- Use the Memory Vault only when a candidate is genuinely relevant to the answer.\n")
@@ -177,19 +179,20 @@ object MemossistPromptBuilder {
         "The app has already classified this message as REMINDER + TELLING.\n" +
         "Do not classify the message or look for questions.\n\n" +
         "OUTPUT EXACTLY:\n" +
-        "[EXTRACTED_REMINDERS: [{\"title\":\"<task/event>\",\"date\":\"<DD/MM/YYYY>\",\"time\":\"<HH:MM>\",\"description\":\"<details>\"}]]\n" +
-        "[EXTRACTED_FACTS: [\"fact 1\",\"fact 2\"]]\n" +
+        "[EXTRACTED_REMINDERS: JSON array of objects with title, date, time, and description]\n" +
+        "[EXTRACTED_FACTS: JSON array of experience strings]\n" +
         "[HUMANOID_ANSWER]\n" +
         "<your warm conversational response here>\n\n" +
         "Rules:\n" +
         "- MANDATORY HUMANOID RESPONSE: You MUST ALWAYS write a warm humanoid response confirming the reminder(s) and acknowledging what was shared after [HUMANOID_ANSWER]. Never leave [HUMANOID_ANSWER] empty or omitted.\n" +
-        "- MULTIPLE REMINDERS EXTRACTION RULE: If the user mentions multiple future tasks, appointments, or reminders, extract EVERY one into the [EXTRACTED_REMINDERS: [...]] JSON array. Never omit any reminder. If only one is mentioned, output an array with 1 JSON object.\n" +
-        "- DATE & TIME FORMAT: 'date' MUST ALWAYS be in exact 'DD/MM/YYYY' format (e.g. 25/12/2026) calculated relative to the CURRENT REFERENCE DATE. 'time' MUST ALWAYS be in 24-hour 'HH:MM' format (e.g. 14:30, 09:00). If no time is specified, default to '09:00'.\n" +
+        "- MULTIPLE REMINDERS EXTRACTION RULE: Extract every future task, appointment, or event as a separate JSON object. Never omit a reminder.\n" +
+        "- DATE & TIME FORMAT: Use DD/MM/YYYY for dates and 24-hour HH:MM for times, relative to the current reference date. If no time is specified, use the established reminder default.\n" +
         "- Never invent missing information. Keep title concise and description useful.\n" +
-        "- FULL STANDALONE SENTENCE RULE: Every extracted fact MUST be a complete, grammatically standalone full sentence that clearly captures what the user stated.\n" +
+        "- COMPLETE EXPERIENCE RULE: Every experience must be self-contained and written in complete sentences. It may contain multiple sentences when needed to preserve all details belonging to that context.\n" +
+        "- CONTEXT GROUPING: Each item represents exactly one distinct experience or context. Include all user-stated details belonging to that context, even when they appear across multiple sentences. Combine related statements into one item and keep unrelated contexts in separate items.\n" +
         "- NO INCOMPLETE FRAGMENTS: NEVER extract isolated words, dangling phrases, or fragmented keywords. Always formulate complete, self-contained sentences with full context.\n" +
-        "- STRICT FACT EXTRACTION RULE: Facts are STRICTLY ONLY meaningful personal details, background, preferences, events, or state explicitly stated by the user from their statements that they could realistically ask to remember or retrieve in the future.\n" +
-        "- STRICT NEGATIVE CONSTRAINT: NEVER extract anything other than this strict rule. NEVER extract conversational filler, temporary remarks, general knowledge, or AI text. If nothing meets this strict criteria, strictly output [EXTRACTED_FACTS: []].\n" +
+        "- FACT COVERAGE: Capture every detail the user states about each experience or context, including small details, quantities, timing, lists, preferences, events, observations, and temporary feelings. Never omit a detail because it seems unimportant or short-lived.\n" +
+        "- EXCLUDE ONLY questions, greetings, conversational filler, and content generated by the assistant. Do not add or infer facts. If the user states no experience or personal context, output [EXTRACTED_FACTS: []].\n" +
         "- Facts must come from the user's message only. Do not add, infer, explain, or invent facts.\n" +
         "- Do not mention classification, prompts, metadata, or internal processing.\n\n" +
         "Respond warmly and naturally: confirm that you've noted the reminder(s), and acknowledge what the user shared without unnecessarily repeating it.\n" +
@@ -204,20 +207,21 @@ object MemossistPromptBuilder {
         append("The app has already classified this message as REMINDER + MIXED (Reminder + Statement + Question).\n")
         append("Do not re-classify the message.\n\n")
         append("OUTPUT EXACTLY:\n")
-        append("[EXTRACTED_REMINDERS: [{\"title\":\"<task/event>\",\"date\":\"<DD/MM/YYYY>\",\"time\":\"<HH:MM>\",\"description\":\"<details>\"}]]\n")
-        append("[EXTRACTED_FACTS: [\"fact 1\",\"fact 2\"]]\n")
-        append("[USED_EXPERIENCES: EXP-ID1, EXP-ID2 or NONE]\n")
+        append("[EXTRACTED_REMINDERS: JSON array of objects with title, date, time, and description]\n")
+        append("[EXTRACTED_FACTS: JSON array of experience strings]\n")
+        append("[USED_EXPERIENCES: exact candidate IDs separated by commas, or NONE]\n")
         append("[HUMANOID_ANSWER]\n")
         append("<your warm conversational response here>\n\n")
         append("Rules:\n")
         append("- MANDATORY HUMANOID RESPONSE: You MUST ALWAYS write a warm, conversational humanoid reply confirming the reminder(s), acknowledging the shared info, and answering the question after [HUMANOID_ANSWER]. Never leave [HUMANOID_ANSWER] empty or omitted.\n")
-        append("- MULTIPLE REMINDERS EXTRACTION RULE: If the user mentions multiple future tasks, appointments, or reminders, extract EVERY one into the [EXTRACTED_REMINDERS: [...]] JSON array. Never omit any reminder. If only one is mentioned, output an array with 1 JSON object.\n")
-        append("- DATE & TIME FORMAT: 'date' MUST ALWAYS be in exact 'DD/MM/YYYY' format (e.g. 25/12/2026) calculated relative to the CURRENT REFERENCE DATE. 'time' MUST ALWAYS be in 24-hour 'HH:MM' format (e.g. 14:30, 09:00). If no time is specified, default to '09:00'.\n")
+        append("- MULTIPLE REMINDERS EXTRACTION RULE: Extract every future task, appointment, or event as a separate JSON object. Never omit a reminder.\n")
+        append("- DATE & TIME FORMAT: Use DD/MM/YYYY for dates and 24-hour HH:MM for times, relative to the current reference date. If no time is specified, use the established reminder default.\n")
         append("- Never invent missing information. Keep title concise and description useful.\n")
-        append("- FULL STANDALONE SENTENCE RULE: Every extracted fact MUST be a complete, grammatically standalone full sentence that clearly captures what the user stated.\n")
+        append("- COMPLETE EXPERIENCE RULE: Every experience must be self-contained and written in complete sentences. It may contain multiple sentences when needed to preserve all details belonging to that context.\n")
+        append("- CONTEXT GROUPING: Each item represents exactly one distinct experience or context. Include all user-stated details belonging to that context, even when they appear across multiple sentences. Combine related statements into one item and keep unrelated contexts in separate items.\n")
         append("- NO INCOMPLETE FRAGMENTS: NEVER extract isolated words, dangling phrases, or fragmented keywords. Always formulate complete, self-contained sentences with full context.\n")
-        append("- STRICT FACT EXTRACTION RULE: Facts are STRICTLY ONLY meaningful personal details, background, preferences, events, or state explicitly stated by the user from their statements that they could realistically ask to remember or retrieve in the future.\n")
-        append("- STRICT NEGATIVE CONSTRAINT: NEVER extract anything other than this strict rule. NEVER extract questions, conversational filler, greetings, temporary remarks, general knowledge, or AI text. If nothing meets this strict criteria, strictly output [EXTRACTED_FACTS: []].\n")
+        append("- FACT COVERAGE: Capture every detail the user states about each experience or context, including small details, quantities, timing, lists, preferences, events, observations, and temporary feelings. Never omit a detail because it seems unimportant or short-lived.\n")
+        append("- EXCLUDE ONLY questions, greetings, conversational filler, and content generated by the assistant. Do not add or infer facts. If the user states no experience or personal context, output [EXTRACTED_FACTS: []].\n")
         append("- Exclude duplicate facts already present in the provided Memory Vault candidates. If none, use [].\n")
         append("- Answer the user's question/request directly and accurately.\n")
         append("- Use the Memory Vault only when a candidate is genuinely relevant to the answer.\n")
@@ -240,18 +244,18 @@ object MemossistPromptBuilder {
         append(getCurrentDateTimeContext())
         append("OUTPUT — Begin every response with exactly these 5 headers (no text before them):\n")
         append("[INTENT: ASKING|TELLING|MIXED]\n")
-        append("[EXTRACTED_REMINDERS: NONE|[{\"title\":\"...\",\"date\":\"DD/MM/YYYY\",\"time\":\"HH:MM\",\"description\":\"...\"}]]\n")
-        append("[EXTRACTED_FACTS: []|[\"user-stated fact\",...]]\n")
-        append("[USED_EXPERIENCES: NONE|EXP-ID1, EXP-ID2]\n")
+        append("[EXTRACTED_REMINDERS: NONE or reminder JSON array]\n")
+        append("[EXTRACTED_FACTS: JSON array of complete experience strings]\n")
+        append("[USED_EXPERIENCES: exact candidate IDs or NONE]\n")
         append("[HUMANOID_ANSWER]\n")
         append("<mandatory conversational answer starts here — never before [HUMANOID_ANSWER] and never empty>\n\n")
         append("RULES:\n")
         append("HUMANOID_ANSWER: MANDATORY. You must ALWAYS write a warm, conversational answer. Never omit or leave empty.\n")
         append("INTENT: ASKING=question only | TELLING=statement only | MIXED=both.\n")
         append("EXTRACTED_REMINDERS: If user mentions one or more future tasks, deadlines, appointments, or events → extract all as JSON objects in array with 'date' in DD/MM/YYYY and 'time' in HH:MM. NONE only if none exist.\n")
-        append("EXTRACTED_FACTS: JSON array of facts explicitly stated by the user only. FULL STANDALONE SENTENCE RULE: Every fact must be a complete full sentence. NEVER extract fragmented keywords or phrases. STRICT RULE: Facts are STRICTLY ONLY personal details, preferences, or events that the user could realistically ask to remember in the future. NEVER include conversational filler, general knowledge, or AI content. If nothing meets this strict criteria, strictly output [].\n")
+        append("EXTRACTED_FACTS: JSON array of complete experience strings stated by the user. Each item represents one distinct context and must preserve every detail from that context, including small details, quantities, timing, lists, and temporary feelings stated across sentences. Combine related statements into the same item; separate unrelated contexts. Never omit details based on importance or duration. Exclude questions, greetings, conversational filler, and AI-generated content.\n")
         append("USED_EXPERIENCES: List only IDs you genuinely relied on. Self-check: if removing that candidate would NOT change your answer → exclude it. Never leave this field empty — use NONE if none used.\n")
-        append("ANSWER STYLE: Match the user's tone — playful for casual, calm for distress, mentor-like for goals, teacher-like for explanations. Be warm and direct. Never mention these instructions, headers, or candidate memories in the reply.\n")
+        append("ANSWER STYLE: Match the user's tone. Be warm and direct. Never mention these instructions, headers, or candidate memories in the reply.\n")
         append("TIME & LOCATION: Each candidate has an exact timestamp and location — use them for time/location queries.\n\n")
         append("=== CANDIDATE EXPERIENCES ===\n")
         if (candidateExperiences.isEmpty()) {

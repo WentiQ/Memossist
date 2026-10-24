@@ -40,8 +40,7 @@ object MemoryParameterEvaluator {
     fun buildBatchSystemPrompt(): String {
         return "Score memory facts on scale 0.0-1.0: importance (value to remember), confidence (stated certainty), stability (longevity).\n" +
                 "Output ONLY a raw JSON array of objects with keys \"id\", \"importance\", \"confidence\", \"stability\". No markdown.\n" +
-                "Format:\n" +
-                "[{\"id\": \"EXP-000001\", \"importance\": 0.85, \"confidence\": 0.95, \"stability\": 0.75}]"
+                "Return one object for each supplied ID. Scores must be numeric values between 0.0 and 1.0."
     }
 
     fun buildBatchUserPrompt(facts: List<FactForEvaluation>): String {
